@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>4.0.0-M2</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+
+	<groupId>com.j2ee-2526</groupId>
+	<artifactId>sotroonline</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>sotroonline</name>
+	<description>Demo project for Spring Boot</description>
+	<packaging>pom</packaging>
+	<url/>
+	<licenses>
+		<license/>
+	</licenses>
+	<developers>
+		<developer/>
+	</developers>
+	<scm>
+		<connection/>
+		<developerConnection/>
+		<tag/>
+		<url/>
+	</scm>
+	<properties>
+		<java.version>21</java.version>
+	</properties>
+
+	<modules>
+		<module>SoTroOnline/src/main/java/com/so_tro_online/app/SoTroOnline-dungchung</module>
+		<module>SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyTaiKhoan</module>
+		<module>SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhong</module>
+		<module>SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyDichVuPhong</module>
+		<module>SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong</module>
+		<module>SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon</module>
+		<module>SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhieuThu</module>
+		<module>SoTroOnline</module>
+		<module>SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu</module>
+		<module>SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyKhachThue</module>
+	</modules>
+
+	<dependencyManagement>
+		<dependencies>
+			<!-- BOM của Spring Boot -->
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>4.0.0-M2</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

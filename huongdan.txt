@@ -1,0 +1,50 @@
+---------------------------MÔ TẢ VỀ DỰ ÁN-----------------------------
+
+Dự án này được chia thành các module chính như sau:
+    1. Module Quản lý tài khoản
+    2. Module quản lý phòng
+    3. Module quản lý phiếu thu
+    4. quản lý khách thuê
+    5. quản lý hợp đồng phòng
+    6. quản lý hợp đồng dịch vụ
+    7. quản lý hóa đơn
+    8. quản lý dịch vụ phòng
+
+---------------------------CẤU TRÚC FOLDER-----------------------------
+- src
+    - main
+        - java
+            - com.so_tro_online.app
+                |_config: Chứa các lớp cấu hình ứng dụng.
+                |_QuanLyTaiKhoan: Chứa các lớp liên quan đến quản lý tài khoản người dùng.
+                |_QuanLyPhong: Chứa các lớp liên quan đến quản lý phòng.
+                |_QuanLyPhieuThu: Chứa các lớp liên quan đến quản lý phiếu thu.
+                |_QuanLyKhachThue: Chứa các lớp liên quan đến quản lý khách thuê.
+                |_QuanLyHopDongPhong: Chứa các lớp liên quan đến quản lý hợp đồng phòng.
+                |_QuanLyHopDongDichVu: Chứa các lớp liên quan đến quản lý hợp đồng dịch vụ.
+                |_QuanLyHoaDon: Chứa các lớp liên quan đến quản lý hóa đơn.
+                |_QuanLyDichVuPhong: Chứa các lớp liên quan đến quản lý dịch vụ phòng.
+                |_SoTroOnline: Chứa các lớp tiện ích hỗ trợ (như xử lý exception, ...)
+                |_SoTroOnlineApplication.java: Lớp chính để khởi động ứng dụng Spring Boot.
+        - resources
+            - application.properties: Tệp cấu hình chính của ứng dụng, anh em chỉnh laại password tại mục 'spring.datasource.password' để kết nối với database.
+
+
+---------------------------------------CẤU TRÚC FOLDER TRONG MODULE--------------
+
+- QuanLyTaiKhoan (các module khác có cấu trúc tương tự)
+    |_src
+        |_main
+            |_java
+                |_com.so_tro_online.app.QuanLyTaiKhoan
+                    |_controller: Chứa các lớp điều khiển (Controller) để xử lý yêu cầu từ người dùng liên quan đến tài khoản.
+                    |_entity: Chứa các lớp mô hình (Model) đại diện cho dữ liệu tài khoản.
+                    |_repository: Chứa các giao diện kho lưu trữ (Repository) để tương tác với cơ sở dữ liệu liên quan đến tài khoản.
+                    |_service: Chứa các lớp dịch vụ (Service) để xử lý logic nghiệp vụ liên quan đến tài khoản.
+                    |_dto: Chứa các lớp Data Transfer Object (DTO) để truyền dữ liệu giữa các lớp và tầng khác nhau trong ứng dụng.
+
+
+- Mấy bro chủ yếu viêết code trong các folder controller, entity, repository, service, dto, trong các module tương ứng.
+- Nếu anh em muốn thêm package thì thêm vào file pom.xml ở thư mục SoTroOnline nhé, không nên thêm vào các file pom.xml trong các module con.
+- Anh em có thể tạo thêm các module khác nếu cần thiết, nhớ thêm vào file pom.xml ở thư mục SoTroOnline nhé.
+- Gỉa sử anh em muốn sử dụng đôi tượng từ package QuanLyTaiKhoan trong package QuanLyPhong thì anh em chỉ cần import package QuanLyTaiKhoan vào package QuanLyPhong, xong import class vào là xong
