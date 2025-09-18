@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="cafe1d0c-bc81-4c1f-9f7d-997f92561b0c" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitattributes" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SoTroOnline/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyDichVuPhong/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyKhachThue/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhieuThu/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhong/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhong/src/main/java/com/so_tro_online/quan_ly_phong/controller/QuanLyPhongController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyTaiKhoan/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyTaiKhoan/src/main/java/com/so_tro_online/quan_ly_tai_khoan/controller/QuanLyTaiKhoanController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyTaiKhoan/target/classes/com/so_tro_online/quan_ly_tai_khoan/controller/QuanLyTaiKhoanController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/SoTroOnline-dungchung/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/SoTroOnlineApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/config/SecurityConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/resources/application.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/test/java/com/TenantApplicationTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/huongdan.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvnw" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvnw.cmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="package-info" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="32UL7eN9UtV5BwcENIondN2rDAw" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.SoTroOnlineApplication.executor": "Run",
+    "Application.TenantApplication.executor": "Run",
+    "Application.com.so_tro_online.app.SoTroOnlineApplication.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "D:/Codes/DoAn/do-an-J2EE/SoTroOnline/backend",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "preferences.pluginManager"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Codes\DoAn\do-an-J2EE\SoTroOnline\QuanLyDichVuPhong" />
+      <recent name="D:\Codes\DoAn\do-an-J2EE\SoTroOnline\QuanLyHoaDon" />
+      <recent name="D:\Codes\DoAn\do-an-J2EE\SoTroOnline\QuanLyHopDongDichVu" />
+      <recent name="D:\Codes\DoAn\do-an-J2EE\SoTroOnline\QuanLyHopDongPhong" />
+      <recent name="D:\Codes\DoAn\do-an-J2EE\SoTroOnline\QuanLyKhachThue" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Codes\DoAn\do-an-J2EE\SoTroOnline\SoTroOnline\src\main\java\com\so_tro_online\app" />
+      <recent name="D:\Codes\DoAn\do-an-J2EE\SoTroOnline\SoTroOnline" />
+      <recent name="D:\Codes\big_project\tenant\tenant-app\src" />
+      <recent name="D:\Codes\big_project\tenant\tenant-app" />
+      <recent name="D:\Codes\big_project\tenant\src\tenant-app" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="com.so_tro_online.app.SoTroOnlineApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.so_tro_online.app.SoTroOnlineApplication" />
+      <module name="SoTroOnline" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.so_tro_online.app.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="SoTroOnline" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="SoTroOnline" />
+      <option name="filePath" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.com.so_tro_online.app.SoTroOnlineApplication" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="cafe1d0c-bc81-4c1f-9f7d-997f92561b0c" name="Changes" comment="" />
+      <created>1757470037497</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1757470037497</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/SoTroOnline$com_so_tro_online_app_SoTroOnlineApplication.ic" NAME="com.so_tro_online.app.SoTroOnlineApplication Coverage Results" MODIFIED="1757930608169" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>com.so_tro_online.app.*</FILTER>
+    </SUITE>
+  </component>
+</project>
