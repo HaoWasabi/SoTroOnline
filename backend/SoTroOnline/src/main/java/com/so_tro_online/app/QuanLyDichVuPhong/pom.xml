@@ -25,6 +25,11 @@
             <artifactId>SoTroOnline-dungchung</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.j2ee-2526</groupId>
+            <artifactId>QuanLyTaiKhoan</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
     
 </project>

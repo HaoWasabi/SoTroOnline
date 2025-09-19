@@ -5,30 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cafe1d0c-bc81-4c1f-9f7d-997f92561b0c" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitattributes" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/pom.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyDichVuPhong/pom.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/pom.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/pom.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/pom.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyKhachThue/pom.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhieuThu/pom.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhong/pom.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhong/src/main/java/com/so_tro_online/quan_ly_phong/controller/QuanLyPhongController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyTaiKhoan/pom.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyTaiKhoan/src/main/java/com/so_tro_online/quan_ly_tai_khoan/controller/QuanLyTaiKhoanController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyTaiKhoan/target/classes/com/so_tro_online/quan_ly_tai_khoan/controller/QuanLyTaiKhoanController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/SoTroOnline-dungchung/pom.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/SoTroOnlineApplication.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/config/SecurityConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/resources/application.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/test/java/com/TenantApplicationTests.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/huongdan.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mvnw" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mvnw.cmd" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/SoTroOnline/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/SoTroOnline/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhong/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhong/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhong/src/main/java/com/so_tro_online/quan_ly_phong/controller/QuanLyPhongController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhong/src/main/java/com/so_tro_online/quan_ly_phong/controller/QuanLyPhongController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/SoTroOnline/src/main/java/com/so_tro_online/app/SoTroOnlineApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/SoTroOnline/src/main/java/com/so_tro_online/app/SoTroOnlineApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/SoTroOnline/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/SoTroOnline/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,6 +26,9 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
   </component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
@@ -67,10 +51,10 @@
     "Application.TenantApplication.executor": "Run",
     "Application.com.so_tro_online.app.SoTroOnlineApplication.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "be-phong",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/Codes/DoAn/do-an-J2EE/SoTroOnline/backend",
+    "last_opened_file_path": "D:/nam2/SoTroOnline/backend",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.0",
