@@ -14,6 +14,6 @@ public class RoomRequest {
     private BigDecimal chieuDai;
     private BigDecimal chieuRong;
     private String vatDung;
-    private Float giaThueCoBan;
+    private BigDecimal giaThueCoBan;
     private TrangThai trangThai;
 }

@@ -12,14 +12,14 @@ public class Phong {
     private Integer maPhong;
     @ManyToOne
     @JoinColumn(name = "maQuanLy")
-    private TaiKhoan maQuanLy;
+    private TaiKhoan taiKhoan;
     private String tenPhong;
     private String loaiPhong;
     private String diaChi;
     private BigDecimal chieuDai;
     private BigDecimal chieuRong;
     private String vatDung;
-    private Float giaThueCoBan;
+    private BigDecimal giaThueCoBan;
     @Enumerated(EnumType.STRING)
     private TrangThai trangThai;
 }
