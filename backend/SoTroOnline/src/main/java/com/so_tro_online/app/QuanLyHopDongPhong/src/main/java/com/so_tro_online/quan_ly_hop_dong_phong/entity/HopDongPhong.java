@@ -29,4 +29,84 @@ public class HopDongPhong {
     private Date ngayTao;
     @Enumerated(EnumType.STRING)
     private TrangThai trangThai;
+
+    public Integer getMaHopDongPhong() {
+        return maHopDongPhong;
+    }
+
+    public TaiKhoan getTaiKhoan() {
+        return taiKhoan;
+    }
+
+    public KhachThue getKhachThue() {
+        return khachThue;
+    }
+
+    public Phong getPhong() {
+        return phong;
+    }
+
+    public BigDecimal getTienPhong() {
+        return tienPhong;
+    }
+
+    public BigDecimal getTienCoc() {
+        return tienCoc;
+    }
+
+    public Date getNgayBatDau() {
+        return ngayBatDau;
+    }
+
+    public Date getNgayKetThuc() {
+        return ngayKetThuc;
+    }
+
+    public Date getNgayTao() {
+        return ngayTao;
+    }
+
+    public TrangThai getTrangThai() {
+        return trangThai;
+    }
+
+    public void setMaHopDongPhong(Integer maHopDongPhong) {
+        this.maHopDongPhong = maHopDongPhong;
+    }
+
+    public void setTaiKhoan(TaiKhoan taiKhoan) {
+        this.taiKhoan = taiKhoan;
+    }
+
+    public void setKhachThue(KhachThue khachThue) {
+        this.khachThue = khachThue;
+    }
+
+    public void setPhong(Phong phong) {
+        this.phong = phong;
+    }
+
+    public void setTienPhong(BigDecimal tienPhong) {
+        this.tienPhong = tienPhong;
+    }
+
+    public void setTienCoc(BigDecimal tienCoc) {
+        this.tienCoc = tienCoc;
+    }
+
+    public void setNgayBatDau(Date ngayBatDau) {
+        this.ngayBatDau = ngayBatDau;
+    }
+
+    public void setNgayKetThuc(Date ngayKetThuc) {
+        this.ngayKetThuc = ngayKetThuc;
+    }
+
+    public void setNgayTao(Date ngayTao) {
+        this.ngayTao = ngayTao;
+    }
+
+    public void setTrangThai(TrangThai trangThai) {
+        this.trangThai = trangThai;
+    }
 }
