@@ -1,7 +1,0 @@
-# application.yml
-spring:
-  datasource:
-    url: jdbc:mysql://r0nj3q.h.filess.io:3307/sotroonline_wagonswim
-    username: sotroonline_wagonswim
-    password: ade41c763ebd1d0412543ffb1d745cb34e35037c
-    driver-class-name: com.mysql.cj.jdbc.Driver
