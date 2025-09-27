@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+#Database source
+# Ignore Spring Boot config
+SoTroOnline/src/main/resources/application.yml
