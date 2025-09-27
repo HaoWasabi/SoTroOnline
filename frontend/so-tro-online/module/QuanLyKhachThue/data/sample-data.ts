@@ -1,0 +1,32 @@
+export const tenants: Tenant[] = [
+  {
+    email: "nguyen.a@example.com",
+    tenant_cccd: "012345678901",
+    represent_code: "#asfght",
+    name: "Nguyen Van A",
+    phone: "0912345678",
+    address: "123 Tran Hung Dao, Hanoi",
+    dateOfBirth: "1999-05-12",
+    status: "isActive",
+  },
+  {
+    email: "le.b@example.com",
+    tenant_cccd: "098765432109",
+    represent_code: "#aserweg",
+    name: "Le Thi B",
+    phone: "0987654321",
+    address: "45 Nguyen Trai, Ho Chi Minh City",
+    dateOfBirth: "2001-11-03",
+    status: "isPending",
+  },
+  {
+    email: "tran.c@example.com",
+    tenant_cccd: "123456789012",
+    represent_code: "#qweit",
+    name: "Tran Van C",
+    phone: "0901122334",
+    address: "89 Le Loi, Da Nang",
+    dateOfBirth: "1995-02-20",
+    status: "isDeleted",
+  },
+];
