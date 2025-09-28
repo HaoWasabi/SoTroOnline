@@ -1,39 +1,24 @@
-package dto;
+package com.so_tro_online.quan_ly_phieu_thu.dto;
 
-import java.math.BigDecimal; // dùng BigDecimal để tránh sai số khi tính toán tiền. 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
+import com.so_tro_online.quan_ly_phieu_thu.entity.TrangThaiPhieuThu;
+
+import java.math.BigDecimal;
+import java.time.Instant;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
-
-@Data   // Tự động sinh getter, setter, toString, equals, hashCode
-@NoArgsConstructor      // constructor rỗng
-@AllArgsConstructor     // constructor đầy đủ tham số
-public class PhieuThuDTO implements Serializable {
-    private String maPhieuThu;    // FK -> HoaDon
-    private String maHoaDon;    // FK -> HoaDon
-    private String maKhachDaiDien;    // FK -> KhachDaiDien
+@Data   // sinh getter, setter, toString, equals, hashCode
+@NoArgsConstructor
+@AllArgsConstructor
+public class PhieuThuDTO {
+    private int maPhieuThu;
+    private int maHoaDon;
+    private int maKhachDaiDien;
     private BigDecimal tienNo;
     private BigDecimal tienDaThu;
     private String ghiChu;
-    private Date ngayTao;
-    private TrangThai trangThai;
-
-    public static enum TrangThai {
-        HOAT_DONG("hoatDong"),
-        DA_HUY("daHuy");
-
-        private String value;
-
-        TrangThai(String value) {
-            this.value = value;
-        }
-
-        public String getValue() {
-            return value;
-        }
-    }
+    private Instant ngayTao;
+    private TrangThaiPhieuThu trangThai;
 }
