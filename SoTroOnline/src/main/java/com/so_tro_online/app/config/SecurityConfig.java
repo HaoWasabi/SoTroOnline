@@ -19,8 +19,11 @@ public class SecurityConfig {
     SecurityFilterChain httpSecurity(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)   // tắt login form mặc định
+                .httpBasic(AbstractHttpConfigurer::disable)   // tắt basic auth
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/*").permitAll()
+                        .requestMatchers("/api/auth/signup").permitAll()
+                        .requestMatchers("/api/auth/login").permitAll()
                         .anyRequest().authenticated()
                 );
 
@@ -32,4 +35,5 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder(12);
     }
 }
+
 

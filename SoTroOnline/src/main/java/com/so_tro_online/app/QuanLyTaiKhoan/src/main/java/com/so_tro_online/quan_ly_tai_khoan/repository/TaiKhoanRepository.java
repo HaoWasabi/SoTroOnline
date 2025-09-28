@@ -9,10 +9,13 @@ import java.util.Optional;
 
 @Repository
 public interface TaiKhoanRepository extends JpaRepository<TaiKhoan, String> {
-    @Query("select u from Account where u.email = ?1 and u.matKhau = ?2")
+    @Query("SELECT u FROM TaiKhoan u WHERE u.email = :email AND u.matKhau = :matKhau")
     Optional<TaiKhoan> findByEmailAndMatKhau(String email, String matKhau);
 
-    @Query("select email from Account u where u.email = ?1")
-    String findByEmail(String email);
+    @Query("select u from TaiKhoan u where u.email = :email")
+    TaiKhoan findByEmail(String email);
+
+    /*@Query("select count(t) > 0 from TaiKhoan t where t.maTaiKhoan = :maTaiKhoan")
+    boolean existByMaTaiKhoan(String maTaiKhoan);*/
 
 }

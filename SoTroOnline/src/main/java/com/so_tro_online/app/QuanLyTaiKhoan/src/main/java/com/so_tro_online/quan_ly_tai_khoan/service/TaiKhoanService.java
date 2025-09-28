@@ -7,37 +7,40 @@ import com.so_tro_online.quan_ly_tai_khoan.exception.InvalidPasswordException;
 import com.so_tro_online.quan_ly_tai_khoan.exception.NoEmailFoundException;
 import com.so_tro_online.quan_ly_tai_khoan.mapper.UserMapper;
 import com.so_tro_online.quan_ly_tai_khoan.repository.TaiKhoanRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.UUID;
 
 @Service
 public class TaiKhoanService {
     private final TaiKhoanRepository taiKhoanRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Autowired
     public TaiKhoanService(TaiKhoanRepository taiKhoanRepository, PasswordEncoder passwordEncoder) {
         this.taiKhoanRepository = taiKhoanRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
-    public TaiKhoan signIn(String email, String password) {
-        String emailTaiKhoan = taiKhoanRepository.findByEmail(email);
+    public void signIn(String email, String password) {
 
-        if(emailTaiKhoan == null) {
-            throw new NoEmailFoundException("Khong tim thay tai khoan voi email!");
+        TaiKhoan taiKhoan = taiKhoanRepository.findByEmail(email);
+
+        if(taiKhoan== null) {
+            throw new NoEmailFoundException();
         }
 
-        TaiKhoan taiKhoan = taiKhoanRepository.findByEmailAndMatKhau(email, password).orElse(null);
-
-        if(taiKhoan == null) {
-            throw new InvalidPasswordException("Sai tai khoan hoac mat khau!");
+        if(!(taiKhoan.getMatKhau() != null && passwordEncoder.matches(password, taiKhoan.getMatKhau()))) {
+            throw new InvalidPasswordException();
         }
 
-        return taiKhoan;
     }
 
+    @Transactional
     public void signUp(
             String email,
             String cccdCode,
@@ -46,17 +49,18 @@ public class TaiKhoanService {
             String thuongTru,
             Date ngaySinh,
             String matKhau,
+            LocalDateTime ngayTao,
             TrangThai trangThai
     ) {
-        String accountRetrievedByEmail = taiKhoanRepository.findByEmail(email);
+        TaiKhoan accountRetrievedByEmail = taiKhoanRepository.findByEmail(email);
 
         if(accountRetrievedByEmail != null) {
-            throw new DuplicateEmailException("Email is already exist!");
+            throw new DuplicateEmailException();
         }
 
         String encodedPassword = passwordEncoder.encode(matKhau);
         TaiKhoan newTaiKhoan = UserMapper.toEntity(
-                email, cccdCode, hoTen, dienThoai, thuongTru, ngaySinh, matKhau, trangThai
+                email, cccdCode, hoTen, dienThoai, thuongTru, ngaySinh, encodedPassword, ngayTao, trangThai
         );
 
         taiKhoanRepository.save(newTaiKhoan);

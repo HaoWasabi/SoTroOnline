@@ -1,11 +1,8 @@
 package com.so_tro_online.quan_ly_tai_khoan.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 
@@ -14,8 +11,9 @@ import java.util.Date;
 public class TaiKhoan {
 
     @Column(name = "maTaiKhoan", updatable = false)
-    @Id
-    private String maTaiKhoan;
+    @Id()
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int maTaiKhoan;
 
     @Column(name = "maCanCuoc", nullable = false, unique = true)
     private String maCanCuoc;
@@ -39,14 +37,15 @@ public class TaiKhoan {
     private String matKhau;
 
     @Column(name = "ngayTao")
-    private Instant ngayTao;
+    private LocalDateTime ngayTao;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "trangThai")
     private TrangThai trangThai;
 
     public TaiKhoan() {}
 
-    public TaiKhoan(String maTaiKhoan, String maCanCuoc, String email, String hoTen, String dienThoai, String thuongTru, Date ngaySinh, String matKhau, TrangThai trangThai) {
+    public TaiKhoan(int maTaiKhoan, String maCanCuoc, String email, String hoTen, String dienThoai, String thuongTru, Date ngaySinh, String matKhau, LocalDateTime ngayTao, TrangThai trangThai) {
         this.maTaiKhoan = maTaiKhoan;
         this.maCanCuoc = maCanCuoc;
         this.email = email;
@@ -55,14 +54,15 @@ public class TaiKhoan {
         this.thuongTru = thuongTru;
         this.ngaySinh = ngaySinh;
         this.matKhau = matKhau;
+        this.ngayTao = ngayTao;
         this.trangThai = trangThai;
     }
 
-    public String getMaTaiKhoan() {
+    public int getMaTaiKhoan() {
         return maTaiKhoan;
     }
 
-    public void setMaTaiKhoan(String maTaiKhoan) {
+    public void setMaTaiKhoan(int maTaiKhoan) {
         this.maTaiKhoan = maTaiKhoan;
     }
 
@@ -122,11 +122,11 @@ public class TaiKhoan {
         this.matKhau = matKhau;
     }
 
-    public Instant getNgayTao() {
+    public LocalDateTime getNgayTao() {
         return ngayTao;
     }
 
-    public void setNgayTao(Instant ngayTao) {
+    public void setNgayTao(LocalDateTime ngayTao) {
         this.ngayTao = ngayTao;
     }
 
