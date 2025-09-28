@@ -18,13 +18,13 @@ public class PhieuThu {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "maPhieuThu", updatable = false, nullable = false)
-    private int maPhieuThu;
+    private Integer maPhieuThu;
 
     @Column(name = "maHoaDon", nullable = false)
-    private int maHoaDon;   // FK -> HoaDon
+    private Integer maHoaDon;   // FK -> HoaDon
 
     @Column(name = "maKhachDaiDien", nullable = false)
-    private int maKhachDaiDien;   // FK -> KhachDaiDien
+    private Integer maKhachDaiDien;   // FK -> KhachDaiDien
 
     @Column(name = "tienNo", nullable = false, precision = 15, scale = 2)
     private BigDecimal tienNo;

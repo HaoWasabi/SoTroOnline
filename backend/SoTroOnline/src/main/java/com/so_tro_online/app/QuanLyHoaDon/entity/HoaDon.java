@@ -20,13 +20,13 @@ public class HoaDon {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "maHoaDon", updatable = false)
-    private int maHoaDon;
+    private Integer maHoaDon;
 
     @Column(name = "maHopDongPhong", nullable = false)
-    private int maHopDongPhong;
+    private Integer maHopDongPhong;
 
     @Column(name = "maKhachDaiDien", nullable = false)
-    private int maKhachDaiDien;
+    private Integer maKhachDaiDien;
 
     @Column(name = "tienPhong", nullable = false)
     private BigDecimal tienPhong;

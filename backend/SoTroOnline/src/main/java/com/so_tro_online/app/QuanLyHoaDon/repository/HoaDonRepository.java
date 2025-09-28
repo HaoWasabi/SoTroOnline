@@ -10,8 +10,10 @@ import java.util.List;
 
 @Repository
 public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
-    Optional<HoaDon> findByIdAndTrangThai(int id, TrangThaiHoaDon trangThai);
-    Optional<HoaDon> findByIdAndTrangThaiNot(int id, TrangThaiHoaDon trangThai);
+    Optional<HoaDon> findTopByTrangThaiOrderByMaHoaDonDesc(TrangThaiHoaDon trangThai);
+    Optional<HoaDon> findTopByTrangThaiNotOrderByMaHoaDonDesc(TrangThaiHoaDon trangThai);
+    Optional<HoaDon> findByMaHoaDonAndTrangThai(Integer maHoaDon, TrangThaiHoaDon trangThai);
+    Optional<HoaDon> findByMaHoaDonAndTrangThaiNot(Integer maHoaDon, TrangThaiHoaDon trangThai);
     List<HoaDon> findAllByTrangThai(TrangThaiHoaDon trangThai);
     List<HoaDon> findAllByTrangThaiNot(TrangThaiHoaDon trangThai);
     int countByTrangThai(TrangThaiHoaDon trangThai);

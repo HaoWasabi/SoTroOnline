@@ -16,9 +16,9 @@ import lombok.AllArgsConstructor;
 @NoArgsConstructor // constructor rỗng
 @AllArgsConstructor // constructor đầy đủ tham số
 public class HoaDonDTO implements Serializable {
-    private int maHoaDon;
-    private int maHopDongPhong;
-    private int maKhachDaiDien;
+    private Integer maHoaDon;
+    private Integer maHopDongPhong;
+    private Integer maKhachDaiDien;
     private BigDecimal tienPhong;
     private BigDecimal tienNo;
     private BigDecimal tongTien;

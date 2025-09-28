@@ -10,8 +10,10 @@ import java.util.List;
 
 @Repository
 public interface PhieuThuRepository extends JpaRepository<PhieuThu, Integer> {
-    Optional<PhieuThu> findByIdAndTrangThai(int id, TrangThaiPhieuThu trangThai);
-    Optional<PhieuThu> findByIdAndTrangThaiNot(int id, TrangThaiPhieuThu trangThai);
+    Optional<PhieuThu> findTopByTrangThaiOrderByMaPhieuThuDesc(TrangThaiPhieuThu trangThai);
+    Optional<PhieuThu> findTopByTrangThaiNotOrderByMaPhieuThuDesc(TrangThaiPhieuThu trangThai);
+    Optional<PhieuThu> findByMaPhieuThuAndTrangThai(Integer maPhieuThu, TrangThaiPhieuThu trangThai);
+    Optional<PhieuThu> findByMaPhieuThuAndTrangThaiNot(Integer maPhieuThu, TrangThaiPhieuThu trangThai);
     List<PhieuThu> findAllByTrangThai(TrangThaiPhieuThu trangThai);
     List<PhieuThu> findAllByTrangThaiNot(TrangThaiPhieuThu trangThai);
     int countByTrangThai(TrangThaiPhieuThu trangThai);

@@ -18,7 +18,7 @@ public class ChiTietHoaDonDichVu {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "maChiTietHoaDonDichVu", updatable = false)
-    private int maChiTietHoaDonDichVu;
+    private Integer maChiTietHoaDonDichVu;
 
     // Nhiều chi tiết dịch vụ -> 1 Hóa đơn
     @ManyToOne(fetch = FetchType.LAZY)
@@ -37,13 +37,13 @@ public class ChiTietHoaDonDichVu {
     private String donVi;
 
     @Column(name = "chiSoCu", nullable = false)
-    private int chiSoCu;
+    private Integer chiSoCu;
 
     @Column(name = "chiSoMoi", nullable = false)
-    private int chiSoMoi;
+    private Integer chiSoMoi;
 
     @Column(name = "soLuong", nullable = false)
-    private int soLuong;
+    private Integer soLuong;
 
     @Column(name = "thanhTien", nullable = false)
     private BigDecimal thanhTien;

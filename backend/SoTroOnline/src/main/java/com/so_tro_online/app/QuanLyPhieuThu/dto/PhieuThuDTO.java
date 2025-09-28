@@ -13,9 +13,9 @@ import lombok.AllArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PhieuThuDTO {
-    private int maPhieuThu;
-    private int maHoaDon;
-    private int maKhachDaiDien;
+    private Integer maPhieuThu;
+    private Integer maHoaDon;
+    private Integer maKhachDaiDien;
     private BigDecimal tienNo;
     private BigDecimal tienDaThu;
     private String ghiChu;

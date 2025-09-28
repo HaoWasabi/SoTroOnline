@@ -10,8 +10,10 @@ import java.util.List;
 
 @Repository
 public interface ChiTietHoaDonDichVuRepository extends JpaRepository<ChiTietHoaDonDichVu, Integer> {
-    Optional<ChiTietHoaDonDichVu> findByIdAndTrangThai(int id, TrangThaiChiTietHoaDonDichVu trangThai);
-    Optional<ChiTietHoaDonDichVu> findByIdAndTrangThaiNot(int id, TrangThaiChiTietHoaDonDichVu trangThai);
+    Optional<ChiTietHoaDonDichVu> findTopByTrangThaiOrderByMaChiTietHoaDonDichVuDesc(TrangThaiChiTietHoaDonDichVu trangThai);
+    Optional<ChiTietHoaDonDichVu> findTopByTrangThaiNotOrderByMaChiTietHoaDonDichVuDesc(TrangThaiChiTietHoaDonDichVu trangThai);
+    Optional<ChiTietHoaDonDichVu> findByMaChiTietHoaDonDichVuAndTrangThai(Integer maChiTietHoaDonDichVu, TrangThaiChiTietHoaDonDichVu trangThai);
+    Optional<ChiTietHoaDonDichVu> findByMaChiTietHoaDonDichVuAndTrangThaiNot(Integer maChiTietHoaDonDichVu, TrangThaiChiTietHoaDonDichVu trangThai);
     List<ChiTietHoaDonDichVu> findAllByTrangThai(TrangThaiChiTietHoaDonDichVu trangThai);
     List<ChiTietHoaDonDichVu> findAllByTrangThaiNot(TrangThaiChiTietHoaDonDichVu trangThai);
     int countByTrangThai(TrangThaiChiTietHoaDonDichVu trangThai);

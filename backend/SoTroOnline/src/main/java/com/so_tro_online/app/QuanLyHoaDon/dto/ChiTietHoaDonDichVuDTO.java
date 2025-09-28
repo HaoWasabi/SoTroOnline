@@ -15,14 +15,14 @@ import lombok.AllArgsConstructor;
 @NoArgsConstructor      // constructor rỗng
 @AllArgsConstructor     // constructor đầy đủ tham số
 public class ChiTietHoaDonDichVuDTO implements Serializable {
-    private int maChiTietHoaDonDichVu;
-    private int maHoaDon;    // FK -> HoaDon
-    private int maHopDongDichVu;    // FK -> DichVu
+    private Integer maChiTietHoaDonDichVu;
+    private Integer maHoaDon;    // FK -> HoaDon
+    private Integer maHopDongDichVu;    // FK -> DichVu
     private BigDecimal donGia;
     private String donVi;
-    private int chiSoCu;
-    private int chiSoMoi;
-    private int soLuong;
+    private Integer chiSoCu;
+    private Integer chiSoMoi;
+    private Integer soLuong;
     private BigDecimal thanhTien;
     private Instant ngayTao;
     private TrangThaiChiTietHoaDonDichVu trangThai;
