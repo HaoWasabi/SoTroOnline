@@ -1,6 +1,7 @@
 package com.so_tro_online.quan_ly_hoa_don.repository;
 
 import com.so_tro_online.quan_ly_hoa_don.entity.ChiTietHoaDonDichVu;
+import com.so_tro_online.quan_ly_hoa_don.entity.TrangThaiChiTietHoaDonDichVu;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -17,5 +18,13 @@ public interface ChiTietHoaDonDichVuRepository extends JpaRepository<ChiTietHoaD
     List<ChiTietHoaDonDichVu> findAllByTrangThai(TrangThaiChiTietHoaDonDichVu trangThai);
     List<ChiTietHoaDonDichVu> findAllByTrangThaiNot(TrangThaiChiTietHoaDonDichVu trangThai);
     int countByTrangThai(TrangThaiChiTietHoaDonDichVu trangThai);
-    int countByTrangThaiNot(TrangThaiChiTietHoaDonDichVu trangThai);
+    int countByTrangThaiNot(TrangThaiChiTietHoaDonDichVu trangThai);  
+    @Modifying
+    @Query("UPDATE ChiTietHoaDonDichVu SET trangThai = :#{T(com.so_tro_online.quan_ly_hoa_don.entity.TrangThaiChiTietHoaDonDichVu).DA_HUY} " +
+        "WHERE maChiTietHoaDonDichVu = :maChiTietHoaDonDichVu AND trangThai != :#{T(com.so_tro_online.quan_ly_hoa_don.entity.TrangThaiChiTietHoaDonDichVu).DA_HUY}")
+    Integer softDeleteById(Integer maChiTietHoaDonDichVu);
+    @Modifying
+    @Query("UPDATE ChiTietHoaDonDichVu SET trangThai = :#{T(com.so_tro_online.quan_ly_hoa_don.entity.TrangThaiChiTietHoaDonDichVu).HOAT_DONG} " +
+        "WHERE maChiTietHoaDonDichVu = :maChiTietHoaDonDichVu AND trangThai = :#{T(com.so_tro_online.quan_ly_hoa_don.entity.TrangThaiChiTietHoaDonDichVu).DA_HUY}")
+    Integer unDeleteById(Integer maChiTietHoaDonDichVu);
 }

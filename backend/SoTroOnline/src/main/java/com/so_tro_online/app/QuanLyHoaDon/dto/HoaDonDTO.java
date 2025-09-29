@@ -30,7 +30,7 @@ public class HoaDonDTO implements Serializable {
     private List<ChiTietHoaDonDichVuDTO> chiTietHoaDonDichVuList;
     private List<PhieuThuDTO> phieuThuList;
 
-    public HoaDonDTO(int maHoaDon, int maHopDongPhong, int maKhachDaiDien, BigDecimal tienPhong,
+    public HoaDonDTO(Integer maHoaDon, Integer maHopDongPhong, Integer maKhachDaiDien, BigDecimal tienPhong,
             BigDecimal tienNo, BigDecimal tongTien, LocalDate thangNam, Instant ngayTao, TrangThaiHoaDon trangThai) {
         this.maHoaDon = maHoaDon;
         this.maHopDongPhong = maHopDongPhong;
