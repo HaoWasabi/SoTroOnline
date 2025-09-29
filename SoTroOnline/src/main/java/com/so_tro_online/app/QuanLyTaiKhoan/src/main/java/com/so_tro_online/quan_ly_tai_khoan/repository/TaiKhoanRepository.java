@@ -17,5 +17,5 @@ public interface TaiKhoanRepository extends JpaRepository<TaiKhoan, String> {
     @Query("select email from TaiKhoan u where u.email = ?1")
     String findByEmail(String email);
 
-    Optional<TaiKhoan> findByMaTaiKhoanAndTrangThai(String maQuanLy, TrangThai trangThai);
+    Optional<TaiKhoan> findByMaTaiKhoanAndTrangThai(Integer maQuanLy, TrangThai trangThai);
 }

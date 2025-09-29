@@ -28,6 +28,6 @@ public interface HopDongPhongRepository extends JpaRepository<HopDongPhong,Integ
             "AND h.khachThue.maKhach = :maKhach " +
             "AND h.trangThai = :trangThai")
     boolean existsHopDong(@Param("maPhong") Integer maPhong,
-                               @Param("maKhach") String maKhach,
+                               @Param("maKhach") Integer maKhach,
                                @Param("trangThai") TrangThai trangThai);
 }

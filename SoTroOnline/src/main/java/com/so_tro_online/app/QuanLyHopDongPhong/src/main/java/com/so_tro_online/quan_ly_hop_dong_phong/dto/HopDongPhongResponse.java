@@ -11,9 +11,9 @@ import java.util.Date;
 
 public class HopDongPhongResponse {
     private Integer maHopDongPhong;
-    private String maTaiKhoan;
+    private Integer maTaiKhoan;
     private String tenTaiKhoan;
-    private String maKhachThue;
+    private Integer maKhachThue;
     private String tenKhachThue;
   private Integer maPhong;
   private String tenPhong;
@@ -24,7 +24,7 @@ public class HopDongPhongResponse {
     private Date ngayTao;
     private TrangThai trangThai;
 
-    public HopDongPhongResponse(Integer maHopDongPhong, String maTaiKhoan, String tenTaiKhoan, String maKhachThue, String tenKhachThue, Integer maPhong, String tenPhong, BigDecimal tienPhong, BigDecimal tienCoc, Date ngayBatDau, Date ngayKetThuc, Date ngayTao, TrangThai trangThai) {
+    public HopDongPhongResponse(Integer maHopDongPhong, Integer maTaiKhoan, String tenTaiKhoan, Integer maKhachThue, String tenKhachThue, Integer maPhong, String tenPhong, BigDecimal tienPhong, BigDecimal tienCoc, Date ngayBatDau, Date ngayKetThuc, Date ngayTao, TrangThai trangThai) {
         this.maHopDongPhong = maHopDongPhong;
         this.maTaiKhoan = maTaiKhoan;
         this.tenTaiKhoan = tenTaiKhoan;
@@ -44,15 +44,14 @@ public class HopDongPhongResponse {
         return maHopDongPhong;
     }
 
-    public String getMaTaiKhoan() {
+    public Integer getMaTaiKhoan() {
         return maTaiKhoan;
     }
-
     public String getTenTaiKhoan() {
         return tenTaiKhoan;
     }
 
-    public String getMaKhachThue() {
+    public Integer getMaKhachThue() {
         return maKhachThue;
     }
 

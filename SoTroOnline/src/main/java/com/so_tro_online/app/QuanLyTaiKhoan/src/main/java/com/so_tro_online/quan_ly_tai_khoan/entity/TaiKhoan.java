@@ -1,9 +1,6 @@
 package com.so_tro_online.quan_ly_tai_khoan.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.time.Instant;
 import java.util.Date;
@@ -15,7 +12,7 @@ public class TaiKhoan {
 
     @Column(name = "maTaiKhoan", updatable = false)
     @Id
-    private String maTaiKhoan;
+    private Integer maTaiKhoan;
 
     @Column(name = "maCanCuoc", nullable = false, unique = true)
     private String maCanCuoc;
@@ -42,11 +39,12 @@ public class TaiKhoan {
     private Instant ngayTao;
 
     @Column(name = "trangThai")
+    @Enumerated(EnumType.STRING)
     private TrangThai trangThai;
 
     public TaiKhoan() {}
 
-    public TaiKhoan(String maTaiKhoan, String maCanCuoc, String email, String hoTen, String dienThoai, String thuongTru, Date ngaySinh, String matKhau, TrangThai trangThai) {
+    public TaiKhoan(Integer maTaiKhoan, String maCanCuoc, String email, String hoTen, String dienThoai, String thuongTru, Date ngaySinh, String matKhau, TrangThai trangThai) {
         this.maTaiKhoan = maTaiKhoan;
         this.maCanCuoc = maCanCuoc;
         this.email = email;
@@ -58,11 +56,11 @@ public class TaiKhoan {
         this.trangThai = trangThai;
     }
 
-    public String getMaTaiKhoan() {
+    public Integer getMaTaiKhoan() {
         return maTaiKhoan;
     }
 
-    public void setMaTaiKhoan(String maTaiKhoan) {
+    public void setMaTaiKhoan(Integer maTaiKhoan) {
         this.maTaiKhoan = maTaiKhoan;
     }
 

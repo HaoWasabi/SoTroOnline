@@ -6,7 +6,7 @@ import com.so_tro_online.quan_ly_phong.entity.TrangThai;
 import java.math.BigDecimal;
 
 public class RoomRequest {
-    private String maQuanLy;
+    private Integer maQuanLy;
     private String tenPhong;
     private String loaiPhong;
     private String diaChi;
@@ -16,14 +16,13 @@ public class RoomRequest {
     private BigDecimal giaThueCoBan;
     private TrangThai trangThai;
 
-    public String getMaQuanLy() {
+    public Integer getMaQuanLy() {
         return maQuanLy;
     }
 
-    public void setMaQuanLy(String maQuanLy) {
+    public void setMaQuanLy(Integer maQuanLy) {
         this.maQuanLy = maQuanLy;
     }
-
     public String getTenPhong() {
         return tenPhong;
     }

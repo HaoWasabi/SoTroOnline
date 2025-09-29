@@ -6,8 +6,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 public class HopDongPhongRequest {
-    private String maTaiKhoan;
-    private String maKhachThue;
+    private Integer maTaiKhoan;
+    private Integer maKhachThue;
     private Integer maPhong;
     private BigDecimal tienPhong;
     private BigDecimal tienCoc;
@@ -17,12 +17,19 @@ public class HopDongPhongRequest {
     private TrangThai trangThai;
 
 
-    public void setMaTaiKhoan(String maTaiKhoan) {
+    public Integer getMaTaiKhoan() {
+        return maTaiKhoan;
+    }
+
+    public void setMaTaiKhoan(Integer maTaiKhoan) {
         this.maTaiKhoan = maTaiKhoan;
     }
 
+    public Integer getMaKhachThue() {
+        return maKhachThue;
+    }
 
-    public void setMaKhachThue(String maKhachThue) {
+    public void setMaKhachThue(Integer maKhachThue) {
         this.maKhachThue = maKhachThue;
     }
 
@@ -54,13 +61,7 @@ public class HopDongPhongRequest {
         this.trangThai = trangThai;
     }
 
-    public String getMaTaiKhoan() {
-        return maTaiKhoan;
-    }
 
-    public String getMaKhachThue() {
-        return maKhachThue;
-    }
 
     public Integer getMaPhong() {
         return maPhong;

@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 public class RoomResponse {
     private Integer maPhong;
     private String tenQuanLy;
-    private String maQuanLy;
+    private Integer maQuanLy;
     private String tenPhong;
     private String loaiPhong;
     private String diaChi;
@@ -19,7 +19,7 @@ public class RoomResponse {
     private BigDecimal giaThueCoBan;
     private TrangThai trangThai;
 
-    public RoomResponse(Integer maPhong, String tenQuanLy, String maQuanLy, String tenPhong, String loaiPhong, String diaChi, BigDecimal chieuDai, BigDecimal chieuRong, String vatDung, BigDecimal giaThueCoBan, TrangThai trangThai) {
+    public RoomResponse(Integer maPhong, String tenQuanLy, Integer maQuanLy, String tenPhong, String loaiPhong, String diaChi, BigDecimal chieuDai, BigDecimal chieuRong, String vatDung, BigDecimal giaThueCoBan, TrangThai trangThai) {
         this.maPhong = maPhong;
         this.tenQuanLy = tenQuanLy;
         this.maQuanLy = maQuanLy;
@@ -49,11 +49,11 @@ public class RoomResponse {
         this.tenQuanLy = tenQuanLy;
     }
 
-    public String getMaQuanLy() {
+    public Integer getMaQuanLy() {
         return maQuanLy;
     }
 
-    public void setMaQuanLy(String maQuanLy) {
+    public void setMaQuanLy(Integer maQuanLy) {
         this.maQuanLy = maQuanLy;
     }
 

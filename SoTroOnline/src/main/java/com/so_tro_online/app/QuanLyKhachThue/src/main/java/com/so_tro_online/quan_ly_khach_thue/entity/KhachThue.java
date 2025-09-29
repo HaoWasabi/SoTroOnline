@@ -14,7 +14,7 @@ public class KhachThue {
 
     @Id
     @Column(name = "maKhach", updatable = false)
-    private String maKhach;
+    private Integer maKhach;
 
     @Column(name = "maKhachDaiDien")
     private String maKhachDaiDien;
@@ -38,7 +38,7 @@ public class KhachThue {
 
     }
 
-    public KhachThue(String maKhach, String maKhachDaiDien, String maCanCuoc, String hoTen, String thuongTru, Date ngaySinh, Instant ngayTao) {
+    public KhachThue(Integer maKhach, String maKhachDaiDien, String maCanCuoc, String hoTen, String thuongTru, Date ngaySinh, Instant ngayTao) {
         this.maKhach = maKhach;
         this.maKhachDaiDien = maKhachDaiDien;
         this.maCanCuoc = maCanCuoc;
@@ -48,11 +48,11 @@ public class KhachThue {
         this.ngayTao = ngayTao;
     }
 
-    public String getMaKhach() {
+    public Integer getMaKhach() {
         return maKhach;
     }
 
-    public void setMaKhach(String maKhach) {
+    public void setMaKhach(Integer maKhach) {
         this.maKhach = maKhach;
     }
 
