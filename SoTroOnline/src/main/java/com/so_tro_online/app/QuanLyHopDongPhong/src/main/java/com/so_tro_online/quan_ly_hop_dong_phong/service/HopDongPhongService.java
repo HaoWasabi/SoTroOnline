@@ -107,6 +107,7 @@ public class HopDongPhongService implements IHopDongPhongService {
         hopDongPhong.setTienPhong(roomRequest.getTienPhong());
         hopDongPhong.setNgayKetThuc(roomRequest.getNgayKetThuc());
         hopDongPhong.setNgayBatDau(roomRequest.getNgayBatDau());
+        hopDongPhong.setTrangThai(roomRequest.getTrangThai());
         return mapToHopDongPhongResponse(hopDongPhongRepository.save(hopDongPhong));
     }
 

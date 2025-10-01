@@ -1,9 +1,6 @@
 package com.so_tro_online.quan_ly_khach_thue.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.time.Instant;
 import java.util.Date;
@@ -33,6 +30,8 @@ public class KhachThue {
 
     @Column(name = "ngayTao")
     private Instant ngayTao;
+    @Enumerated(EnumType.STRING)
+    private TrangThai trangThai;
 
     public KhachThue() {
 
