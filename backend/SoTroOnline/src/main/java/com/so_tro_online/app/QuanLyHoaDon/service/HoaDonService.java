@@ -32,6 +32,10 @@ class HoaDonService implements IHoaDonService {
         return null;
     }
 
+    public int countActive() {
+        return hoaDonRepository.countByTrangThaiNot(trangThai.DA_HUY);
+    }
+
     public int countByTrangThai(TrangThaiHoaDon trangThai) {
         return hoaDonRepository.countByTrangThai(trangThai);
     }
@@ -41,8 +45,9 @@ class HoaDonService implements IHoaDonService {
     }
 
     public Optional<HoaDonDTO> findTopActive() {
-        return hoaDonRepository.findTopByTrangThaiOrderByMaHoaDonDesc(TrangThaiHoaDon.ACTIVE);
+        return hoaDonRepository.findTopByTrangThaiNotOrderByMaHoaDonDesc(trangThai.DA_HUY);
     }
+
     public Optional<HoaDonDTO> findTopByTrangThaiOrderByMaHoaDonDesc(TrangThaiHoaDon trangThai) {
         return hoaDonRepository.findTopByTrangThaiOrderByMaHoaDonDesc(trangThai);
     }
@@ -58,12 +63,9 @@ class HoaDonService implements IHoaDonService {
     public Optional<HoaDonDTO> findByMaHoaDonAndTrangThaiNot(Integer maHoaDon, TrangThaiHoaDon trangThai) {
         return hoaDonRepository.findByMaHoaDonAndTrangThaiNot(maHoaDon, trangThai);
     }
-    public List<HoaDonDTO> findAll() {
-        return hoaDonRepository.findAll();
-    }
 
     public List<HoaDonDTO> findAllActive() {
-        return hoaDonRepository.findAllByTrangThai(TrangThaiHoaDon.ACTIVE);
+        return hoaDonRepository.findAllByTrangThaiNot(trangThai.DA_HUY);
     }
 
     public List<HoaDonDTO> findAllByTrangThai(TrangThaiHoaDon trangThai) {
@@ -74,8 +76,8 @@ class HoaDonService implements IHoaDonService {
         return hoaDonRepository.findAllByTrangThaiNot(trangThai);
     }
 
-    public List<HoaDonDTO> findByTienNoGreaterThan(BigDecimal soTien) {
-        return hoaDonRepository.findByTienNoGreaterThan(soTien);
+    public List<HoaDonDTO> findByTrangThaiActiveAndTienNoGreaterThan(BigDecimal soTien) {
+        return hoaDonRepository.findByTrangThaiAndTienNoGreaterThan(trangThai.HOAT_DONG, soTien);
     }
 
 }

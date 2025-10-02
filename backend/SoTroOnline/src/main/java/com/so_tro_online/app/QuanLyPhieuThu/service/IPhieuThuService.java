@@ -12,9 +12,11 @@ import java.util.Optional;
 public interface IPhieuThuService {
     @Autowired
     private PhieuThuRepository phieuThuRepository;
+    private TrangThaiPhieuThu trangThai;
     public PhieuThuDTO create(PhieuThuDTO phieuThu);
     public PhieuThuDTO softDelete(Integer maPhieuThu);
     public PhieuThuDTO unDelete(Integer maPhieuThu);
+    public int countActive();
     public int countByTrangThai(TrangThaiPhieuThu trangThai);
     public int countByTrangThaiNot(TrangThaiPhieuThu trangThai);
     public Optional<PhieuThuDTO> findTopActive();
@@ -22,9 +24,8 @@ public interface IPhieuThuService {
     public Optional<PhieuThuDTO> findTopByTrangThaiNotOrderByMaPhieuThuDesc(TrangThaiPhieuThu trangThai);
     public Optional<PhieuThuDTO> findByMaPhieuThuAndTrangThai(Integer maPhieuThu, TrangThaiPhieuThu trangThai);
     public Optional<PhieuThuDTO> findByMaPhieuThuAndTrangThaiNot(Integer maPhieuThu, TrangThaiPhieuThu trangThai);
-    public List<PhieuThuDTO> findAll();
     public List<PhieuThuDTO> findAllActive();
     public List<PhieuThuDTO> findAllByTrangThai(TrangThaiPhieuThu trangThai);
     public List<PhieuThuDTO> findAllByTrangThaiNot(TrangThaiPhieuThu trangThai);
-    public List<PhieuThuDTO> findByTienNoGreaterThan(BigDecimal soTien);
+    public List<PhieuThuDTO> findByTrangThaiActiveAndTienNoGreaterThan(BigDecimal soTien);
 }

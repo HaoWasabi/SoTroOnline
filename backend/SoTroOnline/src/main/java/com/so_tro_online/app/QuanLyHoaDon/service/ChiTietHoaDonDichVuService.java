@@ -32,6 +32,10 @@ class ChiTietHoaDonDichVuService implements IChiTietHoaDonDichVuService {
         return null;
     }
 
+    public int countActive() {
+        return chiTietHoaDonDichVuRepository.countByTrangThaiNot(trangThai.DA_HUY);
+    }
+
     public int countByTrangThai(TrangThaiChiTietHoaDonDichVu trangThai) {
         return chiTietHoaDonDichVuRepository.countByTrangThai(trangThai);
     }
@@ -41,8 +45,9 @@ class ChiTietHoaDonDichVuService implements IChiTietHoaDonDichVuService {
     }
 
     public Optional<ChiTietHoaDonDichVuDTO> findTopActive() {
-        return chiTietHoaDonDichVuRepository.findTopByTrangThaiOrderByMaChiTietHoaDonDichVuDesc(TrangThaiChiTietHoaDonDichVu.ACTIVE);
+        return chiTietHoaDonDichVuRepository.findTopByTrangThaiNotOrderByMaChiTietHoaDonDichVuDesc(TrangThaiChiTietHoaDonDichVu.DA_HUY);
     }
+    
     public Optional<ChiTietHoaDonDichVuDTO> findTopByTrangThaiOrderByMaChiTietHoaDonDichVuDesc(TrangThaiChiTietHoaDonDichVu trangThai) {
         return chiTietHoaDonDichVuRepository.findTopByTrangThaiOrderByMaChiTietHoaDonDichVuDesc(trangThai);
     }
@@ -63,10 +68,10 @@ class ChiTietHoaDonDichVuService implements IChiTietHoaDonDichVuService {
     }
 
     public List<ChiTietHoaDonDichVuDTO> findAllActive() {
-        return chiTietHoaDonDichVuRepository.findAllByTrangThai(TrangThaiChiTietHoaDonDichVu.ACTIVE);
+        return chiTietHoaDonDichVuRepository.findAllByTrangThaiNot(TrangThaiChiTietHoaDonDichVu.DA_HUY);
     }
 
-    public List<TrangThaiChiTietHoaDonDichVu> findAllByTrangThai(TrangThaiChiTietHoaDonDichVu trangThai) {
+    public List<ChiTietHoaDonDichVuDTO> findAllByTrangThai(TrangThaiChiTietHoaDonDichVu trangThai) {
         return chiTietHoaDonDichVuRepository.findAllByTrangThai(trangThai);
     }
 

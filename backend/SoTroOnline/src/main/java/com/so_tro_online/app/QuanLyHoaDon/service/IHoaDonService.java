@@ -12,9 +12,11 @@ import java.util.Optional;
 public interface IHoaDonService {
     @Autowired
     private HoaDonRepository hoaDonRepository;
+    private TrangThaiHoaDon trangThai;
     public HoaDonDTO create(HoaDonDTO hoaDon);
     public HoaDonDTO softDelete(Integer maHoaDon);
     public HoaDonDTO unDelete(Integer maHoaDon);
+    public int countActive();
     public int countByTrangThai(TrangThaiHoaDon trangThai);
     public int countByTrangThaiNot(TrangThaiHoaDon trangThai);
     public Optional<HoaDonDTO> findTopActive();
@@ -22,9 +24,8 @@ public interface IHoaDonService {
     public Optional<HoaDonDTO> findTopByTrangThaiNotOrderByMaHoaDonDesc(TrangThaiHoaDon trangThai);
     public Optional<HoaDonDTO> findByMaHoaDonAndTrangThai(Integer maHoaDon, TrangThaiHoaDon trangThai);
     public Optional<HoaDonDTO> findByMaHoaDonAndTrangThaiNot(Integer maHoaDon, TrangThaiHoaDon trangThai);
-    public List<HoaDonDTO> findAll();
     public List<HoaDonDTO> findAllActive();
     public List<HoaDonDTO> findAllByTrangThai(TrangThaiHoaDon trangThai);
     public List<HoaDonDTO> findAllByTrangThaiNot(TrangThaiHoaDon trangThai);
-    public List<HoaDonDTO> findByTienNoGreaterThan(BigDecimal soTien);
+    public List<HoaDonDTO> findByTrangThaiActiveAndTienNoGreaterThan(BigDecimal soTien);
 }

@@ -32,6 +32,10 @@ class PhieuThuService implements IPhieuThuService {
         return null;
     }
 
+    public int countActive() {
+        return phieuThuRepository.countByTrangThaiNot(trangThai.DA_HUY);
+    }
+
     public int countByTrangThai(TrangThaiPhieuThu trangThai) {
         return phieuThuRepository.countByTrangThai(trangThai);
     }
@@ -41,7 +45,7 @@ class PhieuThuService implements IPhieuThuService {
     }
 
     public Optional<PhieuThuDTO> findTopActive() {
-        return phieuThuRepository.findTopByTrangThaiOrderByMaPhieuThuDesc(TrangThaiPhieuThu.ACTIVE);
+        return phieuThuRepository.findTopByTrangThaiNotOrderByMaPhieuThuDesc(trangThai.DA_HUY);
     }
     public Optional<PhieuThuDTO> findTopByTrangThaiOrderByMaPhieuThuDesc(TrangThaiPhieuThu trangThai) {
         return phieuThuRepository.findTopByTrangThaiOrderByMaPhieuThuDesc(trangThai);
@@ -58,12 +62,9 @@ class PhieuThuService implements IPhieuThuService {
     public Optional<PhieuThuDTO> findByMaPhieuThuAndTrangThaiNot(Integer maPhieuThu, TrangThaiPhieuThu trangThai) {
         return phieuThuRepository.findByMaPhieuThuAndTrangThaiNot(maPhieuThu, trangThai);
     }
-    public List<PhieuThuDTO> findAll() {
-        return phieuThuRepository.findAll();
-    }
 
     public List<PhieuThuDTO> findAllActive() {
-        return phieuThuRepository.findAllByTrangThai(TrangThaiPhieuThu.ACTIVE);
+        return phieuThuRepository.findAllByTrangThaiNot(trangThai.DA_HUY);
     }
 
     public List<PhieuThuDTO> findAllByTrangThai(TrangThaiPhieuThu trangThai) {
@@ -74,8 +75,8 @@ class PhieuThuService implements IPhieuThuService {
         return phieuThuRepository.findAllByTrangThaiNot(trangThai);
     }
 
-    public List<PhieuThuDTO> findByTienNoGreaterThan(BigDecimal soTien) {
-        return phieuThuRepository.findByTienNoGreaterThan(soTien);
+    public List<PhieuThuDTO> findByTrangThaiActiveAndTienNoGreaterThan(BigDecimal soTien) {
+        return phieuThuRepository.findByTrangThaiAndTienNoGreaterThan(trangThai.HOAT_DONG, soTien);
     }
 
 }

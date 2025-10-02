@@ -12,9 +12,11 @@ import java.util.Optional;
 public interface IChiTietHoaDonDichVuService {
     @Autowired
     private ChiTietHoaDonDichVuRepository chiTietHoaDonDichVuRepository;
+    private TrangThaiChiTietHoaDonDichVu trangThai;
     public ChiTietHoaDonDichVuDTO create(ChiTietHoaDonDichVuDTO chiTietHoaDonDichVu);
     public ChiTietHoaDonDichVuDTO softDelete(Integer maChiTietHoaDonDichVu);
     public ChiTietHoaDonDichVuDTO unDelete(Integer maChiTietHoaDonDichVu);
+    public int countActive();
     public int countByTrangThai(TrangThaiChiTietHoaDonDichVu trangThai);
     public int countByTrangThaiNot(TrangThaiChiTietHoaDonDichVu trangThai);
     public Optional<ChiTietHoaDonDichVuDTO> findTopActive();
