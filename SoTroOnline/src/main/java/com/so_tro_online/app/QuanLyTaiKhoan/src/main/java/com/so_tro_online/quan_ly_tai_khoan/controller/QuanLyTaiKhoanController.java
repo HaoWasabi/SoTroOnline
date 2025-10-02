@@ -2,10 +2,11 @@ package com.so_tro_online.quan_ly_tai_khoan.controller;
 
 import com.so_tro_online.quan_ly_tai_khoan.dto.SignInRequest;
 import com.so_tro_online.quan_ly_tai_khoan.dto.SignUpRequest;
+import com.so_tro_online.quan_ly_tai_khoan.dto.TaiKhoanDTO;
+import com.so_tro_online.quan_ly_tai_khoan.dto.ApiResponse;
 import com.so_tro_online.quan_ly_tai_khoan.entity.TaiKhoan;
-import com.so_tro_online.quan_ly_tai_khoan.exception.DuplicateEmailException;
-import com.so_tro_online.quan_ly_tai_khoan.exception.InvalidPasswordException;
-import com.so_tro_online.quan_ly_tai_khoan.exception.NoEmailFoundException;
+import com.so_tro_online.quan_ly_tai_khoan.exception.*;
+import com.so_tro_online.quan_ly_tai_khoan.mapper.UserMapper;
 import com.so_tro_online.quan_ly_tai_khoan.service.TaiKhoanService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 
+import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,53 +34,51 @@ public class QuanLyTaiKhoanController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> signIn(@RequestBody SignInRequest signInRequest) {
-        Map<String, String> response = new HashMap<>();
-
+    public ResponseEntity<?> signIn(@RequestBody SignInRequest signInRequest) {
         try {
-            taiKhoanService.signIn(signInRequest.getEmail(), signInRequest.getPassword());
+            TaiKhoan taiKhoan = taiKhoanService.signIn(signInRequest.getEmail(), signInRequest.getPassword());
 
-            response.put("status", "200");
-            response.put("message", "Sign in successfully");
+            ApiResponse<TaiKhoanDTO> apiResponse = new ApiResponse<>(
+                    200,
+                    "Log in successfully",
+                    UserMapper.toDto(taiKhoan)
+            );
 
-            return ResponseEntity.ok(response);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         } catch(NoEmailFoundException ex) {
-            response.put("status", "404");
-            response.put("message", "Account is not exist");
+            ApiResponse<TaiKhoanDTO> apiResponse = new ApiResponse<>(
+                    404,
+                    "Account is not exist",
+                    null
+            );
 
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
         }catch(InvalidPasswordException ex) {
-            response.put("status", "404");
-            response.put("message", "Wrong account or password");
+            ApiResponse<TaiKhoanDTO> apiResponse = new ApiResponse<>(
+                    409,
+                    "Wrong account or password",
+                    null
+            );
 
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
         } catch(Exception ex) {
-            response.put("status", "500");
-            response.put("message", "Internal server error: " + ex.getMessage());
+            ApiResponse<TaiKhoanDTO> apiResponse = new ApiResponse<>(
+                    409,
+                    "Internal server error",
+                    null
+            );
 
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<Map<String, String>> signUp(@RequestBody SignUpRequest signUpRequest) {
-        Map<String, String> response = new HashMap<>();
-
+    public ResponseEntity<?> signUp(@RequestBody SignUpRequest signUpRequest) {
         //logger.info("Received signup request for email: {}", signUpRequest != null ? signUpRequest.getEmail() : "null request");
         try {
-            /*// Add detailed logging for debugging
-            logger.info("SignUp request details - Email: {}, Password: {}, HoTen: {}, DienThoai: {}, NgaySinh: {}, TrangThai: {}, CccdCode: {}, ThuongTru: {}",
-                signUpRequest.getEmail(),
-                signUpRequest.getPassword() != null ? "***" : "null",
-                signUpRequest.getHoTen(),
-                signUpRequest.getDienThoai(),
-                signUpRequest.getNgaySinh(),
-                signUpRequest.getTrangThai(),
-                signUpRequest.getCccdCode(),
-                signUpRequest.getThuongTru());*/
 
             LocalDateTime ngayTao = LocalDateTime.now();
-            taiKhoanService.signUp(
+            TaiKhoan newTaiKhoan = taiKhoanService.signUp(
                    signUpRequest.getEmail(),
                    signUpRequest.getCccdCode(),
                    signUpRequest.getHoTen(),
@@ -90,28 +90,86 @@ public class QuanLyTaiKhoanController {
                    signUpRequest.getTrangThai()
             );
 
-            response.put("status", "200");
-            response.put("message", "Account is signed in successfully");
+            ApiResponse<TaiKhoanDTO> apiResponse = new ApiResponse<>(
+                    200,
+                    "Sign up successfully",
+                    UserMapper.toDto(newTaiKhoan)
+            );
 
-           return ResponseEntity.ok(response);
+           return ResponseEntity.ok(apiResponse);
         } catch(DuplicateEmailException ex) {
-            response.put("status", "409");
-            response.put("message", "Account with this email is already exist!");
+            ApiResponse<TaiKhoanDTO> apiResponse = new ApiResponse<>(
+                    409,
+                    "Account with this email is already exist!",
+                    null
+            );
 
-            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+            return new ResponseEntity<>(apiResponse, HttpStatus.CONFLICT);
         }catch(HttpMessageNotReadableException ex) {
             logger.error("JSON parsing error: {}", ex.getMessage());
-            response.put("status", "400");
-            response.put("message", "Error JSON format");
 
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            ApiResponse<TaiKhoanDTO> apiResponse = new ApiResponse<>(
+                    400,
+                    "Error JSON format",
+                    null
+            );
+
+            return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
         } catch(Exception ex) {
             logger.error("Unexpected error during signup: ", ex);
-            response.put("status", "500");
-            response.put("message", "Internal server error: " + ex.getMessage());
 
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            ApiResponse<TaiKhoanDTO> apiResponse = new ApiResponse<>(
+                    409,
+                    "Internal server error: " + ex.getMessage(),
+                    null
+            );
+
+            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> body) {
+
+        try {
+            taiKhoanService.requestTemporaryPassword(body.get("email"));
+
+            return ResponseEntity.ok(
+                    new ApiResponse<>(200, "New temporary password are sent to your email", null)
+            );
+        }catch (EmailSendFailedException ex) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(200, "Internal server error", null),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    @PutMapping("/update-user-information")
+    public ResponseEntity<?> udateUserInformation(@RequestBody TaiKhoanDTO taiKhoanDTO) {
+        try {
+           taiKhoanService.updateUserInformation(
+                   taiKhoanDTO.getMaTaiKhoan(),
+                   taiKhoanDTO.getMaCanCuoc(),
+                   taiKhoanDTO.getEmail(),
+                   taiKhoanDTO.getHoTen(),
+                   taiKhoanDTO.getDienThoai(),
+                   taiKhoanDTO.getThuongTru(),
+                   Date.valueOf(taiKhoanDTO.getNgaySinh())
+           );
+
+           return ResponseEntity.ok( new ApiResponse<>(200, "Updated information successfully", null));
+        }catch (NoAccountFoundException ex) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(404, "Your account is not exist", null),
+                    HttpStatus.NOT_FOUND
+            );
+        }catch (Exception ex) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(500, "Internal server error", null),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
 }

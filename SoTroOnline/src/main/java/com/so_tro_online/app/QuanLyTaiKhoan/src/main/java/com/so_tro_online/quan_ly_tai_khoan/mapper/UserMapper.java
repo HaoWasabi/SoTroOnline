@@ -1,7 +1,6 @@
 package com.so_tro_online.quan_ly_tai_khoan.mapper;
 
-import com.so_tro_online.quan_ly_tai_khoan.dto.SignInRequest;
-import com.so_tro_online.quan_ly_tai_khoan.dto.UserResponse;
+import com.so_tro_online.quan_ly_tai_khoan.dto.TaiKhoanDTO;
 import com.so_tro_online.quan_ly_tai_khoan.entity.TaiKhoan;
 import com.so_tro_online.quan_ly_tai_khoan.entity.TrangThai;
 
@@ -9,8 +8,19 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 public class UserMapper {
-    public static UserResponse toResponse(TaiKhoan taiKhoan) {
-        return new UserResponse(taiKhoan.getEmail(), taiKhoan.getTrangThai());
+
+    public static TaiKhoanDTO toDto(TaiKhoan taiKhoan) {
+        return new TaiKhoanDTO(
+                taiKhoan.getMaTaiKhoan(),
+                taiKhoan.getMaCanCuoc(),
+                taiKhoan.getEmail(),
+                taiKhoan.getHoTen(),
+                taiKhoan.getDienThoai(),
+                taiKhoan.getThuongTru(),
+                taiKhoan.getNgaySinh().toString(),
+                taiKhoan.getNgayTao().toString(),
+                taiKhoan.getTrangThai()
+        );
     }
 
     public static TaiKhoan toEntity (

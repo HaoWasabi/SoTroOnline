@@ -1,51 +1,37 @@
-package com.so_tro_online.quan_ly_tai_khoan.entity;
+package com.so_tro_online.quan_ly_tai_khoan.dto;
 
-import jakarta.persistence.*;
+import com.so_tro_online.quan_ly_tai_khoan.entity.TrangThai;
 
-import java.time.LocalDateTime;
-import java.util.Date;
+import java.io.Serial;
+import java.io.Serializable;
 
 
-@Entity
-@Table(name = "TaiKhoan")
-public class TaiKhoan {
+public class TaiKhoanDTO implements Serializable {
 
-    @Column(name = "maTaiKhoan", updatable = false)
-    @Id()
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     private int maTaiKhoan;
 
-    @Column(name = "maCanCuoc", nullable = false)
     private String maCanCuoc;
 
-    @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "hoTen", nullable = false)
     private String hoTen;
 
-    @Column(name = "dienThoai", nullable = false)
     private String dienThoai;
 
-    @Column(name = "thuongTru", nullable = false)
     private String thuongTru;
 
-    @Column(name = "ngaySinh", nullable = false)
-    private Date ngaySinh;
+    private String ngaySinh;
 
-    @Column(name = "matKhau", nullable = false)
-    private String matKhau;
+    private String ngayTao;
 
-    @Column(name = "ngayTao")
-    private LocalDateTime ngayTao;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "trangThai")
     private TrangThai trangThai;
 
-    public TaiKhoan() {}
+    public TaiKhoanDTO () {}
 
-    public TaiKhoan(int maTaiKhoan, String maCanCuoc, String email, String hoTen, String dienThoai, String thuongTru, Date ngaySinh, String matKhau, LocalDateTime ngayTao, TrangThai trangThai) {
+    public TaiKhoanDTO(int maTaiKhoan, String maCanCuoc, String email, String hoTen, String dienThoai, String thuongTru, String ngaySinh, String ngayTao, TrangThai trangThai) {
         this.maTaiKhoan = maTaiKhoan;
         this.maCanCuoc = maCanCuoc;
         this.email = email;
@@ -53,7 +39,6 @@ public class TaiKhoan {
         this.dienThoai = dienThoai;
         this.thuongTru = thuongTru;
         this.ngaySinh = ngaySinh;
-        this.matKhau = matKhau;
         this.ngayTao = ngayTao;
         this.trangThai = trangThai;
     }
@@ -106,27 +91,19 @@ public class TaiKhoan {
         this.thuongTru = thuongTru;
     }
 
-    public Date getNgaySinh() {
+    public String getNgaySinh() {
         return ngaySinh;
     }
 
-    public void setNgaySinh(Date ngaySinh) {
+    public void setNgaySinh(String ngaySinh) {
         this.ngaySinh = ngaySinh;
     }
 
-    public String getMatKhau() {
-        return matKhau;
-    }
-
-    public void setMatKhau(String matKhau) {
-        this.matKhau = matKhau;
-    }
-
-    public LocalDateTime getNgayTao() {
+    public String getNgayTao() {
         return ngayTao;
     }
 
-    public void setNgayTao(LocalDateTime ngayTao) {
+    public void setNgayTao(String ngayTao) {
         this.ngayTao = ngayTao;
     }
 
@@ -137,7 +114,4 @@ public class TaiKhoan {
     public void setTrangThai(TrangThai trangThai) {
         this.trangThai = trangThai;
     }
-
 }
-
-

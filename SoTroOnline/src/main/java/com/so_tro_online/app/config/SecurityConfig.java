@@ -20,10 +20,12 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)   // tắt login form mặc định
-                .httpBasic(AbstractHttpConfigurer::disable)   // tắt basic auth
+                .httpBasic(AbstractHttpConfigurer::disable)// tắt basic auth
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/signup").permitAll()
+                        /*.requestMatchers("/api/auth/signup").permitAll()
                         .requestMatchers("/api/auth/login").permitAll()
+                        .requestMatchers("/api/auth/send-test").permitAll()*/
+                        .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated()
                 );
 
