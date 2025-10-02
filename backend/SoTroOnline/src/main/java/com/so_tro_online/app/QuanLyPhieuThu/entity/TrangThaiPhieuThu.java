@@ -6,7 +6,7 @@ public enum TrangThaiPhieuThu {
 
         private final String value;
 
-        TrangThaiHoaDon(String value) {
+        TrangThaiPhieuThu(String value) {
             this.value = value;
         }
 

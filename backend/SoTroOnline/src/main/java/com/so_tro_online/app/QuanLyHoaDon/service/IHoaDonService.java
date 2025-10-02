@@ -1,28 +1,30 @@
 package com.so_tro_online.quan_ly_hoa_don.service;
 
-import com.so_tro_online.quan_ly_hoa_don.dto.HoaDon;
+import com.so_tro_online.quan_ly_hoa_don.dto.HoaDonDTO;
 import com.so_tro_online.quan_ly_hoa_don.entity.TrangThaiHoaDon;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Optional;
+
 @Service
 public interface IHoaDonService {
     @Autowired
     private HoaDonRepository hoaDonRepository;
-    public HoaDon create(HoaDon hoaDon);
-    public HoaDon update(Integer maHoaDon, HoaDon hoaDon);
-    public HoaDon softDelete(Integer maHoaDon);
-    public HoaDon unDelete(Integer maHoaDon);
+    public HoaDonDTO create(HoaDonDTO hoaDon);
+    public HoaDonDTO softDelete(Integer maHoaDon);
+    public HoaDonDTO unDelete(Integer maHoaDon);
     public int countByTrangThai(TrangThaiHoaDon trangThai);
     public int countByTrangThaiNot(TrangThaiHoaDon trangThai);
-    public Optional<HoaDon> findTopActive();
-    public Optional<HoaDon> findTopByTrangThaiOrderByMaHoaDonDesc(TrangThaiHoaDon trangThai);
-    public Optional<HoaDon> findTopByTrangThaiNotOrderByMaHoaDonDesc(TrangThaiHoaDon trangThai);
-    public Optional<HoaDon> findByMaHoaDonAndTrangThai(Integer maHoaDon, TrangThaiHoaDon trangThai);
-    public Optional<HoaDon> findByMaHoaDonAndTrangThaiNot(Integer maHoaDon, TrangThaiHoaDon trangThai);
-    public List<HoaDon> findAll();
-    public List<HoaDon> findAllActive();    
-    public List<HoaDon> findAllByTrangThai(TrangThaiHoaDon trangThai);
-    public List<HoaDon> findAllByTrangThaiNot(TrangThaiHoaDon trangThai);
-    public List<HoaDon> findByTienNoGreaterThan(BigDecimal soTien);
+    public Optional<HoaDonDTO> findTopActive();
+    public Optional<HoaDonDTO> findTopByTrangThaiOrderByMaHoaDonDesc(TrangThaiHoaDon trangThai);
+    public Optional<HoaDonDTO> findTopByTrangThaiNotOrderByMaHoaDonDesc(TrangThaiHoaDon trangThai);
+    public Optional<HoaDonDTO> findByMaHoaDonAndTrangThai(Integer maHoaDon, TrangThaiHoaDon trangThai);
+    public Optional<HoaDonDTO> findByMaHoaDonAndTrangThaiNot(Integer maHoaDon, TrangThaiHoaDon trangThai);
+    public List<HoaDonDTO> findAll();
+    public List<HoaDonDTO> findAllActive();
+    public List<HoaDonDTO> findAllByTrangThai(TrangThaiHoaDon trangThai);
+    public List<HoaDonDTO> findAllByTrangThaiNot(TrangThaiHoaDon trangThai);
+    public List<HoaDonDTO> findByTienNoGreaterThan(BigDecimal soTien);
 }
