@@ -9,7 +9,17 @@ import com.so_tro_online.quan_ly_phong.exception.RoomAldreadyExist;
 import com.so_tro_online.quan_ly_phong.repository.PhongRepository;
 import com.so_tro_online.quan_ly_tai_khoan.entity.TaiKhoan;
 import com.so_tro_online.quan_ly_tai_khoan.repository.TaiKhoanRepository;
+import jakarta.servlet.http.HttpServletResponse;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.List;
 @Service
 
@@ -101,6 +111,80 @@ public class PhongService implements IPhongService{
         phong.setTrangThai(TrangThai.daXoa);
         phongRepository.save(phong);
     }
+
+    @Override
+    public Integer importExcel(MultipartFile file) {
+        int countSaved = 0;
+        try (InputStream is = file.getInputStream();
+             Workbook workbook = WorkbookFactory.create(is)) {
+            Sheet sheet = workbook.getSheetAt(0);
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) { // bỏ header (row 0)
+                Row row = sheet.getRow(i);
+                if (row == null) continue;
+                try {
+                    Phong phong = new Phong();
+                    int maQuanLy = (int) row.getCell(0).getNumericCellValue();
+                    TaiKhoan taiKhoan = taiKhoanRepository.findById(maQuanLy).
+                            orElseThrow(()->new ReseourceNotFoundException("không tìm thấy người dùng với id: "+maQuanLy));
+                    phong.setTaiKhoan(taiKhoan);
+                    if(phongRepository.existsByTenPhongAndTrangThai(row.getCell(1).getStringCellValue(),TrangThai.hoatDong)){
+                        throw new RoomAldreadyExist("phòng đã tồn tại: "+row.getCell(1).getStringCellValue());
+                    }
+                    phong.setTenPhong(row.getCell(1).getStringCellValue());
+                    phong.setLoaiPhong(row.getCell(2).getStringCellValue());
+                    phong.setDiaChi(row.getCell(3).getStringCellValue());
+                    phong.setChieuDai(BigDecimal.valueOf(row.getCell(4).getNumericCellValue()));
+                    phong.setChieuRong(BigDecimal.valueOf(row.getCell(5).getNumericCellValue()));
+                    phong.setVatDung(row.getCell(6).getStringCellValue());
+                    phong.setGiaThueCoBan(BigDecimal.valueOf(row.getCell(7).getNumericCellValue()));
+                    phong.setTrangThai(TrangThai.valueOf(row.getCell(8).getStringCellValue()));
+                    phongRepository.save(phong);
+                    countSaved++;
+                }
+                catch (Exception e){
+
+                }
+
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi đọc file Excel: " + e.getMessage(), e);
+        }
+        return countSaved;
+    }
+
+    @Override
+    public void exportToExcel(HttpServletResponse response) {
+        try (Workbook workbook = new XSSFWorkbook()) { // false để tạo workbook định dạng .xlsx
+            Sheet sheet = workbook.createSheet("Phòng");
+            Row header = sheet.createRow(0);
+            String[] columns = {"Mã quản lý", "Tên phòng", "Loại phòng", "Địa chỉ", "Chiều dài",
+                    "Chiều rộng", "Vật dụng", "Giá thuê cơ bản", "Trạng thái"};
+            for (int i = 0; i < columns.length; i++) {
+                header.createCell(i).setCellValue(columns[i]);
+            }
+            List<Phong> phongList = phongRepository.findAll();
+            int rowNum = 1;
+            for (Phong phong : phongList) {
+                Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(phong.getTaiKhoan().getMaTaiKhoan());
+                row.createCell(1).setCellValue(phong.getTenPhong());
+                row.createCell(2).setCellValue(phong.getLoaiPhong());
+                row.createCell(3).setCellValue(phong.getDiaChi());
+                row.createCell(4).setCellValue(phong.getChieuDai().doubleValue());
+                row.createCell(5).setCellValue(phong.getChieuRong().doubleValue());
+                row.createCell(6).setCellValue(phong.getVatDung());
+                row.createCell(7).setCellValue(phong.getGiaThueCoBan().doubleValue());
+                row.createCell(8).setCellValue(phong.getTrangThai().name());
+            }
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setHeader("Content-Disposition", "attachment; filename=phong.xlsx");
+            workbook.write(response.getOutputStream());
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi xuất file Excel: " + e.getMessage(), e);
+        }
+    }
+
     public RoomResponse mapToRoomResponse(Phong phong) {
         return new RoomResponse(phong.getMaPhong(),phong.getTaiKhoan().getHoTen(),phong.getTaiKhoan().getMaTaiKhoan(),
                 phong.getTenPhong() ,phong.getLoaiPhong(), phong.getDiaChi(),phong.getChieuDai(),phong.getChieuRong()

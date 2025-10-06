@@ -5,8 +5,10 @@ import com.so_tro_online.dto.ApiResponse;
 import com.so_tro_online.quan_ly_phong.dto.RoomRequest;
 import com.so_tro_online.quan_ly_phong.service.IPhongService;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
@@ -48,5 +50,15 @@ public class QuanLyPhongController {
     public ResponseEntity<ApiResponse>deleteRoom(@PathVariable Integer id) {
         phongService.deleteRoom(id);
         return ResponseEntity.ok(new ApiResponse("success", null));
+    }
+    @PostMapping("/import")
+    public ResponseEntity<ApiResponse> importExcel(@RequestParam("file") MultipartFile file) {
+        int count = phongService.importExcel(file);
+        return ResponseEntity.ok(new ApiResponse(String.format("import success:%d record",count), null));
+    }
+    @GetMapping("/export")
+    public ResponseEntity<ApiResponse> exportExcel(HttpServletResponse response) {
+            phongService.exportToExcel(response);
+            return ResponseEntity.ok(new ApiResponse("export success", null));
     }
 }
