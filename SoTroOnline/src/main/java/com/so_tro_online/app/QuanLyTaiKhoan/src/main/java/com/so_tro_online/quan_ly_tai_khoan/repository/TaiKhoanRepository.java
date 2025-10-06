@@ -10,7 +10,7 @@ import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @Repository
-public interface TaiKhoanRepository extends JpaRepository<TaiKhoan, String> {
+public interface TaiKhoanRepository extends JpaRepository<TaiKhoan,Integer> {
     @Query("select u from TaiKhoan u where u.email = ?1 and u.matKhau = ?2")
     Optional<TaiKhoan> findByEmailAndMatKhau(String email, String matKhau);
 

@@ -1,48 +1,11 @@
-package com.so_tro_online.quan_ly_phong.entity;
-import com.so_tro_online.quan_ly_tai_khoan.entity.TaiKhoan;
-import jakarta.persistence.*;
-
+package com.so_tro_online.quan_ly_phong.dto;
 
 import java.math.BigDecimal;
 
-@Entity
-public class Phong {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer maPhong;
-    @ManyToOne
-    @JoinColumn(name = "maQuanLy")
-    private TaiKhoan taiKhoan;
+public class RoomFaqResponse {
     private String tenPhong;
     private String loaiPhong;
     private String diaChi;
-    private BigDecimal chieuDai;
-    private BigDecimal chieuRong;
-    private String vatDung;
-    private BigDecimal giaThueCoBan;
-    @Enumerated(EnumType.STRING)
-    private TrangThai trangThai;
-
-    public Phong() {
-    }
-
-
-
-    public Integer getMaPhong() {
-        return maPhong;
-    }
-
-    public void setMaPhong(Integer maPhong) {
-        this.maPhong = maPhong;
-    }
-
-    public TaiKhoan getTaiKhoan() {
-        return taiKhoan;
-    }
-
-    public void setTaiKhoan(TaiKhoan taiKhoan) {
-        this.taiKhoan = taiKhoan;
-    }
 
     public String getTenPhong() {
         return tenPhong;
@@ -100,12 +63,8 @@ public class Phong {
         this.giaThueCoBan = giaThueCoBan;
     }
 
-    public TrangThai getTrangThai() {
-        return trangThai;
-    }
-
-    public void setTrangThai(TrangThai trangThai) {
-        this.trangThai = trangThai;
-    }
-
+    private BigDecimal chieuDai;
+    private BigDecimal chieuRong;
+    private String vatDung;
+    private BigDecimal giaThueCoBan;
 }
