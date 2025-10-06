@@ -3,9 +3,11 @@ package com.so_tro_online.quan_ly_dich_vu_phong.controller;
 import com.so_tro_online.dto.ApiResponse;
 import com.so_tro_online.quan_ly_dich_vu_phong.dto.DichVuRequest;
 import com.so_tro_online.quan_ly_dich_vu_phong.service.IDichVuService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/dichvu")
@@ -42,5 +44,15 @@ public class DichVuController {
     public ResponseEntity<ApiResponse>deleteDichVu(@PathVariable Integer id) {
         iDichVuService.deleteDichVu(id);
         return ResponseEntity.ok(new ApiResponse("success", null));
+    }
+    @PostMapping("/import")
+    public ResponseEntity<ApiResponse> importExcel(@RequestParam("file") MultipartFile file) {
+        int count = iDichVuService.importExcel(file);
+        return ResponseEntity.ok(new ApiResponse(String.format("import success:%d record",count), null));
+    }
+    @GetMapping("/export")
+    public void exportExcel(HttpServletResponse response) {
+        iDichVuService.exportToExcel(response);
+
     }
 }

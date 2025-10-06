@@ -57,8 +57,8 @@ public class QuanLyPhongController {
         return ResponseEntity.ok(new ApiResponse(String.format("import success:%d record",count), null));
     }
     @GetMapping("/export")
-    public ResponseEntity<ApiResponse> exportExcel(HttpServletResponse response) {
+    public void exportExcel(HttpServletResponse response) {
             phongService.exportToExcel(response);
-            return ResponseEntity.ok(new ApiResponse("export success", null));
+           
     }
 }
