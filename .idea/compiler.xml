@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="QuanLyDichVuPhong" />
+        <module name="QuanLyTaiKhoan" />
+        <module name="QuanLyHopDongPhong" />
+        <module name="QuanLyPhong" />
+        <module name="QuanLyKhachThue" />
+        <module name="QuanLyHoaDon" />
+        <module name="QuanLyHopDongDichVu" />
+        <module name="QuanLyPhieuThu" />
+        <module name="SoTroOnline-dungchung" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="QuanLyDichVuPhong" options="-parameters" />
+      <module name="QuanLyHoaDon" options="-parameters" />
+      <module name="QuanLyHopDongDichVu" options="-parameters" />
+      <module name="QuanLyHopDongPhong" options="-parameters" />
+      <module name="QuanLyKhachThue" options="-parameters" />
+      <module name="QuanLyPhieuThu" options="-parameters" />
+      <module name="QuanLyPhong" options="-parameters" />
+      <module name="QuanLyTaiKhoan" options="-parameters" />
+      <module name="SoTroOnline-dungchung" options="-parameters" />
+      <module name="sotroonline (2)" options="-parameters" />
+    </option>
+  </component>
+</project>
