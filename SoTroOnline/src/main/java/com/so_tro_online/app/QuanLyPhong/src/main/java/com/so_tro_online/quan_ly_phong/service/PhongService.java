@@ -185,6 +185,12 @@ public class PhongService implements IPhongService{
         }
     }
 
+    @Override
+    public List<RoomResponse> searchRoom(String tenPhong, String loaiPhong, String diaChi, BigDecimal chieuDai, BigDecimal chieuRong, String vatDung, BigDecimal giaThueCoBan) {
+        return phongRepository.searchRoom(tenPhong,loaiPhong,diaChi,chieuDai,chieuRong,vatDung,giaThueCoBan)
+                .stream().map(this::mapToRoomResponse).toList();
+    }
+
     public RoomResponse mapToRoomResponse(Phong phong) {
         return new RoomResponse(phong.getMaPhong(),phong.getTaiKhoan().getHoTen(),phong.getTaiKhoan().getMaTaiKhoan(),
                 phong.getTenPhong() ,phong.getLoaiPhong(), phong.getDiaChi(),phong.getChieuDai(),phong.getChieuRong()

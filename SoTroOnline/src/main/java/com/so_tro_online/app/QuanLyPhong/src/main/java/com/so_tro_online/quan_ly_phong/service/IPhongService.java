@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.List;
 @Repository
 public interface IPhongService {
@@ -18,4 +19,7 @@ public interface IPhongService {
     public void deleteRoom(Integer id);
     Integer importExcel(MultipartFile file);
     void exportToExcel(HttpServletResponse response);
+    List<RoomResponse>searchRoom(String tenPhong, String loaiPhong, String diaChi, BigDecimal chieuDai,
+     BigDecimal chieuRong,String vatDung, BigDecimal giaThueCoBan
+    );
 }

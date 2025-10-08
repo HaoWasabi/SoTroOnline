@@ -3,12 +3,16 @@ package com.so_tro_online.quan_ly_phong.controller;
 
 import com.so_tro_online.dto.ApiResponse;
 import com.so_tro_online.quan_ly_phong.dto.RoomRequest;
+import com.so_tro_online.quan_ly_phong.dto.RoomResponse;
 import com.so_tro_online.quan_ly_phong.service.IPhongService;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 
 @RestController
@@ -59,6 +63,15 @@ public class QuanLyPhongController {
     @GetMapping("/export")
     public void exportExcel(HttpServletResponse response) {
             phongService.exportToExcel(response);
-           
+    }
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse> search(
+            @RequestParam(required = false) String tenPhong,@RequestParam(required = false) String loaiPhong,
+            @RequestParam(required = false) String diaChi,@RequestParam(required = false) BigDecimal chieuDai,
+            @RequestParam(required = false) BigDecimal chieuRong,
+            @RequestParam(required = false) String vatDung,
+            @RequestParam(required = false) BigDecimal giaThueCoBan){
+        List<RoomResponse>list=phongService.searchRoom(tenPhong, loaiPhong, diaChi, chieuDai, chieuRong, vatDung, giaThueCoBan);
+        return ResponseEntity.ok(new ApiResponse("success",list));
     }
 }
