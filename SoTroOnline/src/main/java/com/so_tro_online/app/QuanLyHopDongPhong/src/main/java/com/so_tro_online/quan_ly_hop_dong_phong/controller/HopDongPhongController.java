@@ -3,6 +3,7 @@ package com.so_tro_online.quan_ly_hop_dong_phong.controller;
 import com.so_tro_online.dto.ApiResponse;
 import com.so_tro_online.quan_ly_hop_dong_phong.dto.HopDongPhongRequest;
 import com.so_tro_online.quan_ly_hop_dong_phong.service.IHopDongPhongService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,6 +50,10 @@ public class HopDongPhongController {
     public ResponseEntity<ApiResponse>deleteHopDongPhong(@PathVariable Integer id) {
         hopDongPhongService.deleteHopDongPhong(id);
         return ResponseEntity.ok(new ApiResponse("success", null));
+    }
+    @GetMapping("/tai-word/{id}")
+    public void taiHopDongPdf(@PathVariable Integer id, HttpServletResponse response) throws Exception {
+        hopDongPhongService.xuatHopDongWord(response, id);
     }
 
 }

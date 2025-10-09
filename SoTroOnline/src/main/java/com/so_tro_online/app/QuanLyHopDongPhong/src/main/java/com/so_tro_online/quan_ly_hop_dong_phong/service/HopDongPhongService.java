@@ -1,5 +1,6 @@
 package com.so_tro_online.quan_ly_hop_dong_phong.service;
 
+import com.deepoove.poi.XWPFTemplate;
 import com.so_tro_online.quan_ly_hop_dong_phong.dto.HopDongPhongRequest;
 import com.so_tro_online.quan_ly_hop_dong_phong.dto.HopDongPhongResponse;
 import com.so_tro_online.quan_ly_hop_dong_phong.entity.HopDongPhong;
@@ -14,10 +15,15 @@ import com.so_tro_online.quan_ly_phong.exception.ReseourceNotFoundException;
 import com.so_tro_online.quan_ly_phong.repository.PhongRepository;
 import com.so_tro_online.quan_ly_tai_khoan.entity.TaiKhoan;
 import com.so_tro_online.quan_ly_tai_khoan.repository.TaiKhoanRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class HopDongPhongService implements IHopDongPhongService {
@@ -27,7 +33,7 @@ public class HopDongPhongService implements IHopDongPhongService {
         this.taiKhoanRepository = taiKhoanRepository;
         this.hopDongPhongRepository = hopDongPhongRepository;
     }
-
+    private final SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
     private final KhachThueRepository khachThueRepository;
     private final PhongRepository phongRepository;
     private  final TaiKhoanRepository taiKhoanRepository;
@@ -126,4 +132,52 @@ public class HopDongPhongService implements IHopDongPhongService {
                 .map(this::mapToHopDongPhongResponse)
                 .toList();
     }
+
+    @Override
+    public void xuatHopDongWord(HttpServletResponse response, Integer id) {
+            // 1. Lấy dữ liệu hợp đồng
+            HopDongPhong hopDong = hopDongPhongRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy hợp đồng"));
+
+            // 2. Chuẩn bị dữ liệu cho template
+            Map<String, Object> data = new HashMap<>();
+            data.put("maHopDongPhong", hopDong.getMaHopDongPhong());
+            data.put("tenQuanLy", hopDong.getTaiKhoan().getHoTen());
+            data.put("soDienThoaiQuanLy",hopDong.getTaiKhoan().getDienThoai());
+            data.put("diaChiQuanLy",hopDong.getTaiKhoan().getThuongTru());
+            data.put("tenKhach", hopDong.getKhachThue().getHoTen());
+            data.put("cccdKhach",hopDong.getTaiKhoan().getMaCanCuoc());
+            data.put("diaChiKhach",hopDong.getKhachThue().getThuongTru());
+            data.put("tenPhong", hopDong.getPhong().getTenPhong());
+            data.put("diaChiPhong", hopDong.getPhong().getDiaChi());
+            data.put("dienTichPhong", hopDong.getPhong().getChieuDai().multiply(hopDong.getPhong().getChieuRong()));
+            data.put("tienPhong", hopDong.getTienPhong());
+            data.put("tienCoc", hopDong.getTienCoc());
+            data.put("ngayBatDau", df.format(hopDong.getNgayBatDau()));
+            data.put("ngayKetThuc", df.format(hopDong.getNgayKetThuc()));
+            data.put("ngayTao", df.format(hopDong.getNgayTao()));
+
+            // 3. Nạp template Word
+            try (var templateStream = getClass().getResourceAsStream("/templates/template-hopdong.docx");
+                 var out = response.getOutputStream()) {
+
+                if (templateStream == null) {
+                    throw new IllegalStateException("Không tìm thấy file template-hopdong.docx trong resources/templates/");
+                }
+
+                XWPFTemplate template = XWPFTemplate.compile(templateStream).render(data);
+
+                // 4. Thiết lập header tải file
+                response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+                response.setHeader("Content-Disposition", "attachment; filename=hop-dong-" + id + ".docx");
+
+                // 5. Ghi trực tiếp ra response
+                template.write(out);
+                out.flush();
+                template.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+    }
+
 }

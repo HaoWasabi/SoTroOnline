@@ -2,6 +2,7 @@ package com.so_tro_online.quan_ly_hop_dong_phong.service;
 
 import com.so_tro_online.quan_ly_hop_dong_phong.dto.HopDongPhongRequest;
 import com.so_tro_online.quan_ly_hop_dong_phong.dto.HopDongPhongResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 
 import java.util.List;
@@ -15,4 +16,5 @@ public interface IHopDongPhongService {
     public HopDongPhongResponse updateHopDongPhong(Integer id, HopDongPhongRequest roomRequest);
     public void deleteHopDongPhong(Integer id);
     public List<HopDongPhongResponse> getAllHopDongPhongByMaKhachThue(Integer maKhachThue);
+    public void xuatHopDongWord(HttpServletResponse response, Integer id);
 }
