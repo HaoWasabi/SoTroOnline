@@ -91,7 +91,7 @@ public class HopDongPhongService implements IHopDongPhongService {
         hopDongPhong.setPhong(phong);
         hopDongPhong.setTaiKhoan(taiKhoan);
         hopDongPhong.setKhachThue(khachThue);
-        hopDongPhong.setTienPhong(hopDongRequest.getTienPhong());
+        hopDongPhong.setTienPhong(phong.getGiaThueCoBan());
         hopDongPhong.setTienCoc(hopDongRequest.getTienCoc());
         hopDongPhong.setNgayBatDau(hopDongRequest.getNgayBatDau());
         hopDongPhong.setNgayKetThuc(hopDongRequest.getNgayKetThuc());
@@ -105,6 +105,7 @@ public class HopDongPhongService implements IHopDongPhongService {
         HopDongPhong hopDongPhong=hopDongPhongRepository.findByMaHopDongPhongAndTrangThai(id, com.so_tro_online.quan_ly_hop_dong_phong.entity.TrangThai.hoatDong)
                 .orElseThrow(()->new ReseourceNotFoundException("không tìm thấy hợp đồng phòng với id: "+id));
         hopDongPhong.setTienPhong(roomRequest.getTienPhong());
+        hopDongPhong.setTienCoc(roomRequest.getTienCoc());
         hopDongPhong.setNgayKetThuc(roomRequest.getNgayKetThuc());
         hopDongPhong.setNgayBatDau(roomRequest.getNgayBatDau());
         hopDongPhong.setTrangThai(roomRequest.getTrangThai());

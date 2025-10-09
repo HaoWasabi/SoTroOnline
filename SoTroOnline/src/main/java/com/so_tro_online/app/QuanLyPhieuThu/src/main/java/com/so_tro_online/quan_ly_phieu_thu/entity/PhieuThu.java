@@ -18,10 +18,9 @@ public class PhieuThu {
     @ManyToOne
     @JoinColumn(name = "maKhachDaiDien")
     private KhachThue khachThue;
-    private BigDecimal soTienNo;
-    private BigDecimal soTienDaTra;
+    private BigDecimal soTienThu;
     private String ghiChu;
-    private Date hanThanhToan;
+private Date ngayThu;
     private Date capNhatLanCuoi;
     @Enumerated(EnumType.STRING)
     private TrangThai trangThai;
@@ -42,6 +41,14 @@ public class PhieuThu {
         this.hoaDon = hoaDon;
     }
 
+    public Date getNgayThu() {
+        return ngayThu;
+    }
+
+    public void setNgayThu(Date ngayThu) {
+        this.ngayThu = ngayThu;
+    }
+
     public KhachThue getKhachThue() {
         return khachThue;
     }
@@ -50,20 +57,11 @@ public class PhieuThu {
         this.khachThue = khachThue;
     }
 
-    public BigDecimal getSoTienNo() {
-        return soTienNo;
+    public BigDecimal getSoTienThu() {
+        return soTienThu;
     }
-
-    public void setSoTienNo(BigDecimal soTienNo) {
-        this.soTienNo = soTienNo;
-    }
-
-    public BigDecimal getSoTienDaTra() {
-        return soTienDaTra;
-    }
-
-    public void setSoTienDaTra(BigDecimal soTienDaTra) {
-        this.soTienDaTra = soTienDaTra;
+    public void setSoTienThu(BigDecimal soTienThu) {
+        this.soTienThu = soTienThu;
     }
 
     public String getGhiChu() {
@@ -72,14 +70,6 @@ public class PhieuThu {
 
     public void setGhiChu(String ghiChu) {
         this.ghiChu = ghiChu;
-    }
-
-    public Date getHanThanhToan() {
-        return hanThanhToan;
-    }
-
-    public void setHanThanhToan(Date hanThanhToan) {
-        this.hanThanhToan = hanThanhToan;
     }
 
     public Date getCapNhatLanCuoi() {

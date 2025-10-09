@@ -73,6 +73,7 @@ public class DichVuService implements IDichVuService {
         dichVu.setMoTa(dichVuRequest.getMoTa());
         dichVu.setTrangThai(dichVuRequest.getTrangThai());
         dichVu.setTaiKhoan(taiKhoan);
+        dichVu.setLoaiTinh(dichVuRequest.getLoaiTinh());
         return dichVu;
     }
 
@@ -90,6 +91,7 @@ public class DichVuService implements IDichVuService {
         dichVu.setTrangThai(dichVuRequest.getTrangThai());
         dichVu.setDonViCoBan(dichVuRequest.getDonViCoBan());
         dichVu.setTaiKhoan(taiKhoan);
+        dichVu.setLoaiTinh(dichVuRequest.getLoaiTinh());
         return mapToDichVuResponse(dichVuRepository.save(dichVu));
     }
 
@@ -177,6 +179,7 @@ public class DichVuService implements IDichVuService {
         response.setTrangThai(dichVu.getTrangThai());
         response.setMaQuanLy(dichVu.getTaiKhoan().getMaTaiKhoan());
         response.setTenQuanLy(dichVu.getTaiKhoan().getHoTen());
+        response.setLoaiTinh(dichVu.getLoaiTinh());
         return response;
     }
 }

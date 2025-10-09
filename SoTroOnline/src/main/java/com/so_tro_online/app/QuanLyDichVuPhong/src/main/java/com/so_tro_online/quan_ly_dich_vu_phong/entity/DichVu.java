@@ -19,6 +19,16 @@ public class DichVu {
     private String moTa;
     @Enumerated(EnumType.STRING)
     private TrangThai trangThai;
+    @Enumerated(EnumType.STRING)
+    private LoaiTinh loaiTinh;
+
+    public LoaiTinh getLoaiTinh() {
+        return loaiTinh;
+    }
+
+    public void setLoaiTinh(LoaiTinh loaiTinh) {
+        this.loaiTinh = loaiTinh;
+    }
 
     public DichVu(Integer maDichVu, TaiKhoan taiKhoan, String tenDichVu, BigDecimal donGiaCoBan, String donViCoBan, String moTa, TrangThai trangThai) {
         this.maDichVu = maDichVu;

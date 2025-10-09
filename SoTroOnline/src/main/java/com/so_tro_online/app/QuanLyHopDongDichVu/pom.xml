@@ -36,6 +36,11 @@
         </dependency>
         <dependency>
             <groupId>com.j2ee-2526</groupId>
+            <artifactId>QuanLyHopDongPhong</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.j2ee-2526</groupId>
             <artifactId>QuanLyKhachThue</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
