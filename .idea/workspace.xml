@@ -5,17 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cafe1d0c-bc81-4c1f-9f7d-997f92561b0c" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/SoTroOnline/src/main/resources/templates/template-hopdong.docx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/target/classes/com/so_tro_online/quan_ly_hop_dong_dich_vu/service/SuDungDichVuService.class" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/target/classes/com/so_tro_online/quan_ly_hop_dong_dich_vu/service/SuDungDichVuService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/src/main/java/com/so_tro_online/quan_ly_hop_dong_phong/controller/HopDongPhongController.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/src/main/java/com/so_tro_online/quan_ly_hop_dong_phong/controller/HopDongPhongController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/src/main/java/com/so_tro_online/quan_ly_hop_dong_phong/service/HopDongPhongService.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/src/main/java/com/so_tro_online/quan_ly_hop_dong_phong/service/HopDongPhongService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/src/main/java/com/so_tro_online/quan_ly_hop_dong_phong/service/IHopDongPhongService.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/src/main/java/com/so_tro_online/quan_ly_hop_dong_phong/service/IHopDongPhongService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/target/classes/com/so_tro_online/quan_ly_hop_dong_phong/controller/HopDongPhongController.class" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/target/classes/com/so_tro_online/quan_ly_hop_dong_phong/controller/HopDongPhongController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/target/classes/com/so_tro_online/quan_ly_hop_dong_phong/service/HopDongPhongService.class" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/target/classes/com/so_tro_online/quan_ly_hop_dong_phong/service/HopDongPhongService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/target/classes/com/so_tro_online/quan_ly_hop_dong_phong/service/IHopDongPhongService.class" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/target/classes/com/so_tro_online/quan_ly_hop_dong_phong/service/IHopDongPhongService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/src/main/java/com/so_tro_online/quan_ly_hop_dong_dich_vu/service/SuDungDichVuService.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/src/main/java/com/so_tro_online/quan_ly_hop_dong_dich_vu/service/SuDungDichVuService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/resources/templates/~$mplate-hopdong.docx" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,24 +49,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.SoTroOnlineApplication.executor": "Run",
-    "Application.TenantApplication.executor": "Run",
-    "Application.com.so_tro_online.app.SoTroOnlineApplication.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "be-phong",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/nam2/SoTroOnline",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.36673555",
-    "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.SoTroOnlineApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Application.TenantApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Application.com.so_tro_online.app.SoTroOnlineApplication.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;be-phong&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/nam2/SoTroOnline&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.36673555&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="com.so_tro_online.quan_ly_hop_dong_dich_vu.exception" />

@@ -1,15 +1,19 @@
 package com.so_tro_online.quan_ly_hop_dong_dich_vu.service;
 
+import com.so_tro_online.quan_ly_dich_vu_phong.entity.LoaiTinh;
 import com.so_tro_online.quan_ly_hop_dong_dich_vu.dto.SuDungDichVuRequest;
 import com.so_tro_online.quan_ly_hop_dong_dich_vu.dto.SuDungDichVuResponse;
 import com.so_tro_online.quan_ly_hop_dong_dich_vu.entity.MyHopDongDichVu;
 import com.so_tro_online.quan_ly_hop_dong_dich_vu.entity.SuDungDichVu;
+import com.so_tro_online.quan_ly_hop_dong_dich_vu.exception.BusinessException;
 import com.so_tro_online.quan_ly_hop_dong_dich_vu.exception.SuDungDichVuAlreadyExist;
 import com.so_tro_online.quan_ly_hop_dong_dich_vu.repository.MyHopDongDichVuRepository;
 import com.so_tro_online.quan_ly_hop_dong_dich_vu.repository.SuDungDichVuRepository;
 import com.so_tro_online.quan_ly_phong.exception.ReseourceNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,14 +45,24 @@ public class SuDungDichVuService implements ISuDungDichVuService{
 
     @Override
     public SuDungDichVuResponse createSuDungDichVu(SuDungDichVuRequest req) {
-        if(suDungDichVuRepository.findByHopDongDichVuIdAndThangNam(
+        LocalDate localDate = req.getThangNam().toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+
+        int month = localDate.getMonthValue();
+        int year = localDate.getYear();
+
+        if (suDungDichVuRepository.findByHopDongDichVuIdAndThangNam(
                 req.getMaHopDongDichVu(),
-                req.getThangNam().getMonth(),
-                req.getThangNam().getYear())!=null){
-            throw new SuDungDichVuAlreadyExist("sử dụng dịch vụ đã tồn tại");
+                month,
+                year) != null) {
+            throw new SuDungDichVuAlreadyExist("Sử dụng dịch vụ đã tồn tại");
         }
         MyHopDongDichVu hopDongDichVu=hopDongDichVuRepository.findById(req.getMaHopDongDichVu())
                 .orElseThrow(()->new ReseourceNotFoundException("không tìm thấy hợp đồng dịch vụ id: "+req.getMaHopDongDichVu()));
+        if(hopDongDichVu.getDichVu().getLoaiTinh()== LoaiTinh.THEO_THANG){
+            throw new BusinessException("dịch vụ theo tháng không cần chỉ số");
+        }
         SuDungDichVu suDungDichVu=new SuDungDichVu();
         suDungDichVu.setHopDongDichVu(hopDongDichVu);
         suDungDichVu.setChiSoCu(req.getChiSoCu());
