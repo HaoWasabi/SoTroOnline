@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 
 public interface HoaDonRepository extends JpaRepository<HoaDon,Integer> {
@@ -18,5 +19,10 @@ public interface HoaDonRepository extends JpaRepository<HoaDon,Integer> {
     List<HoaDon> findHoaDonConNo(
             @Param("maHopDongPhong") Integer maHopDongPhong,
             @Param("soTien") BigDecimal soTien);
-
+    @Query(value = """
+    SELECT * FROM hoa_don
+    WHERE MONTH(ngay_tao) = :thang
+      AND YEAR(ngay_tao) = :nam
+""", nativeQuery = true)
+    List<HoaDon> findByMonthAndYear(Integer thang, Integer nam);
 }

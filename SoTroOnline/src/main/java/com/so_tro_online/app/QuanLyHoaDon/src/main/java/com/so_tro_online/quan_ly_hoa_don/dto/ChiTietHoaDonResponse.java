@@ -1,21 +1,19 @@
-package com.so_tro_online.quan_ly_hoa_don.entity;
+package com.so_tro_online.quan_ly_hoa_don.dto;
 
 import com.so_tro_online.quan_ly_dich_vu_phong.entity.DichVu;
-import jakarta.persistence.*;
+import com.so_tro_online.quan_ly_hoa_don.entity.HoaDon;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 
 import java.math.BigDecimal;
 
-@Entity
-public class ChiTietHoaDon {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ChiTietHoaDonResponse {
     private Integer id;
 
-    @ManyToOne
-    private HoaDon hoaDon;
+    private Integer maHoaDon;
     private String tenDichVu;
-    @ManyToOne
-    private DichVu dichVu;
 
     private BigDecimal donGia;
     private BigDecimal soLuong;
@@ -23,44 +21,21 @@ public class ChiTietHoaDon {
     private BigDecimal heSo;
     private BigDecimal tienThucTe;
 
-    public BigDecimal getHeSo() {
-        return heSo;
-    }
-
-    public void setHeSo(BigDecimal heSo) {
-        this.heSo = heSo;
-    }
-
-    public BigDecimal getTienThucTe() {
-        return tienThucTe;
-    }
-
-    public void setTienThucTe(BigDecimal tienThucTe) {
-        this.tienThucTe = tienThucTe;
-    }
-
     public Integer getId() {
         return id;
     }
+
     public void setId(Integer id) {
         this.id = id;
     }
-    public HoaDon getHoaDon() {
-        return hoaDon;
+
+    public Integer getMaHoaDon() {
+        return maHoaDon;
     }
 
-    public void setHoaDon(HoaDon hoaDon) {
-        this.hoaDon = hoaDon;
+    public void setMaHoaDon(Integer maHoaDon) {
+        this.maHoaDon = maHoaDon;
     }
-
-    public DichVu getDichVu() {
-        return dichVu;
-    }
-
-    public void setDichVu(DichVu dichVu) {
-        this.dichVu = dichVu;
-    }
-
 
     public String getTenDichVu() {
         return tenDichVu;
@@ -69,6 +44,8 @@ public class ChiTietHoaDon {
     public void setTenDichVu(String tenDichVu) {
         this.tenDichVu = tenDichVu;
     }
+
+
 
     public BigDecimal getDonGia() {
         return donGia;
@@ -92,5 +69,21 @@ public class ChiTietHoaDon {
 
     public void setThanhTien(BigDecimal thanhTien) {
         this.thanhTien = thanhTien;
+    }
+
+    public BigDecimal getHeSo() {
+        return heSo;
+    }
+
+    public void setHeSo(BigDecimal heSo) {
+        this.heSo = heSo;
+    }
+
+    public BigDecimal getTienThucTe() {
+        return tienThucTe;
+    }
+
+    public void setTienThucTe(BigDecimal tienThucTe) {
+        this.tienThucTe = tienThucTe;
     }
 }

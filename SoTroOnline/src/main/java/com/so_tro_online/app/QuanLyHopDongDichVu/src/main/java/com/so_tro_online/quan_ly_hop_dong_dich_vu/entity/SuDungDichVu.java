@@ -11,10 +11,8 @@ public class SuDungDichVu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @ManyToOne
     private MyHopDongDichVu hopDongDichVu;
-
     private Date thangNam;  // ví dụ: 2025-10-01
     private BigDecimal chiSoCu;
     private BigDecimal chiSoMoi;
@@ -54,4 +52,5 @@ public class SuDungDichVu {
     public void setChiSoMoi(BigDecimal chiSoMoi) {
         this.chiSoMoi = chiSoMoi;
     }
+
 }

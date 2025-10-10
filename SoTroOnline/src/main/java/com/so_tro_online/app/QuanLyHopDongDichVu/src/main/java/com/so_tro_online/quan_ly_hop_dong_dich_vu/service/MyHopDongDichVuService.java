@@ -5,8 +5,9 @@ import com.so_tro_online.quan_ly_dich_vu_phong.entity.DichVu;
 import com.so_tro_online.quan_ly_dich_vu_phong.repository.DichVuRepository;
 import com.so_tro_online.quan_ly_hop_dong_dich_vu.dto.MyHopDongDichVuRequest;
 import com.so_tro_online.quan_ly_hop_dong_dich_vu.dto.MyHopDongDichVuResponse;
+import com.so_tro_online.quan_ly_hop_dong_dich_vu.dto.SuDungDichVuResponse;
 import com.so_tro_online.quan_ly_hop_dong_dich_vu.entity.MyHopDongDichVu;
-
+import com.so_tro_online.quan_ly_hop_dong_dich_vu.entity.TrangThai;
 import com.so_tro_online.quan_ly_hop_dong_dich_vu.exception.HopDongDichVuAlreadyExists;
 import com.so_tro_online.quan_ly_hop_dong_dich_vu.repository.MyHopDongDichVuRepository;
 import com.so_tro_online.quan_ly_hop_dong_phong.entity.HopDongPhong;
@@ -22,6 +23,7 @@ public class MyHopDongDichVuService implements IMyHopDongDichVu {
     private final MyHopDongDichVuRepository myHopDongDichVuRepository;
     private final HopDongPhongRepository hopDongPhongRepository;
     private final DichVuRepository dichVuRepository;
+
 
     public MyHopDongDichVuService(MyHopDongDichVuRepository myHopDongDichVuRepository, HopDongPhongRepository hopDongPhongRepository, DichVuRepository dichVuRepository) {
         this.myHopDongDichVuRepository = myHopDongDichVuRepository;
@@ -43,6 +45,15 @@ public class MyHopDongDichVuService implements IMyHopDongDichVu {
         response.setMaDichVu(myHopDongDichVu.getDichVu().getMaDichVu());
         response.setSoLuong(myHopDongDichVu.getSoLuong());
         response.setTenDichVu(myHopDongDichVu.getDichVu().getTenDichVu());
+        response.setSuDungDichVuResponses(myHopDongDichVu.getSuDungDichVus().stream()
+                .map(suDungDichVu -> {
+            SuDungDichVuResponse suDungDichVuResponse = new SuDungDichVuResponse();
+            suDungDichVuResponse.setMaHopDongDichVu(suDungDichVu.getHopDongDichVu().getId());
+            suDungDichVuResponse.setThangNam(suDungDichVu.getThangNam());
+            suDungDichVuResponse.setChiSoCu(suDungDichVu.getChiSoCu());
+            suDungDichVuResponse.setChiSoMoi(suDungDichVu.getChiSoMoi());
+            return suDungDichVuResponse;
+        }).collect(Collectors.toList()));
         return response;
     }
 
@@ -59,6 +70,7 @@ public class MyHopDongDichVuService implements IMyHopDongDichVu {
         myHopDongDichVu.setHopDong(hopDongPhong);
         myHopDongDichVu.setDichVu(dichVu);
         myHopDongDichVu.setSoLuong(req.getSoLuong());
+        myHopDongDichVu.setTrangThai(TrangThai.hoatDong);
         return mapToResponse(myHopDongDichVuRepository.save(myHopDongDichVu));
     }
 
@@ -74,7 +86,9 @@ public class MyHopDongDichVuService implements IMyHopDongDichVu {
     public void deleteHopDongDichVu(Integer id) {
         MyHopDongDichVu dichVu=myHopDongDichVuRepository.findById(id)
                 .orElseThrow(()->new ReseourceNotFoundException("không tìm thấy hợp đồng dịch vụ với id: "+id));
-        myHopDongDichVuRepository.delete(dichVu);
+        dichVu.setTrangThai(TrangThai.daXoa);
+
+        myHopDongDichVuRepository.save(dichVu);
     }
 
     @Override
@@ -82,5 +96,11 @@ public class MyHopDongDichVuService implements IMyHopDongDichVu {
         return myHopDongDichVuRepository.findById(id)
                 .map(this::mapToResponse)
                 .orElseThrow(()->new ReseourceNotFoundException("không tìm thấy hợp đồng dịch vụ với id: "+id));
+    }
+
+    @Override
+    public List<MyHopDongDichVuResponse> getHopDongDichVuByMaHopDong(Integer maHopDong) {
+        return myHopDongDichVuRepository.findByHopDongMaHopDongPhongAndTrangThai(maHopDong,TrangThai.hoatDong).stream()
+                .map(this::mapToResponse).collect(Collectors.toList());
     }
 }

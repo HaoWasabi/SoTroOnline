@@ -143,7 +143,7 @@ public HoaDon process(HopDongPhong item) throws Exception {
     chiTietList.add(ctPhong);
 
     // ====== TÍNH TIỀN DỊCH VỤ ======
-    List<MyHopDongDichVu> list = hopDongDichVuRepo.findByHopDongMaHopDongPhong(item.getMaHopDongPhong());
+    List<MyHopDongDichVu> list = hopDongDichVuRepo.findByHopDongMaHopDongPhongAndTrangThai(item.getMaHopDongPhong(), com.so_tro_online.quan_ly_hop_dong_dich_vu.entity.TrangThai.hoatDong);
     for (MyHopDongDichVu hdDv : list) {
         ChiTietHoaDon ct = new ChiTietHoaDon();
         DichVu dv = hdDv.getDichVu();
@@ -188,6 +188,7 @@ public HoaDon process(HopDongPhong item) throws Exception {
     hoaDon.setTrangThai(TrangThai.CON_NO);
     hoaDon.setChiTietHoaDons(chiTietList);
     hoaDon.setHopDongPhong(item);
+    hoaDon.setNoiDung("Hoa don thang " + thang + "/" + nam);
     return hoaDon;
 }
 

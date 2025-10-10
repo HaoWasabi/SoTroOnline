@@ -11,5 +11,6 @@ public interface IMyHopDongDichVu {
     MyHopDongDichVuResponse updateHopDongDichVu(Integer id, MyHopDongDichVuRequest roomRequest);
     public void deleteHopDongDichVu(Integer id);
     public MyHopDongDichVuResponse getHopDongDichVuById(Integer id);
+    public List<MyHopDongDichVuResponse> getHopDongDichVuByMaHopDong(Integer maHopDong);
 
 }

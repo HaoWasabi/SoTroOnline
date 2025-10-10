@@ -1,6 +1,7 @@
 package com.so_tro_online.quan_ly_hop_dong_dich_vu.dto;
 
 
+import java.util.List;
 
 public class MyHopDongDichVuResponse {
     private Integer id;
@@ -9,6 +10,15 @@ public class MyHopDongDichVuResponse {
     private Integer maDichVu;
     private  String tenDichVu;
     private Integer soLuong;
+    private List<SuDungDichVuResponse> suDungDichVuResponses;
+
+    public List<SuDungDichVuResponse> getSuDungDichVuResponses() {
+        return suDungDichVuResponses;
+    }
+
+    public void setSuDungDichVuResponses(List<SuDungDichVuResponse> suDungDichVuResponses) {
+        this.suDungDichVuResponses = suDungDichVuResponses;
+    }
 
     public Integer getId() {
         return id;

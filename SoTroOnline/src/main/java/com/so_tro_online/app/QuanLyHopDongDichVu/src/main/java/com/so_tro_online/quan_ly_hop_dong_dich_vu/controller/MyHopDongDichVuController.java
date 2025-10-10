@@ -19,6 +19,7 @@ public class MyHopDongDichVuController {
     public ResponseEntity<ApiResponse> getAllHopDongDichVu() {
         return ResponseEntity.ok(new ApiResponse("success", myHopDongDichVuService.getAllHopDongDichVu()));
     }
+
     @GetMapping("/{id}")
     public  ResponseEntity<ApiResponse>getHopDongDichVuById(@PathVariable Integer id) {
         return ResponseEntity.ok(new ApiResponse("success", myHopDongDichVuService.getHopDongDichVuById(id)));
@@ -35,5 +36,9 @@ public class MyHopDongDichVuController {
     public ResponseEntity<ApiResponse>deleteHopDongDichVu(@PathVariable Integer id) {
         myHopDongDichVuService.deleteHopDongDichVu(id);
         return ResponseEntity.ok(new ApiResponse("success", null));
+    }
+    @GetMapping("/hopdong/{id}")
+    public ResponseEntity<ApiResponse> getHopDongDichVuByHopDongPhongId(@PathVariable Integer id) {
+        return ResponseEntity.ok(new ApiResponse("success", myHopDongDichVuService.getHopDongDichVuByMaHopDong(id)));
     }
 }

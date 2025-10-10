@@ -1,5 +1,7 @@
-package com.so_tro_online.quan_ly_hoa_don.entity;
+package com.so_tro_online.quan_ly_hoa_don.dto;
 
+import com.so_tro_online.quan_ly_hoa_don.entity.ChiTietHoaDon;
+import com.so_tro_online.quan_ly_hoa_don.entity.TrangThai;
 import com.so_tro_online.quan_ly_hop_dong_phong.entity.HopDongPhong;
 import jakarta.persistence.*;
 
@@ -8,10 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Entity
-public class HoaDon {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class HoaDonResponse {
     private Integer maHoaDon;
     private BigDecimal tienPhong;
     private BigDecimal tienDichVu;
@@ -19,37 +18,19 @@ public class HoaDon {
     private BigDecimal tienConNo;
     private Date ngayTao;
     private Date capNhatLanCuoi;
-    @Enumerated(EnumType.STRING)
     private TrangThai trangThai;
     private String noiDung;
-    @ManyToOne
-    @JoinColumn(name = "ma_hop_dong_phong", nullable = false)
-    private HopDongPhong hopDongPhong;
-    @OneToMany(mappedBy = "hoaDon", cascade = CascadeType.ALL)
-    private List<ChiTietHoaDon> chiTietHoaDons = new ArrayList<>();
+    private Integer maHopDongPhong;
+    private Integer maPhong;
+    private String tenPhong;
+    private List<ChiTietHoaDonResponse> chiTietHoaDons = new ArrayList<>();
 
     public Integer getMaHoaDon() {
         return maHoaDon;
     }
 
-    public HopDongPhong getHopDongPhong() {
-        return hopDongPhong;
-    }
-
-    public void setHopDongPhong(HopDongPhong hopDongPhong) {
-        this.hopDongPhong = hopDongPhong;
-    }
-
     public void setMaHoaDon(Integer maHoaDon) {
         this.maHoaDon = maHoaDon;
-    }
-
-    public BigDecimal getTienConNo() {
-        return tienConNo;
-    }
-
-    public void setTienConNo(BigDecimal tienConNo) {
-        this.tienConNo = tienConNo;
     }
 
     public BigDecimal getTienPhong() {
@@ -63,6 +44,7 @@ public class HoaDon {
     public BigDecimal getTienDichVu() {
         return tienDichVu;
     }
+
     public void setTienDichVu(BigDecimal tienDichVu) {
         this.tienDichVu = tienDichVu;
     }
@@ -73,6 +55,14 @@ public class HoaDon {
 
     public void setTongTien(BigDecimal tongTien) {
         this.tongTien = tongTien;
+    }
+
+    public BigDecimal getTienConNo() {
+        return tienConNo;
+    }
+
+    public void setTienConNo(BigDecimal tienConNo) {
+        this.tienConNo = tienConNo;
     }
 
     public Date getNgayTao() {
@@ -99,19 +89,43 @@ public class HoaDon {
         this.trangThai = trangThai;
     }
 
-    public List<ChiTietHoaDon> getChiTietHoaDons() {
-        return chiTietHoaDons;
-    }
-
-    public void setChiTietHoaDons(List<ChiTietHoaDon> chiTietHoaDons) {
-        this.chiTietHoaDons = chiTietHoaDons;
-    }
-
     public String getNoiDung() {
         return noiDung;
     }
 
     public void setNoiDung(String noiDung) {
         this.noiDung = noiDung;
+    }
+
+    public Integer getMaHopDongPhong() {
+        return maHopDongPhong;
+    }
+
+    public void setMaHopDongPhong(Integer maHopDongPhong) {
+        this.maHopDongPhong = maHopDongPhong;
+    }
+
+    public Integer getMaPhong() {
+        return maPhong;
+    }
+
+    public void setMaPhong(Integer maPhong) {
+        this.maPhong = maPhong;
+    }
+
+    public String getTenPhong() {
+        return tenPhong;
+    }
+
+    public void setTenPhong(String tenPhong) {
+        this.tenPhong = tenPhong;
+    }
+
+    public List<ChiTietHoaDonResponse> getChiTietHoaDons() {
+        return chiTietHoaDons;
+    }
+
+    public void setChiTietHoaDons(List<ChiTietHoaDonResponse> chiTietHoaDons) {
+        this.chiTietHoaDons = chiTietHoaDons;
     }
 }

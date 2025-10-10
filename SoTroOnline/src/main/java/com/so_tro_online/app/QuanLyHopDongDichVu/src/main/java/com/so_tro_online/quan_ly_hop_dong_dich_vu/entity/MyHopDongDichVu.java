@@ -4,6 +4,8 @@ import com.so_tro_online.quan_ly_dich_vu_phong.entity.DichVu;
 import com.so_tro_online.quan_ly_hop_dong_phong.entity.HopDongPhong;
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 public class MyHopDongDichVu {
     @Id
@@ -14,7 +16,10 @@ public class MyHopDongDichVu {
     @ManyToOne
     private DichVu dichVu;
     private Integer soLuong;
-
+    @Enumerated(EnumType.STRING)
+    private TrangThai trangThai;
+    @OneToMany(mappedBy = "hopDongDichVu",fetch = FetchType.EAGER)
+    private List<SuDungDichVu> suDungDichVus;
     public Integer getId() {
         return id;
     }
@@ -45,5 +50,19 @@ public class MyHopDongDichVu {
 
     public void setSoLuong(Integer soLuong) {
         this.soLuong = soLuong;
+    }
+    public TrangThai getTrangThai() {
+        return trangThai;
+    }
+    public void setTrangThai(TrangThai trangThai) {
+        this.trangThai = trangThai;
+    }
+
+    public List<SuDungDichVu> getSuDungDichVus() {
+        return suDungDichVus;
+    }
+
+    public void setSuDungDichVus(List<SuDungDichVu> suDungDichVus) {
+        this.suDungDichVus = suDungDichVus;
     }
 }
