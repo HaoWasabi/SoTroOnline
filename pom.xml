@@ -33,16 +33,17 @@
 	</properties>
 
 	<modules>
-		<module>SoTroOnline/src/main/java/com/so_tro_online/app/SoTroOnline-dungchung</module>
-		<module>SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyTaiKhoan</module>
-		<module>SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhong</module>
-		<module>SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyDichVuPhong</module>
-		<module>SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong</module>
-		<module>SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon</module>
-		<module>SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhieuThu</module>
+		<module>SoTroOnline/SoTroOnline-dungchung</module>
+		<module>SoTroOnline/QuanLyTaiKhoan</module>
+		<module>SoTroOnline/QuanLyPhong</module>
+		<module>SoTroOnline/QuanLyDichVuPhong</module>
+		<module>SoTroOnline/QuanLyHopDongPhong</module>
+		<module>SoTroOnline/QuanLyHoaDon</module>
+		<module>SoTroOnline/QuanLyPhieuThu</module>
 		<module>SoTroOnline</module>
-		<module>SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu</module>
-		<module>SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyKhachThue</module>
+		<module>SoTroOnline/QuanLyHopDongDichVu</module>
+		<module>SoTroOnline/QuanLyKhachThue</module>
+        <module>SoTroOnline/app</module>
 	</modules>
 
 	<dependencyManagement>

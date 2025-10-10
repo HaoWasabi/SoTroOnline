@@ -34,3 +34,8 @@ build/
 
 #Database source
 application.yml
+
+#env files
+.env
+.env.local
+.env.*.local
