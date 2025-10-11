@@ -90,8 +90,8 @@ public class HopDongPhongService implements IHopDongPhongService {
                 .orElseThrow(()->new ReseourceNotFoundException("không tìm thấy phòng với id: "+hopDongRequest.getMaPhong()));
         KhachThue khachThue=khachThueRepository.findById(hopDongRequest.getMaKhachThue())
                 .orElseThrow(()->new ReseourceNotFoundException("không tìm thấy khách hàng với id: "+hopDongRequest.getMaKhachThue()));
-        if(hopDongPhongRepository.existsHopDong(phong.getMaPhong(),khachThue.getMaKhach(), com.so_tro_online.quan_ly_hop_dong_phong.entity.TrangThai.hoatDong)){
-            throw new HopDongAlreadyExists("Hop dong phong da ton tai");
+        if(hopDongPhongRepository.existsByPhongAndTrangThai(phong, com.so_tro_online.quan_ly_hop_dong_phong.entity.TrangThai.hoatDong)){
+            throw new HopDongAlreadyExists("phòng này đã được thuê");
         }
         HopDongPhong hopDongPhong=new HopDongPhong();
         hopDongPhong.setPhong(phong);
@@ -113,7 +113,6 @@ public class HopDongPhongService implements IHopDongPhongService {
         hopDongPhong.setTienPhong(roomRequest.getTienPhong());
         hopDongPhong.setTienCoc(roomRequest.getTienCoc());
         hopDongPhong.setNgayKetThuc(roomRequest.getNgayKetThuc());
-        hopDongPhong.setNgayBatDau(roomRequest.getNgayBatDau());
         hopDongPhong.setTrangThai(roomRequest.getTrangThai());
         return mapToHopDongPhongResponse(hopDongPhongRepository.save(hopDongPhong));
     }

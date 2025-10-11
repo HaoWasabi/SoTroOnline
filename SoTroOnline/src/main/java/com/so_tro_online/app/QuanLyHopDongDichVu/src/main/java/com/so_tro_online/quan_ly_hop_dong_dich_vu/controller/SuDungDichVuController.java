@@ -1,7 +1,8 @@
 package com.so_tro_online.quan_ly_hop_dong_dich_vu.controller;
 
 import com.so_tro_online.dto.ApiResponse;
-import com.so_tro_online.quan_ly_hop_dong_dich_vu.dto.MyHopDongDichVuRequest;
+
+
 import com.so_tro_online.quan_ly_hop_dong_dich_vu.dto.SuDungDichVuRequest;
 import com.so_tro_online.quan_ly_hop_dong_dich_vu.service.ISuDungDichVuService;
 import org.springframework.http.ResponseEntity;
@@ -32,4 +33,13 @@ public class SuDungDichVuController {
         return ResponseEntity.ok(new ApiResponse("success", suDungDichVuService.updateSuDungDichVu(id,request)));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse>deleteHopDongDichVu(@PathVariable Integer id) {
+        suDungDichVuService.deleteSuDungDichVu(id);
+        return ResponseEntity.ok(new ApiResponse("success", null));
+    }
+    @GetMapping("/phong/{maPhong}")
+    public ResponseEntity<ApiResponse>getAllSuDungDichVuActiveByPhong(@PathVariable Integer maPhong) {
+        return ResponseEntity.ok(new ApiResponse("success", suDungDichVuService.getAllSuDungDichVuActiveByPhong(maPhong)));
+    }
 }

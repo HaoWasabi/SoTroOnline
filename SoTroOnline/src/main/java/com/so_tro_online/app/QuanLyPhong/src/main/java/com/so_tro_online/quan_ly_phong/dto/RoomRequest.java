@@ -4,6 +4,7 @@ import com.so_tro_online.quan_ly_phong.entity.TrangThai;
 
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class RoomRequest {
     private Integer maQuanLy;
@@ -15,7 +16,6 @@ public class RoomRequest {
     private String vatDung;
     private BigDecimal giaThueCoBan;
     private TrangThai trangThai;
-
     public Integer getMaQuanLy() {
         return maQuanLy;
     }

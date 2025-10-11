@@ -5,6 +5,7 @@ import com.so_tro_online.quan_ly_hop_dong_phong.entity.HopDongPhong;
 
 
 import com.so_tro_online.quan_ly_hop_dong_phong.entity.TrangThai;
+import com.so_tro_online.quan_ly_phong.entity.Phong;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -30,4 +31,6 @@ public interface HopDongPhongRepository extends JpaRepository<HopDongPhong,Integ
     boolean existsHopDong(@Param("maPhong") Integer maPhong,
                                @Param("maKhach") Integer maKhach,
                                @Param("trangThai") TrangThai trangThai);
+
+    boolean existsByPhongAndTrangThai(Phong phong, TrangThai trangThai);
 }

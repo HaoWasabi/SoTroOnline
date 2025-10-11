@@ -14,14 +14,21 @@ public class ChiTietHoaDon {
     @ManyToOne
     private HoaDon hoaDon;
     private String tenDichVu;
-    @ManyToOne
-    private DichVu dichVu;
 
     private BigDecimal donGia;
-    private BigDecimal soLuong;
+
     private BigDecimal thanhTien;
     private BigDecimal heSo;
     private BigDecimal tienThucTe;
+    private BigDecimal soLuong;
+
+    public BigDecimal getSoLuong() {
+        return soLuong;
+    }
+
+    public void setSoLuong(BigDecimal soLuong) {
+        this.soLuong = soLuong;
+    }
 
     public BigDecimal getHeSo() {
         return heSo;
@@ -53,13 +60,7 @@ public class ChiTietHoaDon {
         this.hoaDon = hoaDon;
     }
 
-    public DichVu getDichVu() {
-        return dichVu;
-    }
 
-    public void setDichVu(DichVu dichVu) {
-        this.dichVu = dichVu;
-    }
 
 
     public String getTenDichVu() {
@@ -78,13 +79,7 @@ public class ChiTietHoaDon {
         this.donGia = donGia;
     }
 
-    public BigDecimal getSoLuong() {
-        return soLuong;
-    }
 
-    public void setSoLuong(BigDecimal soLuong) {
-        this.soLuong = soLuong;
-    }
 
     public BigDecimal getThanhTien() {
         return thanhTien;

@@ -71,6 +71,8 @@ public class PhieuThuService implements IPhieuThuService{
         phieuThu.setGhiChu(req.getGhiChu());
         phieuThu.setCapNhatLanCuoi(new Date());
         phieuThu.setTrangThai(req.getTrangThai());
+        phieuThu.setConNo(hoaDon.getTienConNo().subtract(req.getSoTienThu()));
+        phieuThu.setNoiDungThu("Thu tiền phòng và dịch vụ của"+hoaDon.getNoiDung());
         PhieuThu saved=phieuThuRepository.save(phieuThu);
         hoaDon.setTienConNo(hoaDon.getTienConNo().subtract(req.getSoTienThu()));
         if(hoaDon.getTienConNo().compareTo(BigDecimal.ZERO)==0) {
@@ -169,6 +171,8 @@ public class PhieuThuService implements IPhieuThuService{
             phieu.setHoaDon(hoaDon);
             phieu.setKhachThue(khach);
             phieu.setSoTienThu(soTienTru);
+            phieu.setConNo(hoaDon.getTienConNo());
+            phieu.setNoiDungThu("Thu tiền phòng và dịch vụ của " + hoaDon.getNoiDung());
             phieu.setNgayThu(new Date());
             phieu.setTrangThai(com.so_tro_online.quan_ly_phieu_thu.entity.TrangThai.hoatDong);
             phieuThus.add(phieu);

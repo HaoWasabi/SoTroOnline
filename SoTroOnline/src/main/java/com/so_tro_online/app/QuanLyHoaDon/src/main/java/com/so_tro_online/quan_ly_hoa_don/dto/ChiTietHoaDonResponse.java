@@ -20,7 +20,6 @@ public class ChiTietHoaDonResponse {
     private BigDecimal thanhTien;
     private BigDecimal heSo;
     private BigDecimal tienThucTe;
-
     public Integer getId() {
         return id;
     }

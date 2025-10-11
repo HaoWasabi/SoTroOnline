@@ -1,15 +1,15 @@
 package com.so_tro_online.quan_ly_hoa_don.batch;
 
 import com.so_tro_online.quan_ly_dich_vu_phong.entity.DichVu;
-import com.so_tro_online.quan_ly_dich_vu_phong.entity.LoaiTinh;
+import com.so_tro_online.quan_ly_dich_vu_phong.repository.DichVuRepository;
 import com.so_tro_online.quan_ly_hoa_don.entity.ChiTietHoaDon;
 import com.so_tro_online.quan_ly_hoa_don.entity.HoaDon;
-import com.so_tro_online.quan_ly_hoa_don.entity.TrangThai;
-import com.so_tro_online.quan_ly_hop_dong_dich_vu.entity.MyHopDongDichVu;
+
 import com.so_tro_online.quan_ly_hop_dong_dich_vu.entity.SuDungDichVu;
-import com.so_tro_online.quan_ly_hop_dong_dich_vu.repository.MyHopDongDichVuRepository;
+import com.so_tro_online.quan_ly_hop_dong_dich_vu.entity.TrangThai;
 import com.so_tro_online.quan_ly_hop_dong_dich_vu.repository.SuDungDichVuRepository;
 import com.so_tro_online.quan_ly_hop_dong_phong.entity.HopDongPhong;
+import com.so_tro_online.quan_ly_phong.exception.ReseourceNotFoundException;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
 
@@ -22,12 +22,11 @@ import java.util.List;
 
 @Component
 public class HopDongPhongProcessor implements ItemProcessor<HopDongPhong, HoaDon> {
-    private final MyHopDongDichVuRepository hopDongDichVuRepo;
     private final SuDungDichVuRepository suDungRepo;
-
-    public HopDongPhongProcessor(MyHopDongDichVuRepository hopDongDichVuRepo, SuDungDichVuRepository suDungRepo) {
-        this.hopDongDichVuRepo = hopDongDichVuRepo;
+    private final DichVuRepository dichVuRepository;
+    public HopDongPhongProcessor(SuDungDichVuRepository suDungRepo, DichVuRepository dichVuRepository) {
         this.suDungRepo = suDungRepo;
+        this.dichVuRepository = dichVuRepository;
     }
 
 
@@ -138,54 +137,50 @@ public HoaDon process(HopDongPhong item) throws Exception {
     ctPhong.setDonGia(item.getTienPhong());
     ctPhong.setHeSo(heSo);
     ctPhong.setTienThucTe(item.getTienPhong());
-    ctPhong.setSoLuong(BigDecimal.ONE);
     ctPhong.setThanhTien(tienPhong);
+    ctPhong.setSoLuong(BigDecimal.ONE);
     chiTietList.add(ctPhong);
-
-    // ====== TÍNH TIỀN DỊCH VỤ ======
-    List<MyHopDongDichVu> list = hopDongDichVuRepo.findByHopDongMaHopDongPhongAndTrangThai(item.getMaHopDongPhong(), com.so_tro_online.quan_ly_hop_dong_dich_vu.entity.TrangThai.hoatDong);
-    for (MyHopDongDichVu hdDv : list) {
-        ChiTietHoaDon ct = new ChiTietHoaDon();
-        DichVu dv = hdDv.getDichVu();
-        int soLuong = hdDv.getSoLuong() == null ? 1 : hdDv.getSoLuong();
-        BigDecimal thanhTien = BigDecimal.ZERO;
-
-        if (dv.getLoaiTinh() == LoaiTinh.THEO_THANG) {
-            // Dịch vụ tính theo tháng → nhân hệ số
-            BigDecimal tienThucTe= dv.getDonGiaCoBan()
-                    .multiply(BigDecimal.valueOf(soLuong));
-            thanhTien = tienThucTe
-                    .multiply(heSo)
-                    .setScale(0, RoundingMode.HALF_UP);
-            ct.setHeSo(heSo);
-            ct.setTienThucTe(tienThucTe);
-        } else if (dv.getLoaiTinh() == LoaiTinh.THEO_SO_LUONG) {
-            // Dịch vụ tính theo chỉ số (điện, nước...)
-            SuDungDichVu suDung = suDungRepo.findByHopDongDichVuIdAndThangNam(hdDv.getId(), thang, nam);
-            if (suDung != null) {
-                BigDecimal soLuongSuDung = suDung.getChiSoMoi().subtract(suDung.getChiSoCu());
-                thanhTien = soLuongSuDung.multiply(dv.getDonGiaCoBan());
-                soLuong = soLuongSuDung.intValue();
-                ct.setHeSo(BigDecimal.ONE);
-                ct.setTienThucTe(thanhTien);
-            }
-        }
-
-        tongDichVu = tongDichVu.add(thanhTien);
-
-        ct.setHoaDon(hoaDon);
-        ct.setTenDichVu(dv.getTenDichVu());
-        ct.setDichVu(dv);
-        ct.setDonGia(dv.getDonGiaCoBan());
-        ct.setSoLuong(BigDecimal.valueOf(soLuong));
-        ct.setThanhTien(thanhTien);
-        chiTietList.add(ct);
-    }
+    SuDungDichVu suDungDichVu=suDungRepo.findByPhongAndThangNam(item.getPhong().getMaPhong(),thang,nam, TrangThai.hoatDong)
+            .orElseThrow(()->new ReseourceNotFoundException("phòng chưa được ghi chỉ số điện nước"));
+    DichVu dichVu=dichVuRepository.findById(1).orElseThrow(()->new RuntimeException("Dich vu not found"));
+    // tien rac
+    ChiTietHoaDon ctRac = new ChiTietHoaDon();
+    ctRac.setHoaDon(hoaDon);
+    ctRac.setTenDichVu("Tiền rác");
+    ctRac.setHeSo(heSo);
+    ctRac.setDonGia(dichVu.getDonGiaRac());
+    ctRac.setSoLuong(BigDecimal.ONE);
+    ctRac.setTienThucTe(dichVu.getDonGiaRac());
+    ctRac.setThanhTien(dichVu.getDonGiaRac().multiply(heSo).setScale(0, RoundingMode.HALF_UP));
+    chiTietList.add(ctRac);
+    // tien nuoc
+    ChiTietHoaDon ctNuoc = new ChiTietHoaDon();
+    ctNuoc.setHoaDon(hoaDon);
+    ctNuoc.setTenDichVu("Tiền nước");
+    ctNuoc.setHeSo(BigDecimal.ONE);
+    ctNuoc.setDonGia(dichVu.getDonGiaNuoc());
+    BigDecimal soNuocDung=suDungDichVu.getChiSoNuocMoi().subtract(suDungDichVu.getChiSoNuocCu());
+    ctNuoc.setSoLuong(soNuocDung);
+    ctNuoc.setThanhTien(soNuocDung.multiply(dichVu.getDonGiaNuoc()));
+    ctNuoc.setTienThucTe(soNuocDung.multiply(dichVu.getDonGiaNuoc()));
+    chiTietList.add(ctNuoc);
+    // tien dien
+    ChiTietHoaDon ctDien = new ChiTietHoaDon();
+    ctDien.setHoaDon(hoaDon);
+    ctDien.setTenDichVu("Tiền điện");
+    ctDien.setHeSo(BigDecimal.ONE);
+    ctDien.setDonGia(dichVu.getDonGiaDien());
+    BigDecimal soDienDung=suDungDichVu.getChiSoDienMoi().subtract(suDungDichVu.getChiSoDienCu());
+    ctDien.setThanhTien(soDienDung.multiply(dichVu.getDonGiaDien()));
+    ctDien.setTienThucTe(soDienDung.multiply(dichVu.getDonGiaDien()));
+    ctDien.setSoLuong(soDienDung);
+    chiTietList.add(ctDien);
+    tongDichVu=tongDichVu.add(ctRac.getThanhTien()).add(ctNuoc.getThanhTien()).add(ctDien.getThanhTien());
 
     hoaDon.setTienDichVu(tongDichVu);
     hoaDon.setTongTien(tienPhong.add(tongDichVu));
     hoaDon.setTienConNo(hoaDon.getTongTien());
-    hoaDon.setTrangThai(TrangThai.CON_NO);
+    hoaDon.setTrangThai(com.so_tro_online.quan_ly_hoa_don.entity.TrangThai.CON_NO);
     hoaDon.setChiTietHoaDons(chiTietList);
     hoaDon.setHopDongPhong(item);
     hoaDon.setNoiDung("Hoa don thang " + thang + "/" + nam);

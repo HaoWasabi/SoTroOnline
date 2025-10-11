@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("/api/hoa-don")
 public class HoaDonController {
@@ -26,9 +28,16 @@ public class HoaDonController {
         return ResponseEntity.ok(new ApiResponse("success",hoaDonService.getHoaDonById(id)));
     }
 
-
-    @GetMapping
+    @GetMapping("/hopDong/{id}")
+    public  ResponseEntity<ApiResponse>getHoaDonByHopDong(@PathVariable Integer id) {
+        return ResponseEntity.ok(new ApiResponse("success",hoaDonService.getHoaDonById(id)));
+    }
+    @GetMapping("/ngay")
     public ResponseEntity<ApiResponse>getHoaDonByDate(@RequestParam Integer thang,@RequestParam Integer nam) {
         return ResponseEntity.ok(new ApiResponse("success",hoaDonService.getHoaDonByDate(thang, nam)));
+    }
+    @GetMapping("/in")
+    public void inHoaDonByDate(@RequestParam Integer thang,@RequestParam Integer nam, HttpServletResponse res) throws IOException {
+        hoaDonService.xuatHoaDonByThangAndNam(res,thang,nam);
     }
 }

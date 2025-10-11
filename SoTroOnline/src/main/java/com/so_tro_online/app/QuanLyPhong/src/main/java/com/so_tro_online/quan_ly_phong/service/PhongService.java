@@ -2,6 +2,7 @@ package com.so_tro_online.quan_ly_phong.service;
 
 import com.so_tro_online.quan_ly_phong.dto.RoomRequest;
 import com.so_tro_online.quan_ly_phong.dto.RoomResponse;
+
 import com.so_tro_online.quan_ly_phong.entity.Phong;
 import com.so_tro_online.quan_ly_phong.entity.TrangThai;
 import com.so_tro_online.quan_ly_phong.exception.ReseourceNotFoundException;
@@ -21,15 +22,18 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.List;
+
 @Service
 
 public class PhongService implements IPhongService{
     private final TaiKhoanRepository taiKhoanRepository;
     private final PhongRepository phongRepository;
 
+
     public PhongService(TaiKhoanRepository taiKhoanRepository, PhongRepository phongRepository) {
         this.taiKhoanRepository = taiKhoanRepository;
         this.phongRepository = phongRepository;
+
     }
 
     @Override

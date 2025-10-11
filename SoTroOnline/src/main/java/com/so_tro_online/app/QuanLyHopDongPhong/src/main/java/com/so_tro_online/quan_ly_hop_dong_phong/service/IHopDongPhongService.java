@@ -17,4 +17,5 @@ public interface IHopDongPhongService {
     public void deleteHopDongPhong(Integer id);
     public List<HopDongPhongResponse> getAllHopDongPhongByMaKhachThue(Integer maKhachThue);
     public void xuatHopDongWord(HttpServletResponse response, Integer id);
+
 }

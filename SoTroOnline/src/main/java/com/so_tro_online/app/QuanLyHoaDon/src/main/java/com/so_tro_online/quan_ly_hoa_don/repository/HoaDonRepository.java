@@ -1,6 +1,8 @@
 package com.so_tro_online.quan_ly_hoa_don.repository;
 
+import com.so_tro_online.quan_ly_hoa_don.dto.HoaDonResponse;
 import com.so_tro_online.quan_ly_hoa_don.entity.HoaDon;
+import com.so_tro_online.quan_ly_hop_dong_phong.entity.HopDongPhong;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,4 +27,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon,Integer> {
       AND YEAR(ngay_tao) = :nam
 """, nativeQuery = true)
     List<HoaDon> findByMonthAndYear(Integer thang, Integer nam);
+
+    List<HoaDon> findByHopDongPhong(HopDongPhong hopDongPhong);
+
 }

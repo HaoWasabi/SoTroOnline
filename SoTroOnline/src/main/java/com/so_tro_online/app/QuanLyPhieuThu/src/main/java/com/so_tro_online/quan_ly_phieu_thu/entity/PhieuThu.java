@@ -19,8 +19,27 @@ public class PhieuThu {
     @JoinColumn(name = "maKhachDaiDien")
     private KhachThue khachThue;
     private BigDecimal soTienThu;
+    private BigDecimal conNo;
+    private String noiDungThu;
     private String ghiChu;
-private Date ngayThu;
+
+    public BigDecimal getConNo() {
+        return conNo;
+    }
+
+    public void setConNo(BigDecimal conNo) {
+        this.conNo = conNo;
+    }
+
+    public String getNoiDungThu() {
+        return noiDungThu;
+    }
+
+    public void setNoiDungThu(String noiDungThu) {
+        this.noiDungThu = noiDungThu;
+    }
+
+    private Date ngayThu;
     private Date capNhatLanCuoi;
     @Enumerated(EnumType.STRING)
     private TrangThai trangThai;

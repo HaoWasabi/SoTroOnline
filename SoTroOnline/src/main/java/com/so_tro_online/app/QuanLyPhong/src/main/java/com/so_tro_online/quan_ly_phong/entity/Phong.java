@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 
+
 @Entity
 public class Phong {
     @Id
@@ -20,9 +21,12 @@ public class Phong {
     private BigDecimal chieuRong;
     private String vatDung;
     private BigDecimal giaThueCoBan;
+
+
+
+
     @Enumerated(EnumType.STRING)
     private TrangThai trangThai;
-
     public Phong() {
     }
 

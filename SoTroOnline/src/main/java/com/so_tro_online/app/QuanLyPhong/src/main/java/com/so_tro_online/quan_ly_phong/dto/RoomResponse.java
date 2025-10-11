@@ -1,9 +1,12 @@
 package com.so_tro_online.quan_ly_phong.dto;
 
+
 import com.so_tro_online.quan_ly_phong.entity.TrangThai;
 
 
+
 import java.math.BigDecimal;
+import java.util.List;
 
 
 public class RoomResponse {
@@ -19,6 +22,7 @@ public class RoomResponse {
     private BigDecimal giaThueCoBan;
     private TrangThai trangThai;
 
+
     public RoomResponse(Integer maPhong, String tenQuanLy, Integer maQuanLy, String tenPhong, String loaiPhong, String diaChi, BigDecimal chieuDai, BigDecimal chieuRong, String vatDung, BigDecimal giaThueCoBan, TrangThai trangThai) {
         this.maPhong = maPhong;
         this.tenQuanLy = tenQuanLy;
@@ -31,7 +35,10 @@ public class RoomResponse {
         this.vatDung = vatDung;
         this.giaThueCoBan = giaThueCoBan;
         this.trangThai = trangThai;
+
     }
+
+
 
     public Integer getMaPhong() {
         return maPhong;
@@ -123,4 +130,5 @@ public class RoomResponse {
 
     public RoomResponse() {
     }
+
 }

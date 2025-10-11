@@ -1,8 +1,6 @@
 package com.so_tro_online.quan_ly_phieu_thu.controller;
 
 import com.so_tro_online.dto.ApiResponse;
-import com.so_tro_online.quan_ly_hop_dong_dich_vu.dto.HopDongDichVuRequest;
-import com.so_tro_online.quan_ly_hop_dong_dich_vu.service.IHopDongDichVu;
 import com.so_tro_online.quan_ly_phieu_thu.dto.PhieuThuRequest;
 import com.so_tro_online.quan_ly_phieu_thu.dto.ThuNoRequest;
 import com.so_tro_online.quan_ly_phieu_thu.service.IPhieuThuService;
