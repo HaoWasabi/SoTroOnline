@@ -1,6 +1,10 @@
 package com.so_tro_online.quan_ly_hoa_don.service;
 
 import com.deepoove.poi.XWPFTemplate;
+import com.deepoove.poi.data.RowRenderData;
+import com.deepoove.poi.data.Rows;
+import com.deepoove.poi.data.TableRenderData;
+import com.deepoove.poi.data.Tables;
 import com.so_tro_online.quan_ly_hoa_don.dto.ChiTietHoaDonResponse;
 import com.so_tro_online.quan_ly_hoa_don.dto.HoaDonResponse;
 import com.so_tro_online.quan_ly_hoa_don.entity.HoaDon;
@@ -21,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -82,19 +87,28 @@ public class HoaDonService implements IHoaDonService{
             data.put("tienDichVu", hoaDon.getTienDichVu());
             data.put("tongTien", hoaDon.getTongTien());
             data.put("tienConNo", hoaDon.getTienConNo());
-            List<Map<String, Object>> chiTietList = hoaDon.getChiTietHoaDons().stream()
-                    .map(ct -> {
-                        Map<String, Object> map = new HashMap<>();
-                        map.put("tenDichVu", ct.getTenDichVu());
-                        map.put("soLuong", ct.getSoLuong());
-                        map.put("donGia", ct.getDonGia());
-                        map.put("thanhTien", ct.getThanhTien());
-                        return map;
-                    })
+            // Chi tiết hóa đơn
+            RowRenderData header = Rows.of("Tên dịch vụ", "Số lượng", "Đơn giá","Tiền thực tế","Hệ số","Thành tiền")
+                    .center().textBold().create();
+
+            List<RowRenderData> rows = hoaDon.getChiTietHoaDons().stream()
+                    .map(ct -> Rows.create(
+                            ct.getTenDichVu(),
+                            String.valueOf(ct.getSoLuong()),
+                            String.valueOf(ct.getDonGia()),
+                            String.valueOf(ct.getTienThucTe()),
+                            String.valueOf(ct.getHeSo()),
+                            String.valueOf(ct.getThanhTien())
+                    ))
                     .toList();
-            data.put("chiTietHoaDons", chiTietList);
 
 
+            TableRenderData table = new TableRenderData();
+            table.addRow(header);
+            for (RowRenderData row : rows) {
+                table.addRow(row);
+            }
+            data.put("chiTietHoaDons", table);
             try (XWPFTemplate template = XWPFTemplate.compile(
                             this.getClass().getResourceAsStream("/templates/hoadon_template.docx"))
                     .render(data)) {

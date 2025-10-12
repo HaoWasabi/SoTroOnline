@@ -6,147 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="cafe1d0c-bc81-4c1f-9f7d-997f92561b0c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyDichVuPhong/src/main/java/com/so_tro_online/quan_ly_dich_vu_phong/controller/DichVuController.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyDichVuPhong/src/main/java/com/so_tro_online/quan_ly_dich_vu_phong/controller/DichVuController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyDichVuPhong/src/main/java/com/so_tro_online/quan_ly_dich_vu_phong/dto/DichVuReponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyDichVuPhong/src/main/java/com/so_tro_online/quan_ly_dich_vu_phong/dto/DichVuReponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyDichVuPhong/src/main/java/com/so_tro_online/quan_ly_dich_vu_phong/dto/DichVuRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyDichVuPhong/src/main/java/com/so_tro_online/quan_ly_dich_vu_phong/dto/DichVuRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyDichVuPhong/src/main/java/com/so_tro_online/quan_ly_dich_vu_phong/entity/DichVu.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyDichVuPhong/src/main/java/com/so_tro_online/quan_ly_dich_vu_phong/entity/DichVu.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyDichVuPhong/src/main/java/com/so_tro_online/quan_ly_dich_vu_phong/entity/LoaiTinh.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyDichVuPhong/src/main/java/com/so_tro_online/quan_ly_dich_vu_phong/entity/TrangThai.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyDichVuPhong/src/main/java/com/so_tro_online/quan_ly_dich_vu_phong/repository/DichVuRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyDichVuPhong/src/main/java/com/so_tro_online/quan_ly_dich_vu_phong/repository/DichVuRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyDichVuPhong/src/main/java/com/so_tro_online/quan_ly_dich_vu_phong/service/DichVuService.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyDichVuPhong/src/main/java/com/so_tro_online/quan_ly_dich_vu_phong/service/DichVuService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyDichVuPhong/src/main/java/com/so_tro_online/quan_ly_dich_vu_phong/service/IDichVuService.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyDichVuPhong/src/main/java/com/so_tro_online/quan_ly_dich_vu_phong/service/IDichVuService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyDichVuPhong/target/classes/com/so_tro_online/quan_ly_dich_vu_phong/controller/DichVuController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyDichVuPhong/target/classes/com/so_tro_online/quan_ly_dich_vu_phong/dto/DichVuReponse.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyDichVuPhong/target/classes/com/so_tro_online/quan_ly_dich_vu_phong/dto/DichVuRequest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyDichVuPhong/target/classes/com/so_tro_online/quan_ly_dich_vu_phong/entity/DichVu.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyDichVuPhong/target/classes/com/so_tro_online/quan_ly_dich_vu_phong/entity/LoaiTinh.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyDichVuPhong/target/classes/com/so_tro_online/quan_ly_dich_vu_phong/entity/TrangThai.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyDichVuPhong/target/classes/com/so_tro_online/quan_ly_dich_vu_phong/repository/DichVuRepository.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyDichVuPhong/target/classes/com/so_tro_online/quan_ly_dich_vu_phong/service/DichVuService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyDichVuPhong/target/classes/com/so_tro_online/quan_ly_dich_vu_phong/service/IDichVuService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/src/main/java/com/so_tro_online/quan_ly_hoa_don/batch/HopDongPhongProcessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/src/main/java/com/so_tro_online/quan_ly_hoa_don/batch/HopDongPhongProcessor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/src/main/java/com/so_tro_online/quan_ly_hoa_don/batch/TaoHoaDonJobConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/src/main/java/com/so_tro_online/quan_ly_hoa_don/batch/TaoHoaDonJobConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/src/main/java/com/so_tro_online/quan_ly_hoa_don/controller/HoaDonController.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/src/main/java/com/so_tro_online/quan_ly_hoa_don/controller/HoaDonController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/src/main/java/com/so_tro_online/quan_ly_hoa_don/dto/ChiTietHoaDonResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/src/main/java/com/so_tro_online/quan_ly_hoa_don/dto/ChiTietHoaDonResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/src/main/java/com/so_tro_online/quan_ly_hoa_don/entity/ChiTietHoaDon.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/src/main/java/com/so_tro_online/quan_ly_hoa_don/entity/ChiTietHoaDon.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/src/main/java/com/so_tro_online/quan_ly_hoa_don/repository/HoaDonRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/src/main/java/com/so_tro_online/quan_ly_hoa_don/repository/HoaDonRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/src/main/java/com/so_tro_online/quan_ly_hoa_don/service/HoaDonService.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/src/main/java/com/so_tro_online/quan_ly_hoa_don/service/HoaDonService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/src/main/java/com/so_tro_online/quan_ly_hoa_don/service/IHoaDonService.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/src/main/java/com/so_tro_online/quan_ly_hoa_don/service/IHoaDonService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/target/classes/com/so_tro_online/quan_ly_hoa_don/batch/HoaDonWriter.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/target/classes/com/so_tro_online/quan_ly_hoa_don/batch/HopDongPhongProcessor.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/target/classes/com/so_tro_online/quan_ly_hoa_don/batch/HopDongPhongReader.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/target/classes/com/so_tro_online/quan_ly_hoa_don/batch/JobScheduler.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/target/classes/com/so_tro_online/quan_ly_hoa_don/batch/TaoHoaDonJobConfig.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/target/classes/com/so_tro_online/quan_ly_hoa_don/controller/HoaDonController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/target/classes/com/so_tro_online/quan_ly_hoa_don/dto/ChiTietHoaDonResponse.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/target/classes/com/so_tro_online/quan_ly_hoa_don/dto/HoaDonResponse.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/target/classes/com/so_tro_online/quan_ly_hoa_don/entity/ChiTietHoaDon.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/target/classes/com/so_tro_online/quan_ly_hoa_don/entity/HoaDon.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/target/classes/com/so_tro_online/quan_ly_hoa_don/entity/TrangThai.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/target/classes/com/so_tro_online/quan_ly_hoa_don/repository/HoaDonRepository.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/target/classes/com/so_tro_online/quan_ly_hoa_don/service/HoaDonService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/target/classes/com/so_tro_online/quan_ly_hoa_don/service/IHoaDonService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/src/main/java/com/so_tro_online/quan_ly_hop_dong_dich_vu/controller/HopDongDichVuController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/src/main/java/com/so_tro_online/quan_ly_hop_dong_dich_vu/controller/MyHopDongDichVuController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/src/main/java/com/so_tro_online/quan_ly_hop_dong_dich_vu/controller/SuDungDichVuController.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/src/main/java/com/so_tro_online/quan_ly_hop_dong_dich_vu/controller/SuDungDichVuController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/src/main/java/com/so_tro_online/quan_ly_hop_dong_dich_vu/dto/SuDungDichVuRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/src/main/java/com/so_tro_online/quan_ly_hop_dong_dich_vu/dto/SuDungDichVuRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/src/main/java/com/so_tro_online/quan_ly_hop_dong_dich_vu/dto/SuDungDichVuResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/src/main/java/com/so_tro_online/quan_ly_hop_dong_dich_vu/dto/SuDungDichVuResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/src/main/java/com/so_tro_online/quan_ly_hop_dong_dich_vu/entity/HopDongDichVu.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/src/main/java/com/so_tro_online/quan_ly_hop_dong_dich_vu/entity/MyHopDongDichVu.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/src/main/java/com/so_tro_online/quan_ly_hop_dong_dich_vu/entity/SuDungDichVu.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/src/main/java/com/so_tro_online/quan_ly_hop_dong_dich_vu/entity/SuDungDichVu.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/src/main/java/com/so_tro_online/quan_ly_hop_dong_dich_vu/exception/HopDongDichVuAlreadyExists.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhong/src/main/java/com/so_tro_online/quan_ly_phong/exception/HopDongDichVuAlreadyExists.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/src/main/java/com/so_tro_online/quan_ly_hop_dong_dich_vu/repository/HopDongDichVuRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/src/main/java/com/so_tro_online/quan_ly_hop_dong_dich_vu/repository/MyHopDongDichVuRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/src/main/java/com/so_tro_online/quan_ly_hop_dong_dich_vu/repository/SuDungDichVuRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/src/main/java/com/so_tro_online/quan_ly_hop_dong_dich_vu/repository/SuDungDichVuRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/src/main/java/com/so_tro_online/quan_ly_hop_dong_dich_vu/service/HopDongDichVuService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/src/main/java/com/so_tro_online/quan_ly_hop_dong_dich_vu/service/IHopDongDichVu.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/src/main/java/com/so_tro_online/quan_ly_hop_dong_dich_vu/service/IMyHopDongDichVu.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/src/main/java/com/so_tro_online/quan_ly_hop_dong_dich_vu/service/ISuDungDichVuService.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/src/main/java/com/so_tro_online/quan_ly_hop_dong_dich_vu/service/ISuDungDichVuService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/src/main/java/com/so_tro_online/quan_ly_hop_dong_dich_vu/service/MyHopDongDichVuService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/src/main/java/com/so_tro_online/quan_ly_hop_dong_dich_vu/service/SuDungDichVuService.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/src/main/java/com/so_tro_online/quan_ly_hop_dong_dich_vu/service/SuDungDichVuService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/target/classes/com/so_tro_online/quan_ly_hop_dong_dich_vu/controller/HopDongDichVuController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/target/classes/com/so_tro_online/quan_ly_hop_dong_dich_vu/controller/MyHopDongDichVuController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/target/classes/com/so_tro_online/quan_ly_hop_dong_dich_vu/controller/SuDungDichVuController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/target/classes/com/so_tro_online/quan_ly_hop_dong_dich_vu/dto/HopDongDichVuReponse.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/target/classes/com/so_tro_online/quan_ly_hop_dong_dich_vu/dto/HopDongDichVuRequest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/target/classes/com/so_tro_online/quan_ly_hop_dong_dich_vu/dto/MyHopDongDichVuRequest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/target/classes/com/so_tro_online/quan_ly_hop_dong_dich_vu/dto/MyHopDongDichVuResponse.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/target/classes/com/so_tro_online/quan_ly_hop_dong_dich_vu/dto/SuDungDichVuRequest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/target/classes/com/so_tro_online/quan_ly_hop_dong_dich_vu/dto/SuDungDichVuResponse.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/target/classes/com/so_tro_online/quan_ly_hop_dong_dich_vu/entity/HopDongDichVu.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/target/classes/com/so_tro_online/quan_ly_hop_dong_dich_vu/entity/MyHopDongDichVu.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/target/classes/com/so_tro_online/quan_ly_hop_dong_dich_vu/entity/SuDungDichVu.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/target/classes/com/so_tro_online/quan_ly_hop_dong_dich_vu/entity/TrangThai.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/target/classes/com/so_tro_online/quan_ly_hop_dong_dich_vu/exception/BusinessException.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/target/classes/com/so_tro_online/quan_ly_hop_dong_dich_vu/exception/HopDongDichVuAlreadyExists.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/target/classes/com/so_tro_online/quan_ly_hop_dong_dich_vu/exception/SuDungDichVuAlreadyExist.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/target/classes/com/so_tro_online/quan_ly_hop_dong_dich_vu/repository/HopDongDichVuRepository.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/target/classes/com/so_tro_online/quan_ly_hop_dong_dich_vu/repository/MyHopDongDichVuRepository.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/target/classes/com/so_tro_online/quan_ly_hop_dong_dich_vu/repository/SuDungDichVuRepository.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/target/classes/com/so_tro_online/quan_ly_hop_dong_dich_vu/service/HopDongDichVuService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/target/classes/com/so_tro_online/quan_ly_hop_dong_dich_vu/service/IHopDongDichVu.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/target/classes/com/so_tro_online/quan_ly_hop_dong_dich_vu/service/IMyHopDongDichVu.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/target/classes/com/so_tro_online/quan_ly_hop_dong_dich_vu/service/ISuDungDichVuService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/target/classes/com/so_tro_online/quan_ly_hop_dong_dich_vu/service/MyHopDongDichVuService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongDichVu/target/classes/com/so_tro_online/quan_ly_hop_dong_dich_vu/service/SuDungDichVuService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/src/main/java/com/so_tro_online/quan_ly_hop_dong_phong/repository/HopDongPhongRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/src/main/java/com/so_tro_online/quan_ly_hop_dong_phong/repository/HopDongPhongRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/src/main/java/com/so_tro_online/quan_ly_hop_dong_phong/service/HopDongPhongService.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/src/main/java/com/so_tro_online/quan_ly_hop_dong_phong/service/HopDongPhongService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/src/main/java/com/so_tro_online/quan_ly_hop_dong_phong/service/IHopDongPhongService.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/src/main/java/com/so_tro_online/quan_ly_hop_dong_phong/service/IHopDongPhongService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/target/classes/com/so_tro_online/quan_ly_hop_dong_phong/controller/HopDongPhongController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/target/classes/com/so_tro_online/quan_ly_hop_dong_phong/dto/HopDongPhongRequest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/target/classes/com/so_tro_online/quan_ly_hop_dong_phong/dto/HopDongPhongResponse.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/target/classes/com/so_tro_online/quan_ly_hop_dong_phong/entity/HopDongPhong.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/target/classes/com/so_tro_online/quan_ly_hop_dong_phong/entity/TrangThai.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/target/classes/com/so_tro_online/quan_ly_hop_dong_phong/exception/HopDongAlreadyExists.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/target/classes/com/so_tro_online/quan_ly_hop_dong_phong/repository/HopDongPhongRepository.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/target/classes/com/so_tro_online/quan_ly_hop_dong_phong/service/HopDongPhongService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/target/classes/com/so_tro_online/quan_ly_hop_dong_phong/service/IHopDongPhongService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyKhachThue/target/classes/com/so_tro_online/quan_ly_khach_thue/entity/KhachThue.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyKhachThue/target/classes/com/so_tro_online/quan_ly_khach_thue/entity/TrangThai.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyKhachThue/target/classes/com/so_tro_online/quan_ly_khach_thue/repository/KhachThueRepository.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhieuThu/src/main/java/com/so_tro_online/quan_ly_phieu_thu/controller/PhieuThuController.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhieuThu/src/main/java/com/so_tro_online/quan_ly_phieu_thu/controller/PhieuThuController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhieuThu/src/main/java/com/so_tro_online/quan_ly_phieu_thu/entity/PhieuThu.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhieuThu/src/main/java/com/so_tro_online/quan_ly_phieu_thu/entity/PhieuThu.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhieuThu/src/main/java/com/so_tro_online/quan_ly_phieu_thu/service/PhieuThuService.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhieuThu/src/main/java/com/so_tro_online/quan_ly_phieu_thu/service/PhieuThuService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhieuThu/target/classes/com/so_tro_online/quan_ly_phieu_thu/controller/PhieuThuController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhieuThu/target/classes/com/so_tro_online/quan_ly_phieu_thu/dto/PhieuThuRequest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhieuThu/target/classes/com/so_tro_online/quan_ly_phieu_thu/dto/PhieuThuResponse.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhieuThu/target/classes/com/so_tro_online/quan_ly_phieu_thu/dto/ThuNoRequest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhieuThu/target/classes/com/so_tro_online/quan_ly_phieu_thu/entity/PhieuThu.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhieuThu/target/classes/com/so_tro_online/quan_ly_phieu_thu/entity/TrangThai.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhieuThu/target/classes/com/so_tro_online/quan_ly_phieu_thu/exception/BusinessException.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhieuThu/target/classes/com/so_tro_online/quan_ly_phieu_thu/repository/PhieuThuRepository.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhieuThu/target/classes/com/so_tro_online/quan_ly_phieu_thu/service/IPhieuThuService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhieuThu/target/classes/com/so_tro_online/quan_ly_phieu_thu/service/PhieuThuService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhong/src/main/java/com/so_tro_online/quan_ly_phong/dto/RoomRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhong/src/main/java/com/so_tro_online/quan_ly_phong/dto/RoomRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhong/src/main/java/com/so_tro_online/quan_ly_phong/dto/RoomResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhong/src/main/java/com/so_tro_online/quan_ly_phong/dto/RoomResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhong/src/main/java/com/so_tro_online/quan_ly_phong/entity/Phong.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhong/src/main/java/com/so_tro_online/quan_ly_phong/entity/Phong.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhong/src/main/java/com/so_tro_online/quan_ly_phong/service/PhongService.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhong/src/main/java/com/so_tro_online/quan_ly_phong/service/PhongService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhong/target/classes/com/so_tro_online/quan_ly_phong/controller/QuanLyPhongController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhong/target/classes/com/so_tro_online/quan_ly_phong/dto/RoomFaqResponse.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhong/target/classes/com/so_tro_online/quan_ly_phong/dto/RoomRequest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhong/target/classes/com/so_tro_online/quan_ly_phong/dto/RoomResponse.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhong/target/classes/com/so_tro_online/quan_ly_phong/entity/Phong.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhong/target/classes/com/so_tro_online/quan_ly_phong/entity/TrangThai.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhong/target/classes/com/so_tro_online/quan_ly_phong/exception/ReseourceNotFoundException.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhong/target/classes/com/so_tro_online/quan_ly_phong/exception/RoomAldreadyExist.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhong/target/classes/com/so_tro_online/quan_ly_phong/repository/PhongRepository.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhong/target/classes/com/so_tro_online/quan_ly_phong/service/IPhongService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyPhong/target/classes/com/so_tro_online/quan_ly_phong/service/PhongService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyTaiKhoan/target/classes/com/so_tro_online/quan_ly_tai_khoan/controller/QuanLyTaiKhoanController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyTaiKhoan/target/classes/com/so_tro_online/quan_ly_tai_khoan/dto/SignUpRequest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyTaiKhoan/target/classes/com/so_tro_online/quan_ly_tai_khoan/dto/UserResponse.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyTaiKhoan/target/classes/com/so_tro_online/quan_ly_tai_khoan/entity/TaiKhoan.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyTaiKhoan/target/classes/com/so_tro_online/quan_ly_tai_khoan/entity/TrangThai.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyTaiKhoan/target/classes/com/so_tro_online/quan_ly_tai_khoan/exception/DuplicateEmailException.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyTaiKhoan/target/classes/com/so_tro_online/quan_ly_tai_khoan/exception/InvalidPasswordException.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyTaiKhoan/target/classes/com/so_tro_online/quan_ly_tai_khoan/exception/NoEmailFoundException.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyTaiKhoan/target/classes/com/so_tro_online/quan_ly_tai_khoan/mapper/UserMapper.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyTaiKhoan/target/classes/com/so_tro_online/quan_ly_tai_khoan/repository/TaiKhoanRepository.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyTaiKhoan/target/classes/com/so_tro_online/quan_ly_tai_khoan/service/TaiKhoanService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/SoTroOnline-dungchung/target/classes/com/so_tro_online/dto/ApiResponse.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/SoTroOnline-dungchung/target/classes/com/so_tro_online/exception/GlobalExceptionHandle.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/target/classes/com/so_tro_online/quan_ly_hoa_don/service/HoaDonService.class" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/target/classes/com/so_tro_online/quan_ly_hoa_don/service/HoaDonService.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/resources/templates/hoadon_template.docx" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -187,24 +50,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.SoTroOnlineApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Application.TenantApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Application.com.so_tro_online.app.SoTroOnlineApplication.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;be-phong&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/nam2/SoTroOnline&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.36673555&quot;,
-    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.SoTroOnlineApplication.executor": "Run",
+    "Application.TenantApplication.executor": "Run",
+    "Application.com.so_tro_online.app.SoTroOnlineApplication.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "be-phong",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "D:/nam2/SoTroOnline/SoTroOnline/src/main/resources/templates",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.36673555",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "preferences.pluginManager"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="com.so_tro_online.quan_ly_phong.entity" />
@@ -214,18 +77,18 @@
       <recent name="com.so_tro_online.quan_ly_hop_dong_dich_vu.repository" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\nam2\SoTroOnline\SoTroOnline\src\main\resources\templates" />
       <recent name="D:\Codes\DoAn\do-an-J2EE\SoTroOnline\QuanLyDichVuPhong" />
       <recent name="D:\Codes\DoAn\do-an-J2EE\SoTroOnline\QuanLyHoaDon" />
       <recent name="D:\Codes\DoAn\do-an-J2EE\SoTroOnline\QuanLyHopDongDichVu" />
       <recent name="D:\Codes\DoAn\do-an-J2EE\SoTroOnline\QuanLyHopDongPhong" />
-      <recent name="D:\Codes\DoAn\do-an-J2EE\SoTroOnline\QuanLyKhachThue" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\nam2\SoTroOnline\SoTroOnline\src\main\resources\templates" />
       <recent name="D:\nam2\SoTroOnline\SoTroOnline\src\main\java\com\so_tro_online\app\SoTroOnline-dungchung\src\main\java\com\so_tro_online\dto" />
       <recent name="D:\nam2\SoTroOnline\SoTroOnline\src\main\java\com\so_tro_online\app\QuanLyKhachThue\src\main\java\com\so_tro_online\quan_ly_khach_thue\entity" />
       <recent name="D:\nam2\SoTroOnline\SoTroOnline\src\main\java\com\so_tro_online\app\QuanLyHopDongDichVu\src\main\java\com\so_tro_online\quan_ly_hop_dong_dich_vu\service" />
       <recent name="D:\nam2\SoTroOnline\SoTroOnline\src\main\java\com\so_tro_online\app\QuanLyHopDongDichVu\src\main\java\com\so_tro_online\quan_ly_hop_dong_dich_vu" />
-      <recent name="D:\nam2\SoTroOnline\SoTroOnline\src\main\java\com\so_tro_online\app\QuanLyHopDongDichVu\src\main\java\com\so_tro_online\quan_ly_hop_dong_dich_vu\repository" />
     </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
       <recent name="com.so_tro_online.quan_ly_hop_dong_dich_vu.entity" />
