@@ -30,7 +30,7 @@ public class HoaDonController {
 
     @GetMapping("/hopDong/{id}")
     public  ResponseEntity<ApiResponse>getHoaDonByHopDong(@PathVariable Integer id) {
-        return ResponseEntity.ok(new ApiResponse("success",hoaDonService.getHoaDonById(id)));
+        return ResponseEntity.ok(new ApiResponse("success",hoaDonService.getAllByHopDong(id)));
     }
     @GetMapping("/ngay")
     public ResponseEntity<ApiResponse>getHoaDonByDate(@RequestParam Integer thang,@RequestParam Integer nam) {
