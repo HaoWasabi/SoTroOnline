@@ -13,11 +13,13 @@ import { Toast, ToastContainer } from '@/components/toast';
 import { validateAddress, validateCccd, validateDateOfBirth, validatePhone } from '@/utils/auth-validation';
 import { signUpApi } from '@/module/QuanLyTaiKhoan/api/api-quan-ly-tai-khoan';
 import { useRouter } from 'next/navigation';
+import { useTaiKhoanStore } from '@/zustand/taikhoan-store';
 
 
 export default function SignUpForm() {
     
     const router = useRouter();
+    const { setTaiKhoan } = useTaiKhoanStore();
     const {language} = useLanguageStore();
     const { toast, showError, showSuccess, removeToast } = useToast();
     const userNameRef = useRef<HTMLInputElement>(null);
@@ -82,6 +84,7 @@ export default function SignUpForm() {
 
         if(response.status === 'success') {
             showSuccess(language === 'vi' ? 'Đăng ký thành công' : 'Registration successful');
+            setTaiKhoan(response.user as TaiKhoan);
             router.push("/")
         } else {
             const errorMessage = response.message && (language === 'vi' ? (

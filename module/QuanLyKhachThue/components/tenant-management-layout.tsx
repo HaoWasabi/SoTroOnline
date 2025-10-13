@@ -8,6 +8,7 @@ import { Plus, Search } from "lucide-react"
 import TenantComponent from "./tenant-component"
 import { tenants } from "../data/sample-data"
 import FilterComponent from "@/components/filter-component"
+import { TenantFormAsDialog } from "./tenant-form-as-dialog"
 
 
 const menu = [
@@ -40,10 +41,7 @@ export default function TenantManagementLayout() {
                         {language === 'vi' ? 'Quản lý thông tin khách thuê' : 'Manage all your tenants and their information'}
                     </p>
                 </div>
-                <Button>
-                    <Plus className="h-4 w-4 mr-2" />
-                    {language === 'vi' ? 'Thêm khách thuê' : 'Add Tenant'}
-                </Button>
+                <TenantFormAsDialog />
             </div>
             <Card>
                 <CardContent className="p-4">

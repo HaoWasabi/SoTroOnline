@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { EyeOff, Eye} from "lucide-react"
 import { Button } from "../../ui/button"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../../ui/card"
@@ -12,12 +12,16 @@ import { useLanguageStore } from "@/zustand/language-tranlator"
 import { Toast, ToastContainer } from "@/components/toast"
 import { useToast } from "@/hook/useToast"
 import { validateEmail } from "@/utils/auth-validation"
-import { signInApi } from "@/module/QuanLyTaiKhoan/api/api-quan-ly-tai-khoan"
+import { sendGoogleTokenToBackend, signInApi } from "@/module/QuanLyTaiKhoan/api/api-quan-ly-tai-khoan"
 import { useRouter } from "next/navigation"
+import { useTaiKhoanStore } from "@/zustand/taikhoan-store"
+import { FaGoogle } from "react-icons/fa";
+import GoogleButton from "./google-button"
 
 export default function LoginForm() {
 
     const router = useRouter();
+    const { setTaiKhoan } = useTaiKhoanStore();
     const emailRef = useRef<HTMLInputElement>(null)
     const passwordRef = useRef<HTMLInputElement>(null)
     const { toast, showError, showSuccess, removeToast } = useToast();
@@ -27,6 +31,7 @@ export default function LoginForm() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setIsSubmitting(true);
 
         const email = emailRef.current?.value || '';
         const password = passwordRef.current?.value || '';
@@ -37,10 +42,20 @@ export default function LoginForm() {
         }
 
         const response = await signInApi(email, password);
+        console.log('Full API response:', response);
 
         if(response.status === 'success') {
-            showSuccess(language === 'vi' ? 'Đăng nhập thành công' : 'Login successful');
-            router.push("/");
+            if (response.user && response.user.email) {
+                setTaiKhoan(response.user);
+                showSuccess(language === 'vi' ? 'Đăng nhập thành công' : 'Login successful');
+                console.log('Logged in user:', response.user);
+                setIsSubmitting(false);
+                router.push("/");
+            } else {
+                console.error('Invalid user data received:', response.user);
+                showError('Invalid user data received from server');
+                setIsSubmitting(false);
+            }
             
         } else {
             const errorMessage = response.message && (language === 'vi' ? (
@@ -115,13 +130,14 @@ export default function LoginForm() {
                             </div>
                         </div>
 
-                        <Link href="/auth/forgot-password" className="text-sm text-right text-blue-600 hover:text-blue-800">
+                        <Link href="/forgot-password" className="text-sm text-right text-blue-600 hover:text-blue-800">
                                 {language === 'vi' ? 'Quên mật khẩu?' : 'Forgot password?'}
                             </Link>
                         </CardContent>
             
                         <CardFooter className="flex flex-col space-y-4">
-                            <Button type="submit" className="w-full bg-blue-500 hover:bg-blue-600 cursor-pointer">
+                           <GoogleButton />
+                            <Button type="submit" disabled={isSubmitting} className="w-full bg-blue-500 hover:bg-blue-600 cursor-pointer">
                                 {language === 'vi' ? 'Đăng nhập' : 'Sign In'}
                             </Button>
                         <div className="text-center text-sm text-gray-600">

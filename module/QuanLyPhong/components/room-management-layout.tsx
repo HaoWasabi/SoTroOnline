@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import GridOfRoomCard from "./grid-of-room-card";
 import FilterComponent from "@/components/filter-component";
+import { RoomFormAsDialog } from "./room-form-as-dialog";
 
 const menu = [
     {
@@ -39,10 +40,7 @@ export default function RoomManagementLayout() {
                         {language === 'vi' ? 'Quản lý thông tin phòng' : 'Manage all your rooms and their availability'}
                     </p>
                 </div>
-                <Button>
-                    <Plus className="h-4 w-4 mr-2" />
-                    {language === 'vi' ? 'Thêm thông tin phòng' : 'Add Room'}
-                </Button>
+                <RoomFormAsDialog />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <TypeOfRoomCard roomName="All Available" quantity={1} />
