@@ -2,6 +2,7 @@ package com.so_tro_online.quan_ly_hoa_don.controller;
 
 import com.so_tro_online.dto.ApiResponse;
 import com.so_tro_online.quan_ly_dich_vu_phong.dto.DichVuRequest;
+import com.so_tro_online.quan_ly_hoa_don.dto.HoaDonRequest;
 import com.so_tro_online.quan_ly_hoa_don.service.IHoaDonService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
@@ -39,5 +40,9 @@ public class HoaDonController {
     @GetMapping("/in")
     public void inHoaDonByDate(@RequestParam Integer thang,@RequestParam Integer nam, HttpServletResponse res) throws IOException {
         hoaDonService.xuatHoaDonByThangAndNam(res,thang,nam);
+    }
+    @PostMapping
+    public ResponseEntity<ApiResponse> createHoaDon(@RequestBody HoaDonRequest request) {
+        return ResponseEntity.ok(new ApiResponse("success",hoaDonService.createHoaDon(request)));
     }
 }

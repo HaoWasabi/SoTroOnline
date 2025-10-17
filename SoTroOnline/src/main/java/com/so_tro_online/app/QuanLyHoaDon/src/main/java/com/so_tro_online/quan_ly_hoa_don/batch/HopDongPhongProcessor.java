@@ -5,6 +5,7 @@ import com.so_tro_online.quan_ly_dich_vu_phong.repository.DichVuRepository;
 import com.so_tro_online.quan_ly_hoa_don.entity.ChiTietHoaDon;
 import com.so_tro_online.quan_ly_hoa_don.entity.HoaDon;
 
+import com.so_tro_online.quan_ly_hoa_don.repository.HoaDonRepository;
 import com.so_tro_online.quan_ly_hop_dong_dich_vu.entity.SuDungDichVu;
 import com.so_tro_online.quan_ly_hop_dong_dich_vu.entity.TrangThai;
 import com.so_tro_online.quan_ly_hop_dong_dich_vu.repository.SuDungDichVuRepository;
@@ -15,17 +16,20 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 @Component
 public class HopDongPhongProcessor implements ItemProcessor<HopDongPhong, HoaDon> {
     private final SuDungDichVuRepository suDungRepo;
+    private  final HoaDonRepository hoaDonRepository;
     private final DichVuRepository dichVuRepository;
-    public HopDongPhongProcessor(SuDungDichVuRepository suDungRepo, DichVuRepository dichVuRepository) {
+    public HopDongPhongProcessor(SuDungDichVuRepository suDungRepo, HoaDonRepository hoaDonRepository, DichVuRepository dichVuRepository) {
         this.suDungRepo = suDungRepo;
+        this.hoaDonRepository = hoaDonRepository;
         this.dichVuRepository = dichVuRepository;
     }
 
@@ -89,35 +93,38 @@ public class HopDongPhongProcessor implements ItemProcessor<HopDongPhong, HoaDon
 //    }
 @Override
 public HoaDon process(HopDongPhong item) throws Exception {
-    // Lấy tháng trước (hóa đơn cho tháng trước)
-    Calendar cal = Calendar.getInstance();
-    cal.add(Calendar.MONTH, -1);
-    int thang = cal.get(Calendar.MONTH) + 1; // Calendar.MONTH từ 0-11
-    int nam = cal.get(Calendar.YEAR);
 
-    // ====== TÍNH HỆ SỐ NGÀY Ở ======
-    Calendar dauThang = Calendar.getInstance();
-    dauThang.set(Calendar.YEAR, nam);
-    dauThang.set(Calendar.MONTH, thang - 1);
-    dauThang.set(Calendar.DAY_OF_MONTH, 1);
 
-    Calendar cuoiThang = Calendar.getInstance();
-    cuoiThang.set(Calendar.YEAR, nam);
-    cuoiThang.set(Calendar.MONTH, thang - 1);
-    cuoiThang.set(Calendar.DAY_OF_MONTH, cuoiThang.getActualMaximum(Calendar.DAY_OF_MONTH));
+    LocalDate now = LocalDate.now();
 
-    Date ngayDauThang = dauThang.getTime();
-    Date ngayCuoiThang = cuoiThang.getTime();
+    // LẤY THÁNG TRƯỚC
+    LocalDate thangTruoc = now.minusMonths(1);
+    int thang = thangTruoc.getMonthValue();  // 1 - 12
+    int nam = thangTruoc.getYear();
+    if(hoaDonRepository.existsByHopDongPhongAndThangAndNam(item,thang,nam)){
+        throw new RuntimeException(String.format("Hóa đơn của hợp đồng %d trong tháng %d/%d đã tồn tại",
+                item.getMaHopDongPhong(),thang,nam));
+    }
+    // TÍNH NGÀY ĐẦU & CUỐI THÁNG
+    YearMonth yearMonth = YearMonth.of(nam, thang);
+    LocalDate ngayDauThang = yearMonth.atDay(1);
+    LocalDate ngayCuoiThang = yearMonth.atEndOfMonth();
 
-    // Ngày bắt đầu thực tế trong tháng
-    Date ngayBatDauO = item.getNgayBatDau().after(ngayDauThang) ? item.getNgayBatDau() : ngayDauThang;
-    Date ngayKetThucO = (item.getNgayKetThuc() != null && item.getNgayKetThuc().before(ngayCuoiThang))
-            ? item.getNgayKetThuc() : ngayCuoiThang;
+    // TÍNH HỆ SỐ NGÀY Ở
+    LocalDate ngayBatDauO = item.getNgayBatDau().isAfter(ngayDauThang)
+            ? item.getNgayBatDau()
+            : ngayDauThang;
 
-    // Số ngày ở thực tế trong tháng
-    long soNgayO = (ngayKetThucO.getTime() - ngayBatDauO.getTime()) / (1000 * 60 * 60 * 24) + 1;
-    long tongNgayThang = cuoiThang.getActualMaximum(Calendar.DAY_OF_MONTH);
-    BigDecimal heSo = BigDecimal.valueOf((double) soNgayO / tongNgayThang);
+    LocalDate ngayKetThucO = (item.getNgayKetThuc() != null && item.getNgayKetThuc().isBefore(ngayCuoiThang))
+            ? item.getNgayKetThuc()
+            : ngayCuoiThang;
+
+    // Số ngày ở thực tế trong tháng (cộng thêm 1 để tính cả ngày cuối)
+    long soNgayO = ChronoUnit.DAYS.between(ngayBatDauO, ngayKetThucO) + 1;
+    long tongNgayThang = yearMonth.lengthOfMonth();
+
+    BigDecimal heSo = BigDecimal.valueOf((double) soNgayO / tongNgayThang)
+            .setScale(2, RoundingMode.HALF_UP);
 
     // ====== TIỀN PHÒNG ======
     BigDecimal tienPhong = item.getTienPhong().multiply(heSo).setScale(0, RoundingMode.HALF_UP);
@@ -127,9 +134,10 @@ public HoaDon process(HopDongPhong item) throws Exception {
     List<ChiTietHoaDon> chiTietList = new ArrayList<>();
     HoaDon hoaDon = new HoaDon();
     hoaDon.setHopDongPhong(item);
-    hoaDon.setNgayTao(new Date());
+    hoaDon.setNgayTao(LocalDate.now());
     hoaDon.setTienPhong(tienPhong);
-
+hoaDon.setNam(nam);
+hoaDon.setThang(thang);
     // Chi tiết tiền phòng
     ChiTietHoaDon ctPhong = new ChiTietHoaDon();
     ctPhong.setHoaDon(hoaDon);
@@ -141,7 +149,7 @@ public HoaDon process(HopDongPhong item) throws Exception {
     ctPhong.setSoLuong(BigDecimal.ONE);
     chiTietList.add(ctPhong);
     SuDungDichVu suDungDichVu=suDungRepo.findByPhongAndThangNam(item.getPhong().getMaPhong(),thang,nam, TrangThai.hoatDong)
-            .orElseThrow(()->new ReseourceNotFoundException("phòng chưa được ghi chỉ số điện nước"));
+            .orElseThrow(()->new ReseourceNotFoundException(String.format("Không tìm thấy chỉ số điện nước của phong %s thang %d nam %d",item.getPhong().getTenPhong(),thang,nam)));
     DichVu dichVu=dichVuRepository.findById(1).orElseThrow(()->new RuntimeException("Dich vu not found"));
     // tien rac
     ChiTietHoaDon ctRac = new ChiTietHoaDon();

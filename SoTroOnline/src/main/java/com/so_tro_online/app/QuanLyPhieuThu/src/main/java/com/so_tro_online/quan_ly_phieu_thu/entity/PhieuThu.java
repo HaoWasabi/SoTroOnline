@@ -5,6 +5,7 @@ import com.so_tro_online.quan_ly_khach_thue.entity.KhachThue;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -39,8 +40,8 @@ public class PhieuThu {
         this.noiDungThu = noiDungThu;
     }
 
-    private Date ngayThu;
-    private Date capNhatLanCuoi;
+    private LocalDate ngayThu;
+    private LocalDate capNhatLanCuoi;
     @Enumerated(EnumType.STRING)
     private TrangThai trangThai;
 
@@ -60,14 +61,12 @@ public class PhieuThu {
         this.hoaDon = hoaDon;
     }
 
-    public Date getNgayThu() {
+    public LocalDate getNgayThu() {
         return ngayThu;
     }
-
-    public void setNgayThu(Date ngayThu) {
+    public void setNgayThu(LocalDate ngayThu) {
         this.ngayThu = ngayThu;
     }
-
     public KhachThue getKhachThue() {
         return khachThue;
     }
@@ -91,11 +90,10 @@ public class PhieuThu {
         this.ghiChu = ghiChu;
     }
 
-    public Date getCapNhatLanCuoi() {
+    public LocalDate getCapNhatLanCuoi() {
         return capNhatLanCuoi;
     }
-
-    public void setCapNhatLanCuoi(Date capNhatLanCuoi) {
+    public void setCapNhatLanCuoi(LocalDate capNhatLanCuoi) {
         this.capNhatLanCuoi = capNhatLanCuoi;
     }
 

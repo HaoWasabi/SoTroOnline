@@ -4,13 +4,14 @@ package com.so_tro_online.quan_ly_hop_dong_dich_vu.dto;
 import com.so_tro_online.quan_ly_hop_dong_dich_vu.entity.TrangThai;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 
 public class SuDungDichVuResponse {
     private Integer id;
     private Integer maPhong;
     private String tenPhong;
-    private Date thangNam;  // ví dụ: 2025-10-01
+    private LocalDate thangNam;  // ví dụ: 2025-10-01
     private BigDecimal chiSoDienCu;
     private BigDecimal chiSoDienMoi;
     private BigDecimal chiSoNuocCu;
@@ -49,11 +50,11 @@ public class SuDungDichVuResponse {
         this.tenPhong = tenPhong;
     }
 
-    public Date getThangNam() {
+    public LocalDate getThangNam() {
         return thangNam;
     }
 
-    public void setThangNam(Date thangNam) {
+    public void setThangNam(LocalDate thangNam) {
         this.thangNam = thangNam;
     }
 

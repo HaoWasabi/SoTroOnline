@@ -6,6 +6,7 @@ import com.so_tro_online.quan_ly_tai_khoan.entity.TaiKhoan;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -24,9 +25,9 @@ public class HopDongPhong {
     private Phong phong;
     private BigDecimal tienPhong;
     private BigDecimal tienCoc;
-    private Date ngayBatDau;
-    private Date ngayKetThuc;
-    private Date ngayTao;
+    private LocalDate ngayBatDau;
+    private LocalDate ngayKetThuc;
+    private LocalDate ngayTao;
     @Enumerated(EnumType.STRING)
     private TrangThai trangThai;
 
@@ -54,17 +55,6 @@ public class HopDongPhong {
         return tienCoc;
     }
 
-    public Date getNgayBatDau() {
-        return ngayBatDau;
-    }
-
-    public Date getNgayKetThuc() {
-        return ngayKetThuc;
-    }
-
-    public Date getNgayTao() {
-        return ngayTao;
-    }
 
     public TrangThai getTrangThai() {
         return trangThai;
@@ -94,15 +84,27 @@ public class HopDongPhong {
         this.tienCoc = tienCoc;
     }
 
-    public void setNgayBatDau(Date ngayBatDau) {
+    public LocalDate getNgayBatDau() {
+        return ngayBatDau;
+    }
+
+    public void setNgayBatDau(LocalDate ngayBatDau) {
         this.ngayBatDau = ngayBatDau;
     }
 
-    public void setNgayKetThuc(Date ngayKetThuc) {
+    public LocalDate getNgayKetThuc() {
+        return ngayKetThuc;
+    }
+
+    public void setNgayKetThuc(LocalDate ngayKetThuc) {
         this.ngayKetThuc = ngayKetThuc;
     }
 
-    public void setNgayTao(Date ngayTao) {
+    public LocalDate getNgayTao() {
+        return ngayTao;
+    }
+
+    public void setNgayTao(LocalDate ngayTao) {
         this.ngayTao = ngayTao;
     }
 

@@ -30,4 +30,5 @@ public interface HoaDonRepository extends JpaRepository<HoaDon,Integer> {
 
     List<HoaDon> findByHopDongPhong(HopDongPhong hopDongPhong);
 
+    boolean existsByHopDongPhongAndThangAndNam(HopDongPhong item, Integer thang, Integer nam);
 }

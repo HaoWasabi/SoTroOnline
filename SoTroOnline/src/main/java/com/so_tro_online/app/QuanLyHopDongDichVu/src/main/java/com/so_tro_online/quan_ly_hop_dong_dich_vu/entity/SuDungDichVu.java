@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -15,7 +16,7 @@ public class SuDungDichVu {
     private Integer id;
     @ManyToOne
    private Phong phong;
-    private Date thangNam;  // ví dụ: 2025-10-01
+    private LocalDate thangNam;
     private BigDecimal chiSoDienCu;
     private BigDecimal chiSoDienMoi;
     private BigDecimal chiSoNuocCu;
@@ -47,11 +48,11 @@ public class SuDungDichVu {
         this.phong = phong;
     }
 
-    public Date getThangNam() {
+    public LocalDate getThangNam() {
         return thangNam;
     }
 
-    public void setThangNam(Date thangNam) {
+    public void setThangNam(LocalDate thangNam) {
         this.thangNam = thangNam;
     }
 

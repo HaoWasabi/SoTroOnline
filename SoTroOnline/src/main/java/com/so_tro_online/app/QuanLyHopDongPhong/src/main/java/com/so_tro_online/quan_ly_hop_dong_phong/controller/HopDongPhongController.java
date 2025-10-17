@@ -55,5 +55,9 @@ public class HopDongPhongController {
     public void taiHopDongPdf(@PathVariable Integer id, HttpServletResponse response) throws Exception {
         hopDongPhongService.xuatHopDongWord(response, id);
     }
+    @GetMapping("/hoadon")
+    public ResponseEntity<ApiResponse> getHoaDon(@RequestParam int thang, @RequestParam int nam) {
+        return ResponseEntity.ok(new ApiResponse("success", hopDongPhongService.findAllNotHasHoaDonByThangAndNam(thang, nam)));
+    }
 
 }

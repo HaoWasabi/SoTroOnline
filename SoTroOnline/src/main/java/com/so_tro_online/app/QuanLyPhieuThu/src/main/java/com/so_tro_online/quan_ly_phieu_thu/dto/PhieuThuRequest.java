@@ -13,8 +13,6 @@ public class PhieuThuRequest {
     private Integer maKhachHang;
     private BigDecimal soTienThu;
     private String ghiChu;
-    private Date hanThanhToan;
-    private Date capNhatLanCuoi;
     private TrangThai trangThai;
 
     public Integer getMaHoaDon() {
@@ -49,21 +47,7 @@ public class PhieuThuRequest {
         this.ghiChu = ghiChu;
     }
 
-    public Date getHanThanhToan() {
-        return hanThanhToan;
-    }
 
-    public void setHanThanhToan(Date hanThanhToan) {
-        this.hanThanhToan = hanThanhToan;
-    }
-
-    public Date getCapNhatLanCuoi() {
-        return capNhatLanCuoi;
-    }
-
-    public void setCapNhatLanCuoi(Date capNhatLanCuoi) {
-        this.capNhatLanCuoi = capNhatLanCuoi;
-    }
 
     public TrangThai getTrangThai() {
         return trangThai;

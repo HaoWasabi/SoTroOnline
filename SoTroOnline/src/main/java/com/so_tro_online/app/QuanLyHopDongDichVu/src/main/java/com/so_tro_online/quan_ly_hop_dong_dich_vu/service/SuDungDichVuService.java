@@ -52,9 +52,7 @@ public class SuDungDichVuService implements ISuDungDichVuService {
 
     @Override
     public SuDungDichVuResponse createSuDungDichVu(SuDungDichVuRequest req) {
-        LocalDate localDate = req.getThangNam().toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate();
+        LocalDate localDate = req.getThangNam();
 
         int month = localDate.getMonthValue();
         int year = localDate.getYear();

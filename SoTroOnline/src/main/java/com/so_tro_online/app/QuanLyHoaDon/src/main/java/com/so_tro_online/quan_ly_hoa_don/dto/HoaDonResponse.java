@@ -6,6 +6,7 @@ import com.so_tro_online.quan_ly_hop_dong_phong.entity.HopDongPhong;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -16,8 +17,8 @@ public class HoaDonResponse {
     private BigDecimal tienDichVu;
     private BigDecimal tongTien;
     private BigDecimal tienConNo;
-    private Date ngayTao;
-    private Date capNhatLanCuoi;
+    private LocalDate ngayTao;
+    private LocalDate capNhatLanCuoi;
     private TrangThai trangThai;
     private String noiDung;
     private Integer maHopDongPhong;
@@ -65,19 +66,16 @@ public class HoaDonResponse {
         this.tienConNo = tienConNo;
     }
 
-    public Date getNgayTao() {
+    public LocalDate getNgayTao() {
         return ngayTao;
     }
-
-    public void setNgayTao(Date ngayTao) {
+    public void setNgayTao(LocalDate ngayTao) {
         this.ngayTao = ngayTao;
     }
-
-    public Date getCapNhatLanCuoi() {
+    public LocalDate getCapNhatLanCuoi() {
         return capNhatLanCuoi;
     }
-
-    public void setCapNhatLanCuoi(Date capNhatLanCuoi) {
+    public void setCapNhatLanCuoi(LocalDate capNhatLanCuoi) {
         this.capNhatLanCuoi = capNhatLanCuoi;
     }
 

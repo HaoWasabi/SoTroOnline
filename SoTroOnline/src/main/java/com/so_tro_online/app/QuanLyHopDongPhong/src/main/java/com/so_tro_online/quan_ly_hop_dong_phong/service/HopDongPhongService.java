@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -102,7 +103,7 @@ public class HopDongPhongService implements IHopDongPhongService {
         hopDongPhong.setNgayBatDau(hopDongRequest.getNgayBatDau());
         hopDongPhong.setNgayKetThuc(hopDongRequest.getNgayKetThuc());
         hopDongPhong.setTrangThai(hopDongRequest.getTrangThai());
-        hopDongPhong.setNgayTao(new Date());
+        hopDongPhong.setNgayTao(LocalDate.now());
         return mapToHopDongPhongResponse(hopDongPhongRepository.save(hopDongPhong));
     }
 
@@ -177,6 +178,13 @@ public class HopDongPhongService implements IHopDongPhongService {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+    }
+
+    @Override
+    public List<HopDongPhongResponse> findAllNotHasHoaDonByThangAndNam(int thang, int nam) {
+        return hopDongPhongRepository.findAllNotHasHoaDonByThangAndNam(thang, nam).stream()
+                .map(this::mapToHopDongPhongResponse)
+                .toList();
     }
 
 }

@@ -6,6 +6,7 @@ import com.so_tro_online.quan_ly_phieu_thu.entity.TrangThai;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 
 public class PhieuThuResponse {
@@ -16,17 +17,11 @@ public class PhieuThuResponse {
     private Integer maKhachThue;
     private BigDecimal soTienThu;
     private String ghiChu;
-    private Date capNhatLanCuoi;
+    private LocalDate capNhatLanCuoi;
     private TrangThai trangThai;
-    private Date ngayThu;
+    private LocalDate ngayThu;
 
-    public Date getNgayThu() {
-        return ngayThu;
-    }
 
-    public void setNgayThu(Date ngayThu) {
-        this.ngayThu = ngayThu;
-    }
 
     public Integer getMaPhieuThu() {
         return maPhieuThu;
@@ -62,12 +57,20 @@ public class PhieuThuResponse {
         this.ghiChu = ghiChu;
     }
 
-    public Date getCapNhatLanCuoi() {
+    public LocalDate getCapNhatLanCuoi() {
         return capNhatLanCuoi;
     }
 
-    public void setCapNhatLanCuoi(Date capNhatLanCuoi) {
+    public void setCapNhatLanCuoi(LocalDate capNhatLanCuoi) {
         this.capNhatLanCuoi = capNhatLanCuoi;
+    }
+
+    public LocalDate getNgayThu() {
+        return ngayThu;
+    }
+
+    public void setNgayThu(LocalDate ngayThu) {
+        this.ngayThu = ngayThu;
     }
 
     public TrangThai getTrangThai() {

@@ -1,6 +1,7 @@
 package com.so_tro_online.quan_ly_hop_dong_phong.repository;
 
 
+import com.so_tro_online.quan_ly_hop_dong_phong.dto.HopDongPhongResponse;
 import com.so_tro_online.quan_ly_hop_dong_phong.entity.HopDongPhong;
 
 
@@ -12,12 +13,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 
+import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 public interface HopDongPhongRepository extends JpaRepository<HopDongPhong,Integer> {
 
-    List<HopDongPhong> findByTrangThai(TrangThai trangThai);
+    List<HopDongPhong>  findByTrangThai(TrangThai trangThai);
 
     List<HopDongPhong> findByKhachThueMaKhach(Integer maKhachThue);
 
@@ -33,4 +36,13 @@ public interface HopDongPhongRepository extends JpaRepository<HopDongPhong,Integ
                                @Param("trangThai") TrangThai trangThai);
 
     boolean existsByPhongAndTrangThai(Phong phong, TrangThai trangThai);
+
+    @Query(value = """
+    SELECT * FROM hop_dong_phong hdp where trang_thai = 'hoat_dong' AND NOT EXISTS (
+        SELECT 1 FROM hoa_don hd
+        WHERE hd.ma_hop_dong_phong = hdp.ma_hop_dong_phong
+        AND hd.thang = :thang AND hd.nam = :nam
+    )
+""", nativeQuery = true)
+    List<HopDongPhong> findAllNotHasHoaDonByThangAndNam(@Param("thang") int thang, @Param("nam") int nam);
 }

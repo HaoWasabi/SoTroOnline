@@ -5,8 +5,10 @@ import com.so_tro_online.quan_ly_khach_thue.entity.KhachThue;
 import com.so_tro_online.quan_ly_phong.entity.Phong;
 import com.so_tro_online.quan_ly_tai_khoan.entity.TaiKhoan;
 import jakarta.persistence.*;
+import net.bytebuddy.asm.Advice;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 
 public class HopDongPhongResponse {
@@ -19,12 +21,12 @@ public class HopDongPhongResponse {
   private String tenPhong;
     private BigDecimal tienPhong;
     private BigDecimal tienCoc;
-    private Date ngayBatDau;
-    private Date ngayKetThuc;
-    private Date ngayTao;
+    private LocalDate ngayBatDau;
+    private LocalDate ngayKetThuc;
+    private LocalDate ngayTao;
     private TrangThai trangThai;
 
-    public HopDongPhongResponse(Integer maHopDongPhong, Integer maTaiKhoan, String tenTaiKhoan, Integer maKhachThue, String tenKhachThue, Integer maPhong, String tenPhong, BigDecimal tienPhong, BigDecimal tienCoc, Date ngayBatDau, Date ngayKetThuc, Date ngayTao, TrangThai trangThai) {
+    public HopDongPhongResponse(Integer maHopDongPhong, Integer maTaiKhoan, String tenTaiKhoan, Integer maKhachThue, String tenKhachThue, Integer maPhong, String tenPhong, BigDecimal tienPhong, BigDecimal tienCoc, LocalDate ngayBatDau, LocalDate ngayKetThuc, LocalDate ngayTao, TrangThai trangThai) {
         this.maHopDongPhong = maHopDongPhong;
         this.maTaiKhoan = maTaiKhoan;
         this.tenTaiKhoan = tenTaiKhoan;
@@ -75,15 +77,13 @@ public class HopDongPhongResponse {
         return tienCoc;
     }
 
-    public Date getNgayBatDau() {
+    public LocalDate getNgayBatDau() {
         return ngayBatDau;
     }
-
-    public Date getNgayKetThuc() {
+    public LocalDate getNgayKetThuc() {
         return ngayKetThuc;
     }
-
-    public Date getNgayTao() {
+    public LocalDate getNgayTao() {
         return ngayTao;
     }
 

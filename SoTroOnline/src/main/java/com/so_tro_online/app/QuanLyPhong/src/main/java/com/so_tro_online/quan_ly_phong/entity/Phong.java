@@ -24,7 +24,6 @@ public class Phong {
 
 
 
-
     @Enumerated(EnumType.STRING)
     private TrangThai trangThai;
     public Phong() {

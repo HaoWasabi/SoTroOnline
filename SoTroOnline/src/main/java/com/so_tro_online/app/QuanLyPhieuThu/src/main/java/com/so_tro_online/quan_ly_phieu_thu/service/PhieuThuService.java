@@ -17,6 +17,7 @@ import com.so_tro_online.quan_ly_phong.exception.ReseourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -67,9 +68,9 @@ public class PhieuThuService implements IPhieuThuService{
         phieuThu.setHoaDon(hoaDon);
         phieuThu.setKhachThue(khachThue);
         phieuThu.setSoTienThu(req.getSoTienThu());
-        phieuThu.setNgayThu(new Date());
+        phieuThu.setNgayThu(LocalDate.now());
         phieuThu.setGhiChu(req.getGhiChu());
-        phieuThu.setCapNhatLanCuoi(new Date());
+        phieuThu.setCapNhatLanCuoi(LocalDate.now());
         phieuThu.setTrangThai(req.getTrangThai());
         phieuThu.setConNo(hoaDon.getTienConNo().subtract(req.getSoTienThu()));
         phieuThu.setNoiDungThu("Thu tiền phòng và dịch vụ của"+hoaDon.getNoiDung());
@@ -89,7 +90,7 @@ public class PhieuThuService implements IPhieuThuService{
        PhieuThu phieuThu=phieuThuRepository.findById(id)
                .orElseThrow(()->new ReseourceNotFoundException("không tìm thấy phiếu thu với id:"+id));
        phieuThu.setGhiChu(req.getGhiChu());
-       phieuThu.setCapNhatLanCuoi(new Date());
+       phieuThu.setCapNhatLanCuoi(LocalDate.now());
        return toResponse(phieuThuRepository.save(phieuThu));
     }
 
@@ -162,7 +163,7 @@ public class PhieuThuService implements IPhieuThuService{
                             ? TrangThai.DA_THANH_TOAN
                             : TrangThai.CON_NO
             );
-            hoaDon.setCapNhatLanCuoi(new Date());
+            hoaDon.setCapNhatLanCuoi(LocalDate.now());
             hoaDonList.add(hoaDon);
 
 
@@ -173,7 +174,7 @@ public class PhieuThuService implements IPhieuThuService{
             phieu.setSoTienThu(soTienTru);
             phieu.setConNo(hoaDon.getTienConNo());
             phieu.setNoiDungThu("Thu tiền phòng và dịch vụ của " + hoaDon.getNoiDung());
-            phieu.setNgayThu(new Date());
+            phieu.setNgayThu(LocalDate.now());
             phieu.setTrangThai(com.so_tro_online.quan_ly_phieu_thu.entity.TrangThai.hoatDong);
             phieuThus.add(phieu);
             tienConLai = tienConLai.subtract(soTienTru);

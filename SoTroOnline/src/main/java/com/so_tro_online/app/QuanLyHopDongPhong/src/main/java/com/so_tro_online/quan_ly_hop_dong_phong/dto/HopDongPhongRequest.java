@@ -3,6 +3,7 @@ package com.so_tro_online.quan_ly_hop_dong_phong.dto;
 import com.so_tro_online.quan_ly_hop_dong_phong.entity.TrangThai;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 
 public class HopDongPhongRequest {
@@ -11,9 +12,9 @@ public class HopDongPhongRequest {
     private Integer maPhong;
     private BigDecimal tienPhong;
     private BigDecimal tienCoc;
-    private Date ngayBatDau;
-    private Date ngayKetThuc;
-    private Date ngayTao;
+    private LocalDate ngayBatDau;
+    private LocalDate ngayKetThuc;
+    private LocalDate ngayTao;
     private TrangThai trangThai;
 
 
@@ -45,17 +46,6 @@ public class HopDongPhongRequest {
         this.tienCoc = tienCoc;
     }
 
-    public void setNgayBatDau(Date ngayBatDau) {
-        this.ngayBatDau = ngayBatDau;
-    }
-
-    public void setNgayKetThuc(Date ngayKetThuc) {
-        this.ngayKetThuc = ngayKetThuc;
-    }
-
-    public void setNgayTao(Date ngayTao) {
-        this.ngayTao = ngayTao;
-    }
 
     public void setTrangThai(TrangThai trangThai) {
         this.trangThai = trangThai;
@@ -75,16 +65,28 @@ public class HopDongPhongRequest {
         return tienCoc;
     }
 
-    public Date getNgayBatDau() {
+    public LocalDate getNgayBatDau() {
         return ngayBatDau;
     }
 
-    public Date getNgayKetThuc() {
+    public void setNgayBatDau(LocalDate ngayBatDau) {
+        this.ngayBatDau = ngayBatDau;
+    }
+
+    public LocalDate getNgayKetThuc() {
         return ngayKetThuc;
     }
 
-    public Date getNgayTao() {
+    public void setNgayKetThuc(LocalDate ngayKetThuc) {
+        this.ngayKetThuc = ngayKetThuc;
+    }
+
+    public LocalDate getNgayTao() {
         return ngayTao;
+    }
+
+    public void setNgayTao(LocalDate ngayTao) {
+        this.ngayTao = ngayTao;
     }
 
     public TrangThai getTrangThai() {

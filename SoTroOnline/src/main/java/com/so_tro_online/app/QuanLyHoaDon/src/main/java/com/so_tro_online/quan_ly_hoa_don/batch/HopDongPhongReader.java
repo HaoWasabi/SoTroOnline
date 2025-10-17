@@ -6,6 +6,8 @@ import com.so_tro_online.quan_ly_hop_dong_phong.repository.HopDongPhongRepositor
 import org.springframework.batch.item.ItemReader;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.Iterator;
 import java.util.List;
 
@@ -23,7 +25,15 @@ public class HopDongPhongReader implements ItemReader<HopDongPhong> {
     @Override
     public HopDongPhong read() {
         if (iterator == null) {
-            List<HopDongPhong> list = hopDongPhongRepository.findByTrangThai(TrangThai.hoatDong);
+            LocalDate now = LocalDate.now().minusMonths(1);
+            YearMonth currentMonth = YearMonth.of(now.getYear(), now.getMonth());
+            List<HopDongPhong> list = hopDongPhongRepository.findByTrangThai(TrangThai.hoatDong).stream()
+                    .filter(hd->{
+                        YearMonth ngayBatDau=YearMonth.of(hd.getNgayBatDau().getYear(),hd.getNgayBatDau().getMonth());
+                        YearMonth ngayKetThuc=YearMonth.of(hd.getNgayKetThuc().getYear(),hd.getNgayKetThuc().getMonth());
+                        return (ngayBatDau.isBefore(currentMonth) || ngayBatDau.equals(currentMonth)) &&
+                                (ngayKetThuc.isAfter(currentMonth) || ngayKetThuc.equals(currentMonth));
+                    }).toList();
             iterator = list.iterator();
         }
         return iterator.hasNext() ? iterator.next() : null;
