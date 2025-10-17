@@ -27,7 +27,7 @@ public class HopDongPhongReader implements ItemReader<HopDongPhong> {
         if (iterator == null) {
             LocalDate now = LocalDate.now().minusMonths(1);
             YearMonth currentMonth = YearMonth.of(now.getYear(), now.getMonth());
-            List<HopDongPhong> list = hopDongPhongRepository.findByTrangThai(TrangThai.hoatDong).stream()
+            List<HopDongPhong> list = hopDongPhongRepository.findAllNotHasHoaDonByThangAndNam(now.getMonth().getValue(),now.getYear()).stream()
                     .filter(hd->{
                         YearMonth ngayBatDau=YearMonth.of(hd.getNgayBatDau().getYear(),hd.getNgayBatDau().getMonth());
                         YearMonth ngayKetThuc=YearMonth.of(hd.getNgayKetThuc().getYear(),hd.getNgayKetThuc().getMonth());

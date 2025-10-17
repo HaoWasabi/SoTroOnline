@@ -284,6 +284,8 @@ public class HoaDonService implements IHoaDonService{
         response.setTienDichVu(hoaDon.getTienDichVu());
         response.setTienPhong(hoaDon.getTienPhong());
         response.setChiTietHoaDons(mapToChiTietResponse(hoaDon));
+        response.setThang(hoaDon.getThang());
+        response.setNam(hoaDon.getNam());
         return response;
     }
     public List<ChiTietHoaDonResponse>mapToChiTietResponse(HoaDon hoaDon){

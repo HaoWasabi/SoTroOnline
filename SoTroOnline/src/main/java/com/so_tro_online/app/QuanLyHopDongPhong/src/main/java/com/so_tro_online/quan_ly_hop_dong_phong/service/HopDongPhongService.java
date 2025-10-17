@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -182,8 +183,15 @@ public class HopDongPhongService implements IHopDongPhongService {
 
     @Override
     public List<HopDongPhongResponse> findAllNotHasHoaDonByThangAndNam(int thang, int nam) {
-        return hopDongPhongRepository.findAllNotHasHoaDonByThangAndNam(thang, nam).stream()
-                .map(this::mapToHopDongPhongResponse)
+        YearMonth currentMonth=YearMonth.of(nam,thang);
+        List<HopDongPhong>temp=hopDongPhongRepository.findAllNotHasHoaDonByThangAndNam(thang,nam);
+        return hopDongPhongRepository.findAllNotHasHoaDonByThangAndNam(thang,nam).stream()
+                .filter(hd->{
+                    YearMonth ngayBatDau=YearMonth.of(hd.getNgayBatDau().getYear(),hd.getNgayBatDau().getMonth());
+                    YearMonth ngayKetThuc=YearMonth.of(hd.getNgayKetThuc().getYear(),hd.getNgayKetThuc().getMonth());
+                    return (ngayBatDau.isBefore(currentMonth) || ngayBatDau.equals(currentMonth)) &&
+                            (ngayKetThuc.isAfter(currentMonth) || ngayKetThuc.equals(currentMonth));
+                }).map(this::mapToHopDongPhongResponse )
                 .toList();
     }
 

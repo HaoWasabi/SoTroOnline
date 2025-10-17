@@ -38,7 +38,7 @@ public interface HopDongPhongRepository extends JpaRepository<HopDongPhong,Integ
     boolean existsByPhongAndTrangThai(Phong phong, TrangThai trangThai);
 
     @Query(value = """
-    SELECT * FROM hop_dong_phong hdp where trang_thai = 'hoat_dong' AND NOT EXISTS (
+    SELECT * FROM hop_dong_phong hdp where trang_thai = 'hoatDong' AND NOT EXISTS (
         SELECT 1 FROM hoa_don hd
         WHERE hd.ma_hop_dong_phong = hdp.ma_hop_dong_phong
         AND hd.thang = :thang AND hd.nam = :nam

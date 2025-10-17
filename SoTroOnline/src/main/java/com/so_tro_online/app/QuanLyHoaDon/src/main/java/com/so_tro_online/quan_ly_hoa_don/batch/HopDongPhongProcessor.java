@@ -101,10 +101,6 @@ public HoaDon process(HopDongPhong item) throws Exception {
     LocalDate thangTruoc = now.minusMonths(1);
     int thang = thangTruoc.getMonthValue();  // 1 - 12
     int nam = thangTruoc.getYear();
-    if(hoaDonRepository.existsByHopDongPhongAndThangAndNam(item,thang,nam)){
-        throw new RuntimeException(String.format("Hóa đơn của hợp đồng %d trong tháng %d/%d đã tồn tại",
-                item.getMaHopDongPhong(),thang,nam));
-    }
     // TÍNH NGÀY ĐẦU & CUỐI THÁNG
     YearMonth yearMonth = YearMonth.of(nam, thang);
     LocalDate ngayDauThang = yearMonth.atDay(1);

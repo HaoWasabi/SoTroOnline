@@ -25,7 +25,7 @@ public class TaoHoaDonJobConfig {
 
     @Bean
     public Job taoHoaDonJob(JobRepository jobRepository, Step taoHoaDonStep) {
-        return new JobBuilder("taoHoaDonJob8", jobRepository)
+        return new JobBuilder("taoHoaDonJob10", jobRepository)
                 .start(taoHoaDonStep)
                 .build();
     }
