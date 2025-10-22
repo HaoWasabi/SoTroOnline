@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/hop-dong-phong")
+@RequestMapping("/api/contract")
 public class HopDongPhongController {
     private final IHopDongPhongService hopDongPhongService;
 
@@ -26,7 +26,7 @@ public class HopDongPhongController {
 
         return ResponseEntity.ok(new ApiResponse("success", hopDongPhongService.getAllHopDongPhongActive()));
     }
-    @GetMapping("/byCustomer/{customerId}")
+    @GetMapping("/customer/{customerId}")
     public ResponseEntity<ApiResponse>getByCustomer(@PathVariable Integer customerId) {
         return ResponseEntity.ok(new ApiResponse("success", hopDongPhongService.getAllHopDongPhongByMaKhachThue(customerId)));
     }
@@ -51,11 +51,11 @@ public class HopDongPhongController {
         hopDongPhongService.deleteHopDongPhong(id);
         return ResponseEntity.ok(new ApiResponse("success", null));
     }
-    @GetMapping("/tai-word/{id}")
-    public void taiHopDongPdf(@PathVariable Integer id, HttpServletResponse response) throws Exception {
-        hopDongPhongService.xuatHopDongWord(response, id);
+    @GetMapping("/print/{id}")
+    public void printHopDongPhong(@PathVariable Integer id, HttpServletResponse response) throws Exception {
+        hopDongPhongService.printHopDongPhong(response, id);
     }
-    @GetMapping("/hoadon")
+    @GetMapping("/invoice")
     public ResponseEntity<ApiResponse> getHoaDon(@RequestParam int thang, @RequestParam int nam) {
         return ResponseEntity.ok(new ApiResponse("success", hopDongPhongService.findAllNotHasHoaDonByThangAndNam(thang, nam)));
     }

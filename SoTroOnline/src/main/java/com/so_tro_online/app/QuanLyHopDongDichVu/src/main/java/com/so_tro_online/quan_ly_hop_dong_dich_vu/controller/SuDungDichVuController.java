@@ -8,7 +8,7 @@ import com.so_tro_online.quan_ly_hop_dong_dich_vu.service.ISuDungDichVuService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 @RestController
-@RequestMapping("/api/sudungdichvu")
+@RequestMapping("/api/service-using")
 public class SuDungDichVuController {
     private final ISuDungDichVuService suDungDichVuService;
 
@@ -38,7 +38,7 @@ public class SuDungDichVuController {
         suDungDichVuService.deleteSuDungDichVu(id);
         return ResponseEntity.ok(new ApiResponse("success", null));
     }
-    @GetMapping("/phong/{maPhong}")
+    @GetMapping("/room/{maPhong}")
     public ResponseEntity<ApiResponse>getAllSuDungDichVuActiveByPhong(@PathVariable Integer maPhong) {
         return ResponseEntity.ok(new ApiResponse("success", suDungDichVuService.getAllSuDungDichVuActiveByPhong(maPhong)));
     }

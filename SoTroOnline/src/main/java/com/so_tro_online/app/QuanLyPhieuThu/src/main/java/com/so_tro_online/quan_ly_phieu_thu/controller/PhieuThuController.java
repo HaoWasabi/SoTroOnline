@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/phieu-thu")
+@RequestMapping("/api/receipt")
 public class PhieuThuController {
     private final IPhieuThuService phieuThuService;
 
@@ -34,15 +34,15 @@ public class PhieuThuController {
     public ResponseEntity<ApiResponse>updatePhieuThu(@PathVariable Integer id, @RequestBody PhieuThuRequest request) {
         return ResponseEntity.ok(new ApiResponse("success", phieuThuService.updatePhieuThu(id,request)));
     }
-   @GetMapping("/hoa-don/{id}")
+   @GetMapping("/invoice/{id}")
     public ResponseEntity<ApiResponse> getPhieuThuByHoaDon(@PathVariable Integer id) {
         return ResponseEntity.ok(new ApiResponse("success", phieuThuService.getPhieuThuByHoaDon(id)));
     }
-    @GetMapping("/khach-thue/{id}")
+    @GetMapping("/guest/{id}")
     public ResponseEntity<ApiResponse> getPhieuThuByKhachThue(@PathVariable Integer id) {
-        return ResponseEntity.ok(new ApiResponse("success", phieuThuService.getPhieuThuByKhachThue(id)));
+        return ResponseEntity.ok(new     ApiResponse("success", phieuThuService.getPhieuThuByKhachThue(id)));
     }
-    @PostMapping("/thu-no")
+    @PostMapping("/debt-collection")
     public ResponseEntity<ApiResponse> thuNo(@RequestBody ThuNoRequest request) {
         return ResponseEntity.status(201).body(new ApiResponse("success", phieuThuService.thuTienTuDong(request.getMaHopDongPhong(),request.getSoTienThu())));
     }

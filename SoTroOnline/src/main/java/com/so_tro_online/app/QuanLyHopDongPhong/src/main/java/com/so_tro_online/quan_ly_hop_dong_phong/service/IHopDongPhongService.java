@@ -16,7 +16,7 @@ public interface IHopDongPhongService {
     public HopDongPhongResponse updateHopDongPhong(Integer id, HopDongPhongRequest roomRequest);
     public void deleteHopDongPhong(Integer id);
     public List<HopDongPhongResponse> getAllHopDongPhongByMaKhachThue(Integer maKhachThue);
-    public void xuatHopDongWord(HttpServletResponse response, Integer id);
+    public void printHopDongPhong(HttpServletResponse response, Integer id);
     public List<HopDongPhongResponse>findAllNotHasHoaDonByThangAndNam(int thang, int nam);
 
 }

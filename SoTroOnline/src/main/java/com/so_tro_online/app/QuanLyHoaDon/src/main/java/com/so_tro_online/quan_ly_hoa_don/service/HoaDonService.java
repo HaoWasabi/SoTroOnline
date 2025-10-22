@@ -80,7 +80,7 @@ public class HoaDonService implements IHoaDonService{
     }
 
     @Override
-    public void xuatHoaDonByThangAndNam(HttpServletResponse response, Integer thang, Integer nam) throws IOException {
+    public void printHoaDonByThangAndNam(HttpServletResponse response, Integer thang, Integer nam) throws IOException {
         List<HoaDon> hoaDons = hoaDonRepository.findByMonthAndYear(thang, nam);
         if (hoaDons.isEmpty()) {
             throw new RuntimeException("Không có hóa đơn nào trong tháng " + thang + "/" + nam);

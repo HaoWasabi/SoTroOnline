@@ -14,6 +14,6 @@ public interface IHoaDonService {
     public HoaDonResponse getHoaDonById(Integer id);
     public List<HoaDonResponse>getHoaDonByDate(Integer thang, Integer nam);
     public List<HoaDonResponse>getAllByHopDong(Integer maHopDong);
-    public void xuatHoaDonByThangAndNam(HttpServletResponse response,Integer thang,Integer nam) throws IOException;
+    public void printHoaDonByThangAndNam(HttpServletResponse response,Integer thang,Integer nam) throws IOException;
     public HoaDonResponse createHoaDon(HoaDonRequest request);
 }

@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/api/hoa-don")
+@RequestMapping("/api/invoice")
 public class HoaDonController {
     private final IHoaDonService hoaDonService;
 
@@ -29,17 +29,17 @@ public class HoaDonController {
         return ResponseEntity.ok(new ApiResponse("success",hoaDonService.getHoaDonById(id)));
     }
 
-    @GetMapping("/hopDong/{id}")
+    @GetMapping("/contract/{id}")
     public  ResponseEntity<ApiResponse>getHoaDonByHopDong(@PathVariable Integer id) {
         return ResponseEntity.ok(new ApiResponse("success",hoaDonService.getAllByHopDong(id)));
     }
-    @GetMapping("/ngay")
+    @GetMapping("/date")
     public ResponseEntity<ApiResponse>getHoaDonByDate(@RequestParam Integer thang,@RequestParam Integer nam) {
         return ResponseEntity.ok(new ApiResponse("success",hoaDonService.getHoaDonByDate(thang, nam)));
     }
-    @GetMapping("/in")
-    public void inHoaDonByDate(@RequestParam Integer thang,@RequestParam Integer nam, HttpServletResponse res) throws IOException {
-        hoaDonService.xuatHoaDonByThangAndNam(res,thang,nam);
+    @GetMapping("/print")
+    public void printHoaDonByDate(@RequestParam Integer thang,@RequestParam Integer nam, HttpServletResponse res) throws IOException {
+        hoaDonService.printHoaDonByThangAndNam(res,thang,nam);
     }
     @PostMapping
     public ResponseEntity<ApiResponse> createHoaDon(@RequestBody HoaDonRequest request) {

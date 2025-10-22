@@ -135,7 +135,7 @@ public class HopDongPhongService implements IHopDongPhongService {
     }
 
     @Override
-    public void xuatHopDongWord(HttpServletResponse response, Integer id) {
+    public void printHopDongPhong(HttpServletResponse response, Integer id) {
             // 1. Lấy dữ liệu hợp đồng
             HopDongPhong hopDong = hopDongPhongRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Không tìm thấy hợp đồng"));
