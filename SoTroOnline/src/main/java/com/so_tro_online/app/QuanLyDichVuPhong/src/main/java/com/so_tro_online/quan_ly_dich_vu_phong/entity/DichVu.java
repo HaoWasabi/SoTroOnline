@@ -9,10 +9,13 @@ import java.math.BigDecimal;
 public class DichVu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer maDichVu;
-   private BigDecimal donGiaDien;
-   private BigDecimal donGiaNuoc;
-   private BigDecimal donGiaRac;
+        private Integer maDichVu;
+        private BigDecimal donGiaDien;
+        private BigDecimal donGiaNuoc;
+        private BigDecimal donGiaRac;
+        private BigDecimal donGiaWifi;
+        private BigDecimal donGiaCap;
+        private BigDecimal donGiaKhac;
 
     public Integer getMaDichVu() {
         return maDichVu;
@@ -45,4 +48,16 @@ public class DichVu {
     public void setDonGiaRac(BigDecimal donGiaRac) {
         this.donGiaRac = donGiaRac;
     }
+
+    public BigDecimal getDonGiaWifi() { return donGiaWifi; }
+
+    public void setDonGiaWifi(BigDecimal donGiaWifi) { this.donGiaWifi = donGiaWifi; }
+
+    public BigDecimal getDonGiaCap() { return donGiaCap; }
+
+    public void setDonGiaCap(BigDecimal donGiaCap) { this.donGiaCap = donGiaCap; }
+
+    public BigDecimal getDonGiaKhac() { return donGiaKhac; }
+
+    public void setDonGiaKhac(BigDecimal donGiaKhac) { this.donGiaKhac = donGiaKhac; }
 }

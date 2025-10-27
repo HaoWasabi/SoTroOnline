@@ -12,6 +12,10 @@ public class HopDongPhongRequest {
     private Integer maPhong;
     private BigDecimal tienPhong;
     private BigDecimal tienCoc;
+    private Boolean dvRac;
+    private Boolean dvWifi;
+    private Boolean dvCap;
+    private Boolean dvKhac;
     private LocalDate ngayBatDau;
     private LocalDate ngayKetThuc;
     private LocalDate ngayTao;
@@ -46,12 +50,17 @@ public class HopDongPhongRequest {
         this.tienCoc = tienCoc;
     }
 
+    public void setDvRac(Boolean dvRac) { this.dvRac = dvRac; }
+
+    public void setDvWifi(Boolean dvWifi) { this.dvWifi = dvWifi; }
+
+    public void setDvCap(Boolean dvCap) { this.dvCap = dvCap; }
+
+    public void setDvKhac(Boolean dvKhac) { this.dvKhac = dvKhac; }
 
     public void setTrangThai(TrangThai trangThai) {
         this.trangThai = trangThai;
     }
-
-
 
     public Integer getMaPhong() {
         return maPhong;
@@ -64,6 +73,14 @@ public class HopDongPhongRequest {
     public BigDecimal getTienCoc() {
         return tienCoc;
     }
+
+    public Boolean getDvRac() { return dvRac; }
+
+    public Boolean getDvWifi() { return dvWifi; }
+
+    public Boolean getDvCap() { return dvCap; }
+
+    public Boolean getDvKhac() { return dvKhac; }
 
     public LocalDate getNgayBatDau() {
         return ngayBatDau;

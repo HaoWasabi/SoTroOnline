@@ -6,12 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="cafe1d0c-bc81-4c1f-9f7d-997f92561b0c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/src/main/java/com/so_tro_online/quan_ly_hoa_don/controller/HoaDonController.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/src/main/java/com/so_tro_online/quan_ly_hoa_don/controller/HoaDonController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/src/main/java/com/so_tro_online/quan_ly_hoa_don/service/HoaDonService.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/src/main/java/com/so_tro_online/quan_ly_hoa_don/service/HoaDonService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/src/main/java/com/so_tro_online/quan_ly_hoa_don/service/IHoaDonService.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/src/main/java/com/so_tro_online/quan_ly_hoa_don/service/IHoaDonService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/src/main/java/com/so_tro_online/quan_ly_hop_dong_phong/controller/HopDongPhongController.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/src/main/java/com/so_tro_online/quan_ly_hop_dong_phong/controller/HopDongPhongController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/src/main/java/com/so_tro_online/quan_ly_hop_dong_phong/service/HopDongPhongService.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/src/main/java/com/so_tro_online/quan_ly_hop_dong_phong/service/HopDongPhongService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/src/main/java/com/so_tro_online/quan_ly_hop_dong_phong/service/IHopDongPhongService.java" beforeDir="false" afterPath="$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHopDongPhong/src/main/java/com/so_tro_online/quan_ly_hop_dong_phong/service/IHopDongPhongService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -171,6 +165,9 @@
       <workItem from="1761134303370" duration="1577000" />
       <workItem from="1761137419804" duration="3846000" />
       <workItem from="1761143323416" duration="747000" />
+      <workItem from="1761441997435" duration="10587000" />
+      <workItem from="1761483701081" duration="4809000" />
+      <workItem from="1761576783813" duration="1401000" />
     </task>
     <servers />
   </component>
@@ -178,15 +175,6 @@
     <option name="version" value="3" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/SoTroOnline/src/main/java/com/so_tro_online/app/QuanLyHoaDon/src/main/java/com/so_tro_online/quan_ly_hoa_don/batch/HopDongPhongReader.java</url>
-          <line>26</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
     <pin-to-top-manager>
       <pinned-members>
         <PinnedItemInfo parentTag="jdk.proxy4.$Proxy142" memberName="h" />

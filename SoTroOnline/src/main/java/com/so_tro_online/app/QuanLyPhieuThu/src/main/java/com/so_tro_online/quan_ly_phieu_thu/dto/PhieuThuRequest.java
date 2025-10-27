@@ -31,10 +31,10 @@ public class PhieuThuRequest {
         this.maKhachHang = maKhachHang;
     }
 
-
     public BigDecimal getSoTienThu() {
         return soTienThu;
     }
+
     public void setSoTienThu(BigDecimal soTienThu) {
         this.soTienThu = soTienThu;
     }
@@ -46,8 +46,6 @@ public class PhieuThuRequest {
     public void setGhiChu(String ghiChu) {
         this.ghiChu = ghiChu;
     }
-
-
 
     public TrangThai getTrangThai() {
         return trangThai;

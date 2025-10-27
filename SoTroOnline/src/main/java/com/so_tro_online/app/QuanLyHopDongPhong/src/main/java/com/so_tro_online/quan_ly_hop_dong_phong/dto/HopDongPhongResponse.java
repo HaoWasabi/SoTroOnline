@@ -17,16 +17,20 @@ public class HopDongPhongResponse {
     private String tenTaiKhoan;
     private Integer maKhachThue;
     private String tenKhachThue;
-  private Integer maPhong;
-  private String tenPhong;
+    private Integer maPhong;
+    private String tenPhong;
     private BigDecimal tienPhong;
     private BigDecimal tienCoc;
+    private Boolean dvRac;
+    private Boolean dvWifi;
+    private Boolean dvCap;
+    private Boolean dvKhac;
     private LocalDate ngayBatDau;
     private LocalDate ngayKetThuc;
     private LocalDate ngayTao;
     private TrangThai trangThai;
 
-    public HopDongPhongResponse(Integer maHopDongPhong, Integer maTaiKhoan, String tenTaiKhoan, Integer maKhachThue, String tenKhachThue, Integer maPhong, String tenPhong, BigDecimal tienPhong, BigDecimal tienCoc, LocalDate ngayBatDau, LocalDate ngayKetThuc, LocalDate ngayTao, TrangThai trangThai) {
+    public HopDongPhongResponse(Integer maHopDongPhong, Integer maTaiKhoan, String tenTaiKhoan, Integer maKhachThue, String tenKhachThue, Integer maPhong, String tenPhong, BigDecimal tienPhong, BigDecimal tienCoc, Boolean dvRac, Boolean dvWifi, Boolean dvCap, Boolean dvKhac, LocalDate ngayBatDau, LocalDate ngayKetThuc, LocalDate ngayTao, TrangThai trangThai) {
         this.maHopDongPhong = maHopDongPhong;
         this.maTaiKhoan = maTaiKhoan;
         this.tenTaiKhoan = tenTaiKhoan;
@@ -36,6 +40,10 @@ public class HopDongPhongResponse {
         this.tenPhong = tenPhong;
         this.tienPhong = tienPhong;
         this.tienCoc = tienCoc;
+        this.dvRac = dvRac;
+        this.dvWifi = dvWifi;
+        this.dvCap = dvCap;
+        this.dvKhac = dvKhac;
         this.ngayBatDau = ngayBatDau;
         this.ngayKetThuc = ngayKetThuc;
         this.ngayTao = ngayTao;
@@ -49,6 +57,7 @@ public class HopDongPhongResponse {
     public Integer getMaTaiKhoan() {
         return maTaiKhoan;
     }
+
     public String getTenTaiKhoan() {
         return tenTaiKhoan;
     }
@@ -77,12 +86,22 @@ public class HopDongPhongResponse {
         return tienCoc;
     }
 
+    public Boolean getDvRac() { return dvRac; }
+
+    public Boolean getDvWifi() { return dvWifi; }
+
+    public Boolean getDvCap() { return dvCap; }
+
+    public Boolean getDvKhac() { return dvKhac; }
+
     public LocalDate getNgayBatDau() {
         return ngayBatDau;
     }
+
     public LocalDate getNgayKetThuc() {
         return ngayKetThuc;
     }
+
     public LocalDate getNgayTao() {
         return ngayTao;
     }

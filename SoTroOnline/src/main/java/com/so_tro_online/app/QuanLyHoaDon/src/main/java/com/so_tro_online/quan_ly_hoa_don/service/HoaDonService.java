@@ -161,110 +161,168 @@ public class HoaDonService implements IHoaDonService{
 
     @Override
     public HoaDonResponse createHoaDon(HoaDonRequest request) {
-        HopDongPhong item=hopDongPhongRepository.findById(request.getMaHopDongPhong())
-                .orElseThrow(()->new ReseourceNotFoundException("không tìm thấy hợp đồng với mã"+request.getMaHopDongPhong()));
-        YearMonth ngayBatDau=YearMonth.of(item.getNgayBatDau().getYear(),item.getNgayBatDau().getMonth());
-        YearMonth ngayKetThuc= YearMonth.of(item.getNgayKetThuc().getYear(),item.getNgayKetThuc().getMonth());
-        YearMonth ngayTaoHoaDon=YearMonth.of(request.getNam(),request.getThang());
-        if(
-                !((ngayBatDau.isBefore(ngayTaoHoaDon) || ngayBatDau.equals(ngayTaoHoaDon)) &&
-                (ngayKetThuc.isAfter(ngayTaoHoaDon) || ngayKetThuc.equals(ngayTaoHoaDon)))
-        ){
+        // Lấy hợp đồng theo id
+        HopDongPhong hopDong = hopDongPhongRepository.findById(request.getMaHopDongPhong())
+                .orElseThrow(() -> new ReseourceNotFoundException(
+                        "Không tìm thấy hợp đồng với mã " + request.getMaHopDongPhong()));
+
+        YearMonth ngayBatDauHD = YearMonth.of(hopDong.getNgayBatDau().getYear(), hopDong.getNgayBatDau().getMonth());
+        YearMonth ngayKetThucHD = YearMonth.of(hopDong.getNgayKetThuc().getYear(), hopDong.getNgayKetThuc().getMonth());
+        YearMonth ngayTaoHD = YearMonth.of(request.getNam(), request.getThang());
+
+        // Kiểm tra hợp đồng có hoạt động trong tháng tạo hóa đơn
+        if (!((ngayBatDauHD.isBefore(ngayTaoHD) || ngayBatDauHD.equals(ngayTaoHD)) &&
+                (ngayKetThucHD.isAfter(ngayTaoHD) || ngayKetThucHD.equals(ngayTaoHD)))) {
             throw new RuntimeException(String.format("Hợp đồng %d không hoạt động trong tháng %d/%d",
-                    item.getMaHopDongPhong(),request.getThang(),request.getNam()));
+                    hopDong.getMaHopDongPhong(), request.getThang(), request.getNam()));
         }
-        if(hoaDonRepository.existsByHopDongPhongAndThangAndNam(item,request.getThang(),request.getNam())){
+
+        // Kiểm tra hóa đơn đã tồn tại chưa
+        if (hoaDonRepository.existsByHopDongPhongAndThangAndNam(hopDong, request.getThang(), request.getNam())) {
             throw new RuntimeException(String.format("Hóa đơn của hợp đồng %d trong tháng %d/%d đã tồn tại",
-                    item.getMaHopDongPhong(),request.getThang(),request.getNam()));
+                    hopDong.getMaHopDongPhong(), request.getThang(), request.getNam()));
         }
-         // TÍNH NGÀY ĐẦU & CUỐI THÁNG
-        YearMonth yearMonth = YearMonth.of(request.getNam(),request.getThang());
+
+        // Tính hệ số ngày ở thực tế
+        YearMonth yearMonth = YearMonth.of(request.getNam(), request.getThang());
         LocalDate ngayDauThang = yearMonth.atDay(1);
         LocalDate ngayCuoiThang = yearMonth.atEndOfMonth();
-
-        // TÍNH HỆ SỐ NGÀY Ở
-        LocalDate ngayBatDauO = item.getNgayBatDau().isAfter(ngayDauThang)
-                ? item.getNgayBatDau()
+        LocalDate ngayBatDauO = hopDong.getNgayBatDau().isAfter(ngayDauThang)
+                ? hopDong.getNgayBatDau()
                 : ngayDauThang;
-
-        LocalDate ngayKetThucO = (item.getNgayKetThuc() != null && item.getNgayKetThuc().isBefore(ngayCuoiThang))
-                ? item.getNgayKetThuc()
+        LocalDate ngayKetThucO = (hopDong.getNgayKetThuc() != null && hopDong.getNgayKetThuc().isBefore(ngayCuoiThang))
+                ? hopDong.getNgayKetThuc()
                 : ngayCuoiThang;
 
-        // Số ngày ở thực tế trong tháng (cộng thêm 1 để tính cả ngày cuối)
         long soNgayO = ChronoUnit.DAYS.between(ngayBatDauO, ngayKetThucO) + 1;
         long tongNgayThang = yearMonth.lengthOfMonth();
 
         BigDecimal heSo = BigDecimal.valueOf((double) soNgayO / tongNgayThang)
                 .setScale(2, RoundingMode.HALF_UP);
 
-        // ====== TIỀN PHÒNG ======
-        BigDecimal tienPhong = item.getTienPhong().multiply(heSo).setScale(0, RoundingMode.HALF_UP);
+        // Tiền phòng
+        BigDecimal tienPhong = hopDong.getTienPhong().multiply(heSo).setScale(0, RoundingMode.HALF_UP);
 
-        // ====== KHỞI TẠO HÓA ĐƠN ======
-        BigDecimal tongDichVu = BigDecimal.ZERO;
-        List<ChiTietHoaDon> chiTietList = new ArrayList<>();
+        // Khởi tạo hóa đơn
         HoaDon hoaDon = new HoaDon();
-        hoaDon.setHopDongPhong(item);
+        hoaDon.setHopDongPhong(hopDong);
         hoaDon.setNgayTao(LocalDate.now());
         hoaDon.setTienPhong(tienPhong);
+
+        List<ChiTietHoaDon> chiTietList = new ArrayList<>();
+        BigDecimal tongDichVu = BigDecimal.ZERO;
 
         // Chi tiết tiền phòng
         ChiTietHoaDon ctPhong = new ChiTietHoaDon();
         ctPhong.setHoaDon(hoaDon);
         ctPhong.setTenDichVu("Tiền phòng");
-        ctPhong.setDonGia(item.getTienPhong());
+        ctPhong.setDonGia(hopDong.getTienPhong());
         ctPhong.setHeSo(heSo);
-        ctPhong.setTienThucTe(item.getTienPhong());
+        ctPhong.setTienThucTe(tienPhong);
         ctPhong.setThanhTien(tienPhong);
-        ctPhong.setSoLuong(BigDecimal.ONE);
+        ctPhong.setSoLuong(1); // Integer
         chiTietList.add(ctPhong);
-        SuDungDichVu suDungDichVu=suDungRepo.findByPhongAndThangNam(item.getPhong().getMaPhong(),request.getThang(),request.getNam(), TrangThai.hoatDong)
-                .orElseThrow(()->new ReseourceNotFoundException(String.format("Không tìm thấy chỉ số điện nước của phong %d thang %d nam %d",item.getPhong().getMaPhong(),request.getThang(),request.getNam())));
-        DichVu dichVu=dichVuRepository.findById(1).orElseThrow(()->new RuntimeException("Dich vu not found"));
-        // tien rac
-        ChiTietHoaDon ctRac = new ChiTietHoaDon();
-        ctRac.setHoaDon(hoaDon);
-        ctRac.setTenDichVu("Tiền rác");
-        ctRac.setHeSo(heSo);
-        ctRac.setDonGia(dichVu.getDonGiaRac());
-        ctRac.setSoLuong(BigDecimal.ONE);
-        ctRac.setTienThucTe(dichVu.getDonGiaRac());
-        ctRac.setThanhTien(dichVu.getDonGiaRac().multiply(heSo).setScale(0, RoundingMode.HALF_UP));
-        chiTietList.add(ctRac);
-        // tien nuoc
+
+        // Lấy dịch vụ mặc định (rác, nước, điện)
+        DichVu dichVu = dichVuRepository.findById(1)
+                .orElseThrow(() -> new RuntimeException("Dich vu not found"));
+
+        SuDungDichVu suDung = suDungRepo.findByPhongAndThangNam(
+                hopDong.getPhong().getMaPhong(),
+                request.getThang(),
+                request.getNam(),
+                TrangThai.hoatDong
+        ).orElseThrow(() -> new ReseourceNotFoundException(
+                String.format("Không tìm thấy chỉ số điện nước của phòng %d tháng %d năm %d",
+                        hopDong.getPhong().getMaPhong(), request.getThang(), request.getNam())
+        ));
+
+        // Chi tiết tiền nước
+        Integer soNuocDung = suDung.getChiSoNuocMoi() - suDung.getChiSoNuocCu();
         ChiTietHoaDon ctNuoc = new ChiTietHoaDon();
         ctNuoc.setHoaDon(hoaDon);
         ctNuoc.setTenDichVu("Tiền nước");
-        ctNuoc.setHeSo(BigDecimal.ONE);
         ctNuoc.setDonGia(dichVu.getDonGiaNuoc());
-        BigDecimal soNuocDung=suDungDichVu.getChiSoNuocMoi().subtract(suDungDichVu.getChiSoNuocCu());
-        ctNuoc.setSoLuong(soNuocDung);
-        ctNuoc.setThanhTien(soNuocDung.multiply(dichVu.getDonGiaNuoc()));
-        ctNuoc.setTienThucTe(soNuocDung.multiply(dichVu.getDonGiaNuoc()));
+        ctNuoc.setHeSo(BigDecimal.ONE);
+        ctNuoc.setSoLuong(soNuocDung); // Integer
+        ctNuoc.setTienThucTe(dichVu.getDonGiaNuoc().multiply(BigDecimal.valueOf(soNuocDung)));
+        ctNuoc.setThanhTien(dichVu.getDonGiaNuoc().multiply(BigDecimal.valueOf(soNuocDung)));
         chiTietList.add(ctNuoc);
-        // tien dien
+
+        // Chi tiết tiền điện
+        Integer soDienDung = suDung.getChiSoDienMoi() - suDung.getChiSoDienCu();
         ChiTietHoaDon ctDien = new ChiTietHoaDon();
         ctDien.setHoaDon(hoaDon);
         ctDien.setTenDichVu("Tiền điện");
-        ctDien.setHeSo(BigDecimal.ONE);
         ctDien.setDonGia(dichVu.getDonGiaDien());
-        BigDecimal soDienDung=suDungDichVu.getChiSoDienMoi().subtract(suDungDichVu.getChiSoDienCu());
-        ctDien.setThanhTien(soDienDung.multiply(dichVu.getDonGiaDien()));
-        ctDien.setTienThucTe(soDienDung.multiply(dichVu.getDonGiaDien()));
+        ctDien.setHeSo(BigDecimal.ONE);
         ctDien.setSoLuong(soDienDung);
+        ctDien.setTienThucTe(dichVu.getDonGiaDien().multiply(BigDecimal.valueOf(soDienDung)));
+        ctDien.setThanhTien(dichVu.getDonGiaDien().multiply(BigDecimal.valueOf(soDienDung)));
         chiTietList.add(ctDien);
-        tongDichVu=tongDichVu.add(ctRac.getThanhTien()).add(ctNuoc.getThanhTien()).add(ctDien.getThanhTien());
 
+        // Chi tiết tiền rác
+        ChiTietHoaDon ctRac = new ChiTietHoaDon();
+        ctRac.setHoaDon(hoaDon);
+        ctRac.setTenDichVu("Tiền rác");
+        ctRac.setDonGia(dichVu.getDonGiaRac());
+        ctRac.setHeSo(heSo);
+        ctRac.setTienThucTe(dichVu.getDonGiaRac());
+        ctRac.setThanhTien(dichVu.getDonGiaRac().multiply(heSo).setScale(0, RoundingMode.HALF_UP));
+        ctRac.setSoLuong(1);
+        chiTietList.add(ctRac);
+
+        // Chi tiết tiền wifi
+        ChiTietHoaDon ctWifi = new ChiTietHoaDon();
+        ctWifi.setHoaDon(hoaDon);
+        ctWifi.setTenDichVu("Tiền wifi");
+        ctWifi.setDonGia(dichVu.getDonGiaWifi());
+        ctWifi.setHeSo(heSo);
+        ctWifi.setTienThucTe(dichVu.getDonGiaWifi());
+        ctWifi.setThanhTien(dichVu.getDonGiaWifi().multiply(heSo).setScale(0, RoundingMode.HALF_UP));
+        ctWifi.setSoLuong(1);
+        chiTietList.add(ctWifi);
+
+        // Chi tiết tiền cáp
+        ChiTietHoaDon ctCap = new ChiTietHoaDon();
+        ctCap.setHoaDon(hoaDon);
+        ctCap.setTenDichVu("Tiền Cáp");
+        ctCap.setDonGia(dichVu.getDonGiaCap());
+        ctCap.setHeSo(heSo);
+        ctCap.setTienThucTe(dichVu.getDonGiaCap());
+        ctCap.setThanhTien(dichVu.getDonGiaCap().multiply(heSo).setScale(0, RoundingMode.HALF_UP));
+        ctCap.setSoLuong(1);
+        chiTietList.add(ctCap);
+
+        // Chi tiết tiền khác
+        ChiTietHoaDon ctKhac = new ChiTietHoaDon();
+        ctKhac.setHoaDon(hoaDon);
+        ctKhac.setTenDichVu("Tiền Khác");
+        ctKhac.setDonGia(dichVu.getDonGiaKhac());
+        ctKhac.setHeSo(heSo);
+        ctKhac.setTienThucTe(dichVu.getDonGiaKhac());
+        ctKhac.setThanhTien(dichVu.getDonGiaKhac().multiply(heSo).setScale(0, RoundingMode.HALF_UP));
+        ctKhac.setSoLuong(1);
+        chiTietList.add(ctKhac);
+
+        // Tính tổng dịch vụ
+        tongDichVu = ctDien.getThanhTien()
+                .add(ctNuoc.getThanhTien())
+                .add(ctRac.getThanhTien())
+                .add(ctWifi.getThanhTien())
+                .add(ctCap.getThanhTien())
+                .add(ctKhac.getThanhTien());
+
+        // Hoàn thiện hóa đơn
+        hoaDon.setChiTietHoaDons(chiTietList);
         hoaDon.setTienDichVu(tongDichVu);
         hoaDon.setTongTien(tienPhong.add(tongDichVu));
         hoaDon.setTienConNo(hoaDon.getTongTien());
         hoaDon.setTrangThai(com.so_tro_online.quan_ly_hoa_don.entity.TrangThai.CON_NO);
-        hoaDon.setChiTietHoaDons(chiTietList);
-        hoaDon.setHopDongPhong(item);
         hoaDon.setNoiDung("Hoa don thang " + request.getThang() + "/" + request.getNam());
         hoaDon.setThang(request.getThang());
         hoaDon.setNam(request.getNam());
+
         return mapToResponse(hoaDonRepository.save(hoaDon));
     }
 

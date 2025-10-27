@@ -17,10 +17,10 @@ public class SuDungDichVu {
     @ManyToOne
    private Phong phong;
     private LocalDate thangNam;
-    private BigDecimal chiSoDienCu;
-    private BigDecimal chiSoDienMoi;
-    private BigDecimal chiSoNuocCu;
-    private BigDecimal chiSoNuocMoi;
+    private Integer chiSoDienCu;
+    private Integer chiSoDienMoi;
+    private Integer chiSoNuocCu;
+    private Integer chiSoNuocMoi;
     @Enumerated(EnumType.STRING)
     private TrangThai trangThai;
 
@@ -56,35 +56,35 @@ public class SuDungDichVu {
         this.thangNam = thangNam;
     }
 
-    public BigDecimal getChiSoDienCu() {
+    public Integer getChiSoDienCu() {
         return chiSoDienCu;
     }
 
-    public void setChiSoDienCu(BigDecimal chiSoDienCu) {
+    public void setChiSoDienCu(Integer chiSoDienCu) {
         this.chiSoDienCu = chiSoDienCu;
     }
 
-    public BigDecimal getChiSoDienMoi() {
+    public Integer getChiSoDienMoi() {
         return chiSoDienMoi;
     }
 
-    public void setChiSoDienMoi(BigDecimal chiSoDienMoi) {
+    public void setChiSoDienMoi(Integer chiSoDienMoi) {
         this.chiSoDienMoi = chiSoDienMoi;
     }
 
-    public BigDecimal getChiSoNuocCu() {
+    public Integer getChiSoNuocCu() {
         return chiSoNuocCu;
     }
 
-    public void setChiSoNuocCu(BigDecimal chiSoNuocCu) {
+    public void setChiSoNuocCu(Integer chiSoNuocCu) {
         this.chiSoNuocCu = chiSoNuocCu;
     }
 
-    public BigDecimal getChiSoNuocMoi() {
+    public Integer getChiSoNuocMoi() {
         return chiSoNuocMoi;
     }
 
-    public void setChiSoNuocMoi(BigDecimal chiSoNuocMoi) {
+    public void setChiSoNuocMoi(Integer chiSoNuocMoi) {
         this.chiSoNuocMoi = chiSoNuocMoi;
     }
 }

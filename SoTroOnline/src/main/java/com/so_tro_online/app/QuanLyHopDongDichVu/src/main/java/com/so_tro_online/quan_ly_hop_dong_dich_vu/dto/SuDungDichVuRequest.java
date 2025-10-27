@@ -11,10 +11,10 @@ public class SuDungDichVuRequest {
 
     private Integer maPhong;
     private LocalDate thangNam;  // ví dụ: 2025-10-01
-    private BigDecimal chiSoDienCu;
-    private BigDecimal chiSoDienMoi;
-    private BigDecimal chiSoNuocCu;
-    private BigDecimal chiSoNuocMoi;
+    private Integer chiSoDienCu;
+    private Integer chiSoDienMoi;
+    private Integer chiSoNuocCu;
+    private Integer chiSoNuocMoi;
    private TrangThai trangThai;
 
     public TrangThai getTrangThai() {
@@ -40,35 +40,35 @@ public class SuDungDichVuRequest {
         this.thangNam = thangNam;
     }
 
-    public BigDecimal getChiSoDienCu() {
+    public Integer getChiSoDienCu() {
         return chiSoDienCu;
     }
 
-    public void setChiSoDienCu(BigDecimal chiSoDienCu) {
+    public void setChiSoDienCu(Integer chiSoDienCu) {
         this.chiSoDienCu = chiSoDienCu;
     }
 
-    public BigDecimal getChiSoDienMoi() {
+    public Integer getChiSoDienMoi() {
         return chiSoDienMoi;
     }
 
-    public void setChiSoDienMoi(BigDecimal chiSoDienMoi) {
+    public void setChiSoDienMoi(Integer chiSoDienMoi) {
         this.chiSoDienMoi = chiSoDienMoi;
     }
 
-    public BigDecimal getChiSoNuocCu() {
+    public Integer getChiSoNuocCu() {
         return chiSoNuocCu;
     }
 
-    public void setChiSoNuocCu(BigDecimal chiSoNuocCu) {
+    public void setChiSoNuocCu(Integer chiSoNuocCu) {
         this.chiSoNuocCu = chiSoNuocCu;
     }
 
-    public BigDecimal getChiSoNuocMoi() {
+    public Integer getChiSoNuocMoi() {
         return chiSoNuocMoi;
     }
 
-    public void setChiSoNuocMoi(BigDecimal chiSoNuocMoi) {
+    public void setChiSoNuocMoi(Integer chiSoNuocMoi) {
         this.chiSoNuocMoi = chiSoNuocMoi;
     }
 }

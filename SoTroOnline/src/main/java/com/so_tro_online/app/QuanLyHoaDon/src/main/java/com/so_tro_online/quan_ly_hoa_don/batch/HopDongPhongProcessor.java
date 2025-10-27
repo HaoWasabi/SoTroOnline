@@ -142,7 +142,7 @@ hoaDon.setThang(thang);
     ctPhong.setHeSo(heSo);
     ctPhong.setTienThucTe(item.getTienPhong());
     ctPhong.setThanhTien(tienPhong);
-    ctPhong.setSoLuong(BigDecimal.ONE);
+    ctPhong.setSoLuong(1);
     chiTietList.add(ctPhong);
     SuDungDichVu suDungDichVu=suDungRepo.findByPhongAndThangNam(item.getPhong().getMaPhong(),thang,nam, TrangThai.hoatDong)
             .orElseThrow(()->new ReseourceNotFoundException(String.format("Không tìm thấy chỉ số điện nước của phong %s thang %d nam %d",item.getPhong().getTenPhong(),thang,nam)));
@@ -153,33 +153,68 @@ hoaDon.setThang(thang);
     ctRac.setTenDichVu("Tiền rác");
     ctRac.setHeSo(heSo);
     ctRac.setDonGia(dichVu.getDonGiaRac());
-    ctRac.setSoLuong(BigDecimal.ONE);
+    ctRac.setSoLuong(1);
     ctRac.setTienThucTe(dichVu.getDonGiaRac());
     ctRac.setThanhTien(dichVu.getDonGiaRac().multiply(heSo).setScale(0, RoundingMode.HALF_UP));
     chiTietList.add(ctRac);
-    // tien nuoc
+    // tien wifi
+    ChiTietHoaDon ctWifi = new ChiTietHoaDon();
+    ctWifi.setHoaDon(hoaDon);
+    ctWifi.setTenDichVu("Tiền wifi");
+    ctWifi.setHeSo(heSo);
+    ctWifi.setDonGia(dichVu.getDonGiaWifi());
+    ctWifi.setSoLuong(1);
+    ctWifi.setTienThucTe(dichVu.getDonGiaWifi());
+    ctWifi.setThanhTien(dichVu.getDonGiaWifi().multiply(heSo).setScale(0, RoundingMode.HALF_UP));
+    chiTietList.add(ctWifi);
+    // tien cáp
+    ChiTietHoaDon ctCap = new ChiTietHoaDon();
+    ctCap.setHoaDon(hoaDon);
+    ctCap.setTenDichVu("Tiền cáp");
+    ctCap.setHeSo(heSo);
+    ctCap.setDonGia(dichVu.getDonGiaCap());
+    ctCap.setSoLuong(1);
+    ctCap.setTienThucTe(dichVu.getDonGiaCap());
+    ctCap.setThanhTien(dichVu.getDonGiaCap().multiply(heSo).setScale(0, RoundingMode.HALF_UP));
+    chiTietList.add(ctCap);
+    // tien khác
+    ChiTietHoaDon ctKhac = new ChiTietHoaDon();
+    ctKhac.setHoaDon(hoaDon);
+    ctKhac.setTenDichVu("Tiền Khác");
+    ctKhac.setHeSo(heSo);
+    ctKhac.setDonGia(dichVu.getDonGiaKhac());
+    ctKhac.setSoLuong(1);
+    ctKhac.setTienThucTe(dichVu.getDonGiaKhac());
+    ctKhac.setThanhTien(dichVu.getDonGiaKhac().multiply(heSo).setScale(0, RoundingMode.HALF_UP));
+    chiTietList.add(ctKhac);
+    // tien nước
     ChiTietHoaDon ctNuoc = new ChiTietHoaDon();
     ctNuoc.setHoaDon(hoaDon);
     ctNuoc.setTenDichVu("Tiền nước");
     ctNuoc.setHeSo(BigDecimal.ONE);
     ctNuoc.setDonGia(dichVu.getDonGiaNuoc());
-    BigDecimal soNuocDung=suDungDichVu.getChiSoNuocMoi().subtract(suDungDichVu.getChiSoNuocCu());
+    Integer soNuocDung = suDungDichVu.getChiSoNuocMoi() - suDungDichVu.getChiSoNuocCu();
     ctNuoc.setSoLuong(soNuocDung);
-    ctNuoc.setThanhTien(soNuocDung.multiply(dichVu.getDonGiaNuoc()));
-    ctNuoc.setTienThucTe(soNuocDung.multiply(dichVu.getDonGiaNuoc()));
+    ctNuoc.setThanhTien(dichVu.getDonGiaNuoc().multiply(BigDecimal.valueOf(soNuocDung)));
+    ctNuoc.setTienThucTe(dichVu.getDonGiaNuoc().multiply(BigDecimal.valueOf(soNuocDung)));
     chiTietList.add(ctNuoc);
-    // tien dien
+    // tien điện
     ChiTietHoaDon ctDien = new ChiTietHoaDon();
     ctDien.setHoaDon(hoaDon);
     ctDien.setTenDichVu("Tiền điện");
     ctDien.setHeSo(BigDecimal.ONE);
     ctDien.setDonGia(dichVu.getDonGiaDien());
-    BigDecimal soDienDung=suDungDichVu.getChiSoDienMoi().subtract(suDungDichVu.getChiSoDienCu());
-    ctDien.setThanhTien(soDienDung.multiply(dichVu.getDonGiaDien()));
-    ctDien.setTienThucTe(soDienDung.multiply(dichVu.getDonGiaDien()));
+    Integer soDienDung = suDungDichVu.getChiSoDienMoi() - suDungDichVu.getChiSoDienCu();
+    ctDien.setThanhTien(dichVu.getDonGiaDien().multiply(BigDecimal.valueOf(soDienDung)));
+    ctDien.setTienThucTe(dichVu.getDonGiaDien().multiply(BigDecimal.valueOf(soDienDung)));
     ctDien.setSoLuong(soDienDung);
     chiTietList.add(ctDien);
-    tongDichVu=tongDichVu.add(ctRac.getThanhTien()).add(ctNuoc.getThanhTien()).add(ctDien.getThanhTien());
+    tongDichVu=tongDichVu.add(ctDien.getThanhTien())
+            .add(ctNuoc.getThanhTien())
+            .add(ctRac.getThanhTien())
+            .add(ctWifi.getThanhTien())
+            .add(ctCap.getThanhTien())
+            .add(ctKhac.getThanhTien());
 
     hoaDon.setTienDichVu(tongDichVu);
     hoaDon.setTongTien(tienPhong.add(tongDichVu));

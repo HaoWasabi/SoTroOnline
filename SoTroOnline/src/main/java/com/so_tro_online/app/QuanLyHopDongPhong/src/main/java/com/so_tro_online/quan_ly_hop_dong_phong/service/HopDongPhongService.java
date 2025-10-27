@@ -64,6 +64,10 @@ public class HopDongPhongService implements IHopDongPhongService {
                 hopDongPhong.getPhong().getTenPhong(),
                 hopDongPhong.getTienPhong(),
                 hopDongPhong.getTienCoc(),
+                hopDongPhong.getDvRac(),
+                hopDongPhong.getDvWifi(),
+                hopDongPhong.getDvCap(),
+                hopDongPhong.getDvKhac(),
                 hopDongPhong.getNgayBatDau(),
                 hopDongPhong.getNgayKetThuc(),
                 hopDongPhong.getNgayTao(),
@@ -101,6 +105,10 @@ public class HopDongPhongService implements IHopDongPhongService {
         hopDongPhong.setKhachThue(khachThue);
         hopDongPhong.setTienPhong(phong.getGiaThueCoBan());
         hopDongPhong.setTienCoc(hopDongRequest.getTienCoc());
+        hopDongPhong.setDvRac(hopDongRequest.getDvRac());
+        hopDongPhong.setDvWifi(hopDongRequest.getDvWifi());
+        hopDongPhong.setDvCap(hopDongRequest.getDvCap());
+        hopDongPhong.setDvKhac(hopDongRequest.getDvKhac());
         hopDongPhong.setNgayBatDau(hopDongRequest.getNgayBatDau());
         hopDongPhong.setNgayKetThuc(hopDongRequest.getNgayKetThuc());
         hopDongPhong.setTrangThai(hopDongRequest.getTrangThai());
@@ -154,6 +162,10 @@ public class HopDongPhongService implements IHopDongPhongService {
             data.put("dienTichPhong", hopDong.getPhong().getChieuDai().multiply(hopDong.getPhong().getChieuRong()));
             data.put("tienPhong", hopDong.getTienPhong());
             data.put("tienCoc", hopDong.getTienCoc());
+            data.put("dvRac", hopDong.getDvRac());
+            data.put("dvWifi", hopDong.getDvWifi());
+            data.put("dvCap", hopDong.getDvCap());
+            data.put("dvKhac", hopDong.getDvKhac());
             data.put("ngayBatDau", df.format(hopDong.getNgayBatDau()));
             data.put("ngayKetThuc", df.format(hopDong.getNgayKetThuc()));
             data.put("ngayTao", df.format(hopDong.getNgayTao()));

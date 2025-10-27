@@ -8,6 +8,9 @@ public class DichVuRequest {
     private BigDecimal donGiaDien;
     private BigDecimal donGiaNuoc;
     private BigDecimal donGiaRac;
+    private BigDecimal donGiaWifi;
+    private BigDecimal donGiaCap;
+    private BigDecimal donGiaKhac;
 
     public BigDecimal getDonGiaDien() {
         return donGiaDien;
@@ -32,4 +35,16 @@ public class DichVuRequest {
     public void setDonGiaRac(BigDecimal donGiaRac) {
         this.donGiaRac = donGiaRac;
     }
+
+    public BigDecimal getDonGiaWifi() { return donGiaWifi; }
+
+    public void setDonGiaWifi(BigDecimal donGiaWifi) { this.donGiaWifi = donGiaWifi; }
+
+    public BigDecimal getDonGiaCap() { return donGiaCap; }
+
+    public void setDonGiaCap(BigDecimal donGiaCap) { this.donGiaCap = donGiaCap; }
+
+    public BigDecimal getDonGiaKhac() { return donGiaKhac; }
+
+    public void setDonGiaKhac(BigDecimal donGiaKhac) { this.donGiaKhac = donGiaKhac; }
 }

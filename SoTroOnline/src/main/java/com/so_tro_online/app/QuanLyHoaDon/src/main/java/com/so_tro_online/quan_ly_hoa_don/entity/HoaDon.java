@@ -66,6 +66,7 @@ public class HoaDon {
     public BigDecimal getTienDichVu() {
         return tienDichVu;
     }
+
     public void setTienDichVu(BigDecimal tienDichVu) {
         this.tienDichVu = tienDichVu;
     }

@@ -14,19 +14,17 @@ public class ChiTietHoaDon {
     @ManyToOne
     private HoaDon hoaDon;
     private String tenDichVu;
-
     private BigDecimal donGia;
-
     private BigDecimal thanhTien;
     private BigDecimal heSo;
     private BigDecimal tienThucTe;
-    private BigDecimal soLuong;
+    private Integer soLuong;
 
-    public BigDecimal getSoLuong() {
+    public Integer getSoLuong() {
         return soLuong;
     }
 
-    public void setSoLuong(BigDecimal soLuong) {
+    public void setSoLuong(Integer soLuong) {
         this.soLuong = soLuong;
     }
 
@@ -49,9 +47,11 @@ public class ChiTietHoaDon {
     public Integer getId() {
         return id;
     }
+
     public void setId(Integer id) {
         this.id = id;
     }
+
     public HoaDon getHoaDon() {
         return hoaDon;
     }
@@ -59,9 +59,6 @@ public class ChiTietHoaDon {
     public void setHoaDon(HoaDon hoaDon) {
         this.hoaDon = hoaDon;
     }
-
-
-
 
     public String getTenDichVu() {
         return tenDichVu;
@@ -78,8 +75,6 @@ public class ChiTietHoaDon {
     public void setDonGia(BigDecimal donGia) {
         this.donGia = donGia;
     }
-
-
 
     public BigDecimal getThanhTien() {
         return thanhTien;

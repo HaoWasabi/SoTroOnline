@@ -11,12 +11,10 @@ import java.math.BigDecimal;
 
 public class ChiTietHoaDonResponse {
     private Integer id;
-
     private Integer maHoaDon;
     private String tenDichVu;
-
     private BigDecimal donGia;
-    private BigDecimal soLuong;
+    private Integer soLuong;
     private BigDecimal thanhTien;
     private BigDecimal heSo;
     private BigDecimal tienThucTe;
@@ -54,11 +52,11 @@ public class ChiTietHoaDonResponse {
         this.donGia = donGia;
     }
 
-    public BigDecimal getSoLuong() {
+    public Integer getSoLuong() {
         return soLuong;
     }
 
-    public void setSoLuong(BigDecimal soLuong) {
+    public void setSoLuong(Integer soLuong) {
         this.soLuong = soLuong;
     }
 
