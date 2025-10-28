@@ -1,5 +1,6 @@
 package com.so_tro_online.quan_ly_tai_khoan.controller;
 
+import com.so_tro_online.dung_chung.dto.ApiResponse;
 import com.so_tro_online.quan_ly_tai_khoan.dto.*;
 import com.so_tro_online.quan_ly_tai_khoan.entity.TaiKhoan;
 import com.so_tro_online.quan_ly_tai_khoan.exception.*;
@@ -17,6 +18,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -68,15 +70,22 @@ public class QuanLyTaiKhoanController {
         }
     }*/
 
-    @PostMapping("/login")
+    /*@PostMapping("/login")
     public ResponseEntity<?> signIn(@RequestBody SignInRequest signInRequest) {
         try {
             TaiKhoan taiKhoan = taiKhoanService.signIn(signInRequest.getEmail(), signInRequest.getPassword());
 
+            // Generate JWT token
+            String jwtToken = jwtService.generateToken(taiKhoan.getEmail());
+
+            // Create response with both user data and token
+            TaiKhoanDTO userDto = UserMapper.toDto(taiKhoan);
+            userDto.setToken(jwtToken); // Add token to DTO
+
             ApiResponse<TaiKhoanDTO> apiResponse = new ApiResponse<>(
                     200,
                     "Log in successfully",
-                    UserMapper.toDto(taiKhoan)
+                    userDto
             );
 
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
@@ -105,63 +114,94 @@ public class QuanLyTaiKhoanController {
 
             return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
+    }/*
 
-    @PostMapping("/signup")
-    public ResponseEntity<?> signUp(@RequestBody SignUpRequest signUpRequest) {
-        //logger.info("Received signup request for email: {}", signUpRequest != null ? signUpRequest.getEmail() : "null request");
+    /**
+     * Alternative login endpoint with LoginRequest format (for consistency with frontend)
+     */
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<Object>> login(@RequestBody LoginRequest loginRequest) {
+        logger.info("Login attempt for email: {}", loginRequest.getEmail());
+        ApiResponse<Object> response = new ApiResponse<>();
+        
         try {
+            LoginResponse loginResponse = taiKhoanService.authenticateUser(loginRequest);
 
-            LocalDateTime ngayTao = LocalDateTime.now();
-            TaiKhoan newTaiKhoan = taiKhoanService.signUp(
-                    signUpRequest.getEmail(),
-                    signUpRequest.getCccdCode(),
-                    signUpRequest.getHoTen(),
-                    signUpRequest.getDienThoai(),
-                    signUpRequest.getThuongTru(),
-                    signUpRequest.getNgaySinh(),
-                    signUpRequest.getPassword(),
-                    ngayTao,
-                    signUpRequest.getTrangThai()
+            response.setStatus(200);
+            response.setMessage("Login successful");
+            response.setData(loginResponse);
+            
+            return ResponseEntity.ok(
+                   response
             );
+        } catch (Exception e) {
+            logger.error("Login failed for email: {}", loginRequest.getEmail(), e);
 
-            ApiResponse<TaiKhoanDTO> apiResponse = new ApiResponse<>(
-                    200,
-                    "Sign up successfully",
-                    UserMapper.toDto(newTaiKhoan)
+            response.setStatus(401);
+            response.setMessage("Invalid credentials");
+            response.setData(null);
+            
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                   response
             );
-
-            return ResponseEntity.ok(apiResponse);
-        } catch (DuplicateEmailException ex) {
-            ApiResponse<TaiKhoanDTO> apiResponse = new ApiResponse<>(
-                    409,
-                    "Account with this email is already exist!",
-                    null
-            );
-
-            return new ResponseEntity<>(apiResponse, HttpStatus.CONFLICT);
-        } catch (HttpMessageNotReadableException ex) {
-            logger.error("JSON parsing error: {}", ex.getMessage());
-
-            ApiResponse<TaiKhoanDTO> apiResponse = new ApiResponse<>(
-                    400,
-                    "Error JSON format",
-                    null
-            );
-
-            return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
-        } catch (Exception ex) {
-            logger.error("Unexpected error during signup: ", ex);
-
-            ApiResponse<TaiKhoanDTO> apiResponse = new ApiResponse<>(
-                    409,
-                    "Internal server error: " + ex.getMessage(),
-                    null
-            );
-
-            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    /**
+     * Refresh token endpoint
+     */
+    @PostMapping("/refresh")
+    public ResponseEntity<Map<String, Object>> refreshToken(@RequestHeader("Authorization") String refreshToken) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            String newAccessToken = taiKhoanService.refreshAccessToken(refreshToken);
+            
+            response.put("success", true);
+            response.put("message", "Token refreshed successfully");
+            response.put("data", Map.of("accessToken", newAccessToken));
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Token refresh failed", e);
+            
+            response.put("success", false);
+            response.put("message", "Invalid refresh token");
+            response.put("data", null);
+            
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+    }
+
+    /**
+     * Get current user info using the new method
+     */
+    @GetMapping("/me")
+    public ResponseEntity<Map<String, Object>> getCurrentUser(@RequestHeader("Authorization") String token) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            TaiKhoanDto userInfo = taiKhoanService.getCurrentUserInfo(token);
+            
+            response.put("success", true);
+            response.put("message", "User info retrieved successfully");
+            response.put("data", userInfo);
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Failed to get user info", e);
+            
+            response.put("success", false);
+            response.put("message", "Unable to retrieve user info");
+            response.put("data", null);
+            
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+    }
+
+    /**
+     * Test endpoint to verify auth module is working
+     */
 
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> body) {
@@ -181,7 +221,7 @@ public class QuanLyTaiKhoanController {
     }
 
     @PutMapping("/update-user-information")
-    public ResponseEntity<?> udateUserInformation(@RequestBody TaiKhoanDTO taiKhoanDTO) {
+    public ResponseEntity<?> udateUserInformation(@RequestBody TaiKhoanDto taiKhoanDTO) {
         try {
             taiKhoanService.updateUserInformation(
                     taiKhoanDTO.getMaTaiKhoan(),
@@ -268,7 +308,7 @@ public class QuanLyTaiKhoanController {
 
             TaiKhoan taiKhoan = taiKhoanService.getUserByEmail(email);
 
-            TaiKhoanDTO userInfo = UserMapper.toDto(taiKhoan);
+            TaiKhoanDto userInfo = UserMapper.toDto(taiKhoan);
 
             return ResponseEntity.ok(new ApiResponse<>(200, "User information retrieved successfully", userInfo));
         } catch (NoEmailFoundException ex) {
@@ -287,27 +327,4 @@ public class QuanLyTaiKhoanController {
         }
     }
 
-    @GetMapping("/test-token")
-    public ResponseEntity<?> testToken(@RequestParam("token") String token) {
-        try {
-            System.out.println("Testing token: " + token.substring(0, Math.min(20, token.length())) + "...");
-
-            // Test token validation
-            boolean isValid = jwtService.isTokenValid(token);
-            System.out.println("Token valid: " + isValid);
-
-            if (isValid) {
-                String email = jwtService.extractEmail(token);
-                System.out.println("Extracted email: " + email);
-
-                return ResponseEntity.ok(new ApiResponse<>(200, "Token is valid. Email: " + email, null));
-            } else {
-                return ResponseEntity.ok(new ApiResponse<>(400, "Token is invalid", null));
-            }
-        } catch (Exception ex) {
-            System.out.println("Token test error: " + ex.getMessage());
-            ex.printStackTrace();
-            return ResponseEntity.ok(new ApiResponse<>(500, "Error: " + ex.getMessage(), null));
-        }
-    }
 }

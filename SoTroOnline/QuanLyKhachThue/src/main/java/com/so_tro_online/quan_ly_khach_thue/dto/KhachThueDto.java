@@ -1,44 +1,25 @@
-package com.so_tro_online.quan_ly_khach_thue.entity;
+package com.so_tro_online.quan_ly_khach_thue.dto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import java.io.Serial;
+import java.io.Serializable;
 
-import java.time.Instant;
-import java.util.Date;
+public class KhachThueDto implements Serializable {
 
-@Entity
-@Table(name = "KhachThue")
-public class KhachThue {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
-    @Id
-    @Column(name = "maKhach", updatable = false)
     private int maKhach;
-
-    @Column(name = "maKhachDaiDien")
     private String maKhachDaiDien;
-
-    @Column(name = "maCanCuoc")
     private String maCanCuoc;
-
-    @Column(name = "hoTen")
     private String hoTen;
-
-    @Column(name = "thuongTru")
     private String thuongTru;
+    private String ngaySinh;
+    private String ngayTao;
 
-    @Column(name = "ngaySinh")
-    private Date ngaySinh;
+    public KhachThueDto() {}
 
-    @Column(name = "ngayTao")
-    private Instant ngayTao;
-
-    public KhachThue() {
-
-    }
-
-    public KhachThue(int maKhach, String maKhachDaiDien, String maCanCuoc, String hoTen, String thuongTru, Date ngaySinh, Instant ngayTao) {
+    public KhachThueDto(int maKhach, String maKhachDaiDien, String maCanCuoc, String hoTen,
+                       String thuongTru, String ngaySinh, String ngayTao) {
         this.maKhach = maKhach;
         this.maKhachDaiDien = maKhachDaiDien;
         this.maCanCuoc = maCanCuoc;
@@ -48,6 +29,7 @@ public class KhachThue {
         this.ngayTao = ngayTao;
     }
 
+    // Getters and Setters
     public int getMaKhach() {
         return maKhach;
     }
@@ -88,21 +70,19 @@ public class KhachThue {
         this.thuongTru = thuongTru;
     }
 
-    public Date getNgaySinh() {
+    public String getNgaySinh() {
         return ngaySinh;
     }
 
-    public void setNgaySinh(Date ngaySinh) {
+    public void setNgaySinh(String ngaySinh) {
         this.ngaySinh = ngaySinh;
     }
 
-    public Instant getNgayTao() {
+    public String getNgayTao() {
         return ngayTao;
     }
 
-    public void setNgayTao(Instant ngayTao) {
+    public void setNgayTao(String ngayTao) {
         this.ngayTao = ngayTao;
     }
-
-
 }

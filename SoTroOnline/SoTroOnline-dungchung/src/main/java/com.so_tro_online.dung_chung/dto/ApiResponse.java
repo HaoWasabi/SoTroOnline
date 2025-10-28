@@ -1,9 +1,12 @@
-package com.so_tro_online.quan_ly_tai_khoan.dto;
+package com.so_tro_online.dung_chung.dto;
 
 public class ApiResponse<T> {
     private int status;
     private String message;
     private T data;
+
+    public ApiResponse() {
+    }
 
     public ApiResponse(int status, String message, T data) {
         this.status = status;

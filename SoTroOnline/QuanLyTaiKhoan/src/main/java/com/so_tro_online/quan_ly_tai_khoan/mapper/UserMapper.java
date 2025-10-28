@@ -1,6 +1,6 @@
 package com.so_tro_online.quan_ly_tai_khoan.mapper;
 
-import com.so_tro_online.quan_ly_tai_khoan.dto.TaiKhoanDTO;
+import com.so_tro_online.quan_ly_tai_khoan.dto.TaiKhoanDto;
 import com.so_tro_online.quan_ly_tai_khoan.entity.TaiKhoan;
 import com.so_tro_online.quan_ly_tai_khoan.entity.TrangThai;
 
@@ -9,8 +9,8 @@ import java.util.Date;
 
 public class UserMapper {
 
-    public static TaiKhoanDTO toDto(TaiKhoan taiKhoan) {
-        return new TaiKhoanDTO(
+    public static TaiKhoanDto toDto(TaiKhoan taiKhoan) {
+        return new TaiKhoanDto(
                 taiKhoan.getMaTaiKhoan(),
                 taiKhoan.getMaCanCuoc(),
                 taiKhoan.getEmail(),

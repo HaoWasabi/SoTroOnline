@@ -1,6 +1,9 @@
 package com.so_tro_online.quan_ly_tai_khoan.service;
 
 import com.so_tro_online.dung_chung.utils.SecureRandomString;
+import com.so_tro_online.quan_ly_tai_khoan.dto.LoginRequest;
+import com.so_tro_online.quan_ly_tai_khoan.dto.LoginResponse;
+import com.so_tro_online.quan_ly_tai_khoan.dto.TaiKhoanDto;
 import com.so_tro_online.quan_ly_tai_khoan.entity.TaiKhoan;
 import com.so_tro_online.quan_ly_tai_khoan.entity.TrangThai;
 import com.so_tro_online.quan_ly_tai_khoan.exception.DuplicateEmailException;
@@ -9,25 +12,31 @@ import com.so_tro_online.quan_ly_tai_khoan.exception.NoAccountFoundException;
 import com.so_tro_online.quan_ly_tai_khoan.exception.NoEmailFoundException;
 import com.so_tro_online.quan_ly_tai_khoan.mapper.UserMapper;
 import com.so_tro_online.quan_ly_tai_khoan.repository.TaiKhoanRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.UUID;
 
 @Service
 public class TaiKhoanService {
+    private static final Logger logger = LoggerFactory.getLogger(TaiKhoanService.class);
+    
     private final TaiKhoanRepository taiKhoanRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final JwtService jwtService;
 
     @Autowired
-    public TaiKhoanService(TaiKhoanRepository taiKhoanRepository, PasswordEncoder passwordEncoder, EmailService emailService) {
+    public TaiKhoanService(TaiKhoanRepository taiKhoanRepository, PasswordEncoder passwordEncoder, 
+                          EmailService emailService, JwtService jwtService) {
         this.taiKhoanRepository = taiKhoanRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
+        this.jwtService = jwtService;
     }
 
     public TaiKhoan signIn(String email, String password) {
@@ -147,5 +156,137 @@ public class TaiKhoanService {
             throw new NoEmailFoundException();
         }
         return taiKhoan;
+    }
+
+    /**
+     * Authenticate user with email and password and return LoginResponse with JWT token
+     */
+    public LoginResponse authenticateUser(LoginRequest loginRequest) {
+        logger.info("Authenticating user: {}", loginRequest.getEmail());
+
+        try {
+            // Use existing signIn method for authentication
+            TaiKhoan taiKhoan = signIn(loginRequest.getEmail(), loginRequest.getPassword());
+            
+            // Generate JWT tokens
+            String accessToken = jwtService.generateToken(taiKhoan.getEmail());
+            String refreshToken = generateRefreshToken(taiKhoan.getEmail());
+
+            // Create user info
+            TaiKhoanDto taiKhoanDTO = UserMapper.toDto(taiKhoan);
+            
+            return new LoginResponse(
+                accessToken,
+                refreshToken,
+                3600, // 1 hour (can be configurable)
+                taiKhoanDTO
+            );
+        } catch (Exception e) {
+            logger.error("Authentication failed for user: {}", loginRequest.getEmail(), e);
+            throw new RuntimeException("Invalid credentials");
+        }
+    }
+
+    /**
+     * Authenticate OAuth2 user and return LoginResponse with JWT tokens
+     */
+    public LoginResponse authenticateOAuth2User(String email, String name) {
+        logger.info("Authenticating OAuth2 user: {}", email);
+
+        try {
+            // Find or create user
+            TaiKhoan taiKhoan = taiKhoanRepository.findByEmail(email);
+            
+            if (taiKhoan == null) {
+                // Create new user for OAuth2 login
+                taiKhoan = new TaiKhoan();
+                taiKhoan.setEmail(email);
+                taiKhoan.setHoTen(name != null ? name : email.split("@")[0]);
+                taiKhoan.setTrangThai(TrangThai.hoatDong);
+                taiKhoan.setNgayTao(LocalDateTime.now());
+                // OAuth2 users don't have passwords
+                taiKhoan = taiKhoanRepository.save(taiKhoan);
+                logger.info("Created new OAuth2 user: {}", email);
+            }
+            
+            // Generate JWT tokens
+            String accessToken = jwtService.generateToken(taiKhoan.getEmail());
+            String refreshToken = generateRefreshToken(taiKhoan.getEmail());
+
+            // Create user info
+            TaiKhoanDto taiKhoanDTO = UserMapper.toDto(taiKhoan);
+            
+            return new LoginResponse(
+                accessToken,
+                refreshToken,
+                3600, // 1 hour (can be configurable)
+                taiKhoanDTO
+            );
+        } catch (Exception e) {
+            logger.error("OAuth2 authentication failed for user: {}", email, e);
+            throw new RuntimeException("OAuth2 authentication failed");
+        }
+    }
+
+    /**
+     * Refresh access token using refresh token
+     */
+    public String refreshAccessToken(String refreshToken) {
+        try {
+            // Extract email from refresh token (implement your own validation logic)
+            String email = validateAndExtractEmailFromRefreshToken(refreshToken);
+            
+            // Generate new access token
+            return jwtService.generateToken(email);
+        } catch (Exception e) {
+            logger.error("Token refresh failed", e);
+            throw new RuntimeException("Invalid refresh token");
+        }
+    }
+
+    /**
+     * Get current user information from JWT token
+     */
+    public TaiKhoanDto getCurrentUserInfo(String token) {
+        try {
+            if (token != null && token.startsWith("Bearer ")) {
+                String jwtToken = token.substring(7);
+                
+                if (jwtService.isTokenValid(jwtToken)) {
+                    String email = jwtService.extractEmail(jwtToken);
+                    TaiKhoan taiKhoan = getUserByEmail(email);
+                    
+                    return UserMapper.toDto(taiKhoan);
+                }
+            }
+            throw new RuntimeException("Invalid token");
+        } catch (Exception e) {
+            logger.error("Failed to get user info from token", e);
+            throw new RuntimeException("Invalid token");
+        }
+    }
+
+    /**
+     * Generate refresh token
+     */
+    private String generateRefreshToken(String email) {
+        // You can implement a more sophisticated refresh token generation
+        // For now, using a simple approach
+        return "refresh_" + email + "_" + System.currentTimeMillis();
+    }
+
+    /**
+     * Validate refresh token and extract email
+     */
+    private String validateAndExtractEmailFromRefreshToken(String refreshToken) {
+        // Implement your refresh token validation logic here
+        // This is a simple implementation - you should use proper JWT for refresh tokens too
+        if (refreshToken != null && refreshToken.startsWith("refresh_")) {
+            String[] parts = refreshToken.split("_");
+            if (parts.length >= 2) {
+                return parts[1]; // Extract email from refresh token
+            }
+        }
+        throw new RuntimeException("Invalid refresh token format");
     }
 }

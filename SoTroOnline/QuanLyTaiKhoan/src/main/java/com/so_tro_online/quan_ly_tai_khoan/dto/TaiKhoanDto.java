@@ -6,7 +6,7 @@ import java.io.Serial;
 import java.io.Serializable;
 
 
-public class TaiKhoanDTO implements Serializable {
+public class TaiKhoanDto implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -31,9 +31,11 @@ public class TaiKhoanDTO implements Serializable {
 
     private String matKhau;
 
-    public TaiKhoanDTO () {}
+    private String token; // JWT token field
 
-    public TaiKhoanDTO(int maTaiKhoan, String maCanCuoc, String email, String hoTen, String dienThoai, String thuongTru, String ngaySinh, String ngayTao, TrangThai trangThai) {
+    public TaiKhoanDto() {}
+
+    public TaiKhoanDto(int maTaiKhoan, String maCanCuoc, String email, String hoTen, String dienThoai, String thuongTru, String ngaySinh, String ngayTao, TrangThai trangThai) {
         this.maTaiKhoan = maTaiKhoan;
         this.maCanCuoc = maCanCuoc;
         this.email = email;
@@ -124,5 +126,6 @@ public class TaiKhoanDTO implements Serializable {
     public void setMatKhau(String matKhau) {
         this.matKhau = matKhau;
     }
+
 
 }

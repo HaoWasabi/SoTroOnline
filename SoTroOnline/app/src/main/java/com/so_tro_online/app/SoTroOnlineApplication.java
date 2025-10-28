@@ -9,10 +9,19 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication
 @ComponentScan(basePackages = {
         "com.so_tro_online.app",
-        "com.so_tro_online.quan_ly_tai_khoan"
+        "com.so_tro_online.quan_ly_tai_khoan",
+        "com.so_tro_online.quan_ly_khach_thue",
+        "com.so_tro_online.dung_chung"
 })
-@EnableJpaRepositories(basePackages = "com.so_tro_online.quan_ly_tai_khoan.repository")
-@EntityScan(basePackages = "com.so_tro_online.quan_ly_tai_khoan.entity")
+@EnableJpaRepositories(basePackages = {
+        "com.so_tro_online.quan_ly_tai_khoan.repository",
+        "com.so_tro_online.quan_ly_khach_thue.repository"
+})
+@EntityScan(basePackages = {
+        "com.so_tro_online.quan_ly_tai_khoan.entity",
+        "com.so_tro_online.quan_ly_khach_thue.entity",
+        "com.so_tro_online.dung_chung.entity"
+})
 public class SoTroOnlineApplication {
 
 	public static void main(String[] args) {
