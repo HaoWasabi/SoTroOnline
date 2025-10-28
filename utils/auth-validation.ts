@@ -42,7 +42,7 @@ export function validateAddress(address: string): boolean {
 export function validateDateOfBirth(dateOfBirth: Date | undefined): boolean {
     if (!dateOfBirth) return false;
     const today = new Date();
-    return today.getFullYear() - dateOfBirth.getFullYear() < 0 || (today.getFullYear() - dateOfBirth.getFullYear() === 0 && today.getMonth() < dateOfBirth.getMonth()) || (today.getFullYear() - dateOfBirth.getFullYear() === 0 && today.getMonth() === dateOfBirth.getMonth() && today.getDate() < dateOfBirth.getDate());
+    return dateOfBirth < today;
 }
 
 export function validatePassword(password: string): boolean {

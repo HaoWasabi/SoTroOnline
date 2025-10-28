@@ -1,10 +1,11 @@
-interface Tenant {
-    email: string,
-    tenant_cccd: string,
-    represent_code: string,
-    name: string,
-    phone: string,
-    address: string,
-    dateOfBirth: string,
-    status: "isActive" | "isDeleted" | "isPending"
+export interface Tenant {
+    maKhach: number,
+    maKhachDaiDien: string,
+    maCanCuoc: string,
+    hoTen: string,
+    thuongTru: string,
+    ngaySinh: string,
+    ngayTao: string,
+    trangThai: string,
+    dienThoai: string,
 }

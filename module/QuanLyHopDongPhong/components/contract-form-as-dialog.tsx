@@ -2,7 +2,6 @@
 
 import DatePickerWithCustomLabel from "@/components/date-picker-with-custom-label"
 import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
 import { CardContent } from "@/components/ui/card"
 import {
   Dialog,
@@ -19,6 +18,7 @@ import { Label } from "@/components/ui/label"
 import Combobox from "@/module/QuanLyPhong/components/combobox"
 import { useLanguageStore } from "@/zustand/language-tranlator"
 import { Plus } from "lucide-react"
+import ServiceTable from "./service-table"
 
 export function ContractFormAsDialog() {
 
@@ -49,6 +49,17 @@ export function ContractFormAsDialog() {
                             <h2 className="text-xl font-semibold">{language === 'vi' ? 'Thông tin hợp đồng' : 'Contract Information'}</h2>
 
                             <div className="px-4 space-y-4 sm:space-y-0 sm:grid grid-cols-2 gap-2">
+                                <div className="space-y-2">
+                                    <Label htmlFor="rent_price">
+                                        { language === 'vi' ? 'Chọn khách thuê' : 'Select tenant'}
+                                    </Label>
+                                    <Combobox 
+                                        data={null}
+                                        button_message={language === 'vi' ? 'Chọn khách thuê...' : 'Select tenant...'}
+                                        no_data_found_english_message="No tenant found."
+                                        no_data_found_vietname_message="Không tìm thấy khách thuê."
+                                    />
+                                </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="room">
                                         {language === 'vi' ? 'Chọn phòng' : 'Select Room'}
@@ -107,20 +118,10 @@ export function ContractFormAsDialog() {
                                 </div>
                             </div>
 
-                            <h2 className="text-xl font-semibold">{language === 'vi' ? 'Thông tin khách hàng' : 'Customer Information'}</h2>
+                            <h2 className="text-xl font-semibold">{language === 'vi' ? 'Thông tin dịch vụ' : 'Service Information'}</h2>
 
-                            <div className="px-4 space-y-4 sm:space-y-0 sm:grid grid-cols-2 gap-2">
-                                <div className="space-y-2">
-                                    <Label htmlFor="rent_price">
-                                        { language === 'vi' ? 'Chọn khách thuê' : 'Select tenant'}
-                                    </Label>
-                                    <Combobox 
-                                        data={null}
-                                        button_message={language === 'vi' ? 'Chọn khách thuê...' : 'Select tenant...'}
-                                        no_data_found_english_message="No tenant found."
-                                        no_data_found_vietname_message="Không tìm thấy khách thuê."
-                                    />
-                                </div>
+                            <div className="px-4 space-y-4">
+                                <ServiceTable />
                             </div>
                         </CardContent>
                         

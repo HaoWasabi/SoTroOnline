@@ -1,4 +1,4 @@
-export async function signUpApi(
+/*export async function signUpApi(
     email: string,
     cccdCode: string,
     password: string,
@@ -41,8 +41,9 @@ export async function signUpApi(
             user: null
         };
     }
-}
+}/*
 
+/*
 export async function signInApi(email: string, password: string): Promise<{status: string; message: string, user?: TaiKhoan | null}> {
     try {
         const response = await fetch('http://localhost:8080/api/auth/login', {
@@ -88,6 +89,7 @@ export async function signInApi(email: string, password: string): Promise<{statu
         };
     }
 }
+*/
 
 export async function resetPasswordApi(email: string): Promise<{status: string; message: string}> {
     try {
@@ -221,3 +223,135 @@ export async function sendGoogleTokenToBackend(token: string): Promise<{status: 
         };
     }
 }
+
+// Authentication API service
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+
+export interface LoginResponse {
+    status: 'success' | 'error';
+    message: string;
+    data: {
+        accessToken: string;
+        refreshToken: string;
+        tokenType: string;
+        expiresIn: number;
+        taiKhoanDTO: {
+            maTaiKhoan: number;
+            maCanCuoc: string;
+            email: string;
+            hoTen: string;
+            dienThoai: string;
+            thuongTru: string;
+            ngaySinh: string;
+            trangThai: 'hoatDong' | 'biKhoa';
+            token?: string;
+        };
+    };
+}
+
+// Login with email and password
+export const login = async (email: string, password: string): Promise<LoginResponse> => {
+    try {
+        console.log('🔐 Attempting login for email:', email);
+        
+        const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password }),
+        });
+
+        const data = await response.json();
+        console.log('🔐 Login response from backend:', data);
+        
+        // Store tokens in localStorage - check for backend response structure
+        if (data.status === 200 && data.data && data.data.accessToken) {
+            console.log('🔐 Storing tokens in localStorage');
+            localStorage.setItem('accessToken', data.data.accessToken);
+            localStorage.setItem('refreshToken', data.data.refreshToken);
+            localStorage.setItem('user', JSON.stringify(data.data.taiKhoanDTO));
+            console.log('✅ Tokens stored successfully');
+        } else {
+            console.warn('⚠️ No tokens to store. Response data:', data);
+        }
+        
+        return {
+            status: data.status === 200 ? 'success' : 'error',
+            message: data.message,
+            data: data.data
+        }
+    } catch (error) {
+        console.error('💥 Error during login:', error);
+        throw error;
+    }
+};
+
+// Logout
+export const logout = async (): Promise<void> => {
+    try {
+        // Clear tokens from storage
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('user');
+        
+        // Optionally call backend logout endpoint
+        // await fetch(`${API_BASE_URL}/api/auth/logout`, { method: 'POST' });
+    } catch (error) {
+        console.error('Error during logout:', error);
+    }
+};
+
+// Check if user is authenticated
+export const isAuthenticated = (): boolean => {
+    if (typeof window !== 'undefined') {
+        const token = localStorage.getItem('accessToken');
+        return token !== null;
+    }
+    return false;
+};
+
+// Get current user from storage
+export const getCurrentUser = () => {
+    if (typeof window !== 'undefined') {
+        const userStr = localStorage.getItem('user');
+        return userStr ? JSON.parse(userStr) : null;
+    }
+    return null;
+};
+
+// Refresh token
+export const refreshToken = async (): Promise<string | null> => {
+    try {
+        const refreshTokenValue = localStorage.getItem('refreshToken');
+        if (!refreshTokenValue) {
+            throw new Error('No refresh token available');
+        }
+
+        const response = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${refreshTokenValue}`,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to refresh token');
+        }
+
+        const data = await response.json();
+        
+        if (data.success && data.data.accessToken) {
+            localStorage.setItem('accessToken', data.data.accessToken);
+            return data.data.accessToken;
+        }
+        
+        throw new Error('Invalid refresh response');
+    } catch (error) {
+        console.error('Error refreshing token:', error);
+        // Clear invalid tokens
+        logout();
+        return null;
+    }
+};

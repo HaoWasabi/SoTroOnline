@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import FilterComponent from "@/components/filter-component";
 import GridOfContractCard from "@/module/QuanLyHopDongPhong/components/grid-of-contract";
+import { InvoiceFormAsDialog } from "./invoice-form-as-dialog";
 
 
 const menu = [
@@ -40,10 +41,7 @@ export default function InvoiceManagementLayout() {
                         {language === 'vi' ? 'Theo dõi thanh toán tiền thuê nhà và hóa đơn' : 'Track rent payments and billing'}
                     </p>
                 </div>
-                <Button>
-                    <Plus className="h-4 w-4 mr-2" />
-                    {language === 'vi' ? 'Thêm hóa đơn' : 'Add Invoice'}
-                </Button>
+                <InvoiceFormAsDialog />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <CategoryOfInvoiceStatus categoryName="Total Revenue" quantity={10}/>

@@ -36,7 +36,7 @@ export default function Combobox({data, button_message, no_data_found_english_me
             </PopoverTrigger>
             <PopoverContent className="w-[200px] p-0">
                 <Command>
-                <CommandInput placeholder="Search framework..." className="h-9" />
+                {/* <CommandInput placeholder="Search ..." className="h-9" /> */}
                     <CommandList>
                         <CommandEmpty>{language === 'vi' ? no_data_found_vietname_message : no_data_found_english_message}</CommandEmpty>
                         <CommandGroup>

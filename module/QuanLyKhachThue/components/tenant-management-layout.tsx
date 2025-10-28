@@ -1,14 +1,12 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { useLanguageStore } from "@/zustand/language-tranlator"
-import { Plus, Search } from "lucide-react"
-import TenantComponent from "./tenant-component"
-import { tenants } from "../data/sample-data"
+import { List, Search } from "lucide-react"
 import FilterComponent from "@/components/filter-component"
-import { TenantFormAsDialog } from "./tenant-form-as-dialog"
+import { TenantForm } from "./tenant-form"
+import ListOfTenants from "./list-of-tenants"
 
 
 const menu = [
@@ -41,7 +39,7 @@ export default function TenantManagementLayout() {
                         {language === 'vi' ? 'Quản lý thông tin khách thuê' : 'Manage all your tenants and their information'}
                     </p>
                 </div>
-                <TenantFormAsDialog />
+                <TenantForm />
             </div>
             <Card>
                 <CardContent className="p-4">
@@ -57,11 +55,7 @@ export default function TenantManagementLayout() {
                     </div>
                 </CardContent>
             </Card>
-            <div className="grid grid-col-1 lg:grid-cols-3 gap-4">
-                {tenants.map((tenant) => (
-                    <TenantComponent key={tenant.email} tenant={tenant} />
-                ))}
-            </div>
+            <ListOfTenants />
         </main>
     )
 }

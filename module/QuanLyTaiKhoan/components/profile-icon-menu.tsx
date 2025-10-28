@@ -7,6 +7,7 @@ import { CircleUser, LogOut,  SquareUserRound } from "lucide-react"
 import { useTaiKhoanStore } from "@/zustand/taikhoan-store"
 import { useCallback } from "react"
 import { useRouter } from "next/navigation"
+import { logout } from "../api/api-quan-ly-tai-khoan"
 
 
 export default function ProfileIconMenu() {
@@ -16,7 +17,7 @@ export default function ProfileIconMenu() {
     const {language} = useLanguageStore()
 
     const handleLogout = useCallback(() => {
-        clearTaiKhoan()
+        logout();
         router.push('/login-page')
     }, [])
 

@@ -1,7 +1,7 @@
 "use client"
 
-import { Building2 } from "lucide-react";
 import LoginForm from "./login-form";
+import { Building2 } from "lucide-react";
 
 export default function LoginPageLayout() {
     return (

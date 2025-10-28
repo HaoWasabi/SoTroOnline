@@ -4,79 +4,297 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader} from "@/components/ui/card"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { useLanguageStore } from "@/zustand/language-tranlator"
-import { MoreHorizontal, Edit, Mail, Trash2, Phone } from "lucide-react"
+import { MoreHorizontal, Edit, Mail, Trash2, Phone, User, Calendar, MapPin, CreditCard } from "lucide-react"
+import { TenantFormEditing } from "./tenant-form-editing"
+import { deleteTenant } from "../api/api-tenant"
+import { useState } from "react"
+import { Tenant } from "../types/Tenant"
 
-export default function TenantComponent({tenant}: {tenant: Tenant}) {
+interface TenantComponentProps {
+    tenant: Tenant;
+    onUpdate?: () => void;
+    onDelete?: () => void;
+}
 
-    const {language} = useLanguageStore();
+export default function TenantComponent({ tenant, onUpdate, onDelete }: TenantComponentProps) {
+
+    const { language } = useLanguageStore();
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    // Helper function to get status badge
+    const getStatusBadge = () => {
+        const statusConfig = {
+            'hoatDong': {
+                variant: 'default' as const,
+                className: 'bg-green-100 text-green-800 hover:bg-green-200',
+                text: language === 'vi' ? 'Đang hoạt động' : 'Active'
+            },
+            'biKhoa': {
+                variant: 'destructive' as const,
+                className: 'bg-red-100 text-red-800 hover:bg-red-200',
+                text: language === 'vi' ? 'Bị khóa' : 'Blocked'
+            },
+            'pending': {
+                variant: 'secondary' as const,
+                className: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
+                text: language === 'vi' ? 'Đang chờ' : 'Pending'
+            }
+        };
+
+        const config = statusConfig[tenant.trangThai as keyof typeof statusConfig] || statusConfig.pending;
+        
+        return (
+            <Badge variant={config.variant} className={config.className}>
+                {config.text}
+            </Badge>
+        );
+    };
 
     return (
-        <Card key={tenant.name} className="w-full hover:shadow-md transition-shadow">
-            <CardHeader className="pb-2">
+        <Card className="w-full hover:shadow-lg transition-all duration-200 border-l-4 border-l-blue-500">
+            <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
-                    <div className="flex flex-col items-start">
-                        <p className="text-lg font-bold text-blue-600">
-                            {tenant.name}
-                        </p>
-                        {/* <div>
-                            <CardTitle className="text-lg">{tenant.name}</CardTitle>
-                            <p className="text-sm text-gray-500">{tenant.room}</p>
-                        </div> */}
-                         <p className="text-sm text-gray-500">{tenant.represent_code}</p>
+                    <div className="flex flex-col space-y-1">
+                        <div className="flex items-center gap-2">
+                            <User className="h-5 w-5 text-blue-600" />
+                            <h3 className="text-lg font-semibold text-gray-900">
+                                {tenant.hoTen}
+                            </h3>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <CreditCard className="h-4 w-4" />
+                            <span>ID: {tenant.maKhachDaiDien || tenant.maKhach}</span>
+                        </div>
                     </div>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm">
-                            <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>{language === 'vi' ? "Hành động" : "Actions"}</DropdownMenuLabel>
-                                <DropdownMenuItem>
-                                    <Edit className="h-4 w-4 mr-2" />
-                                    {language === 'vi' ? "Chỉnh sửa khách thuê" : "Edit Tenant"}
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                    <Mail className="h-4 w-4 mr-2" />
-                                    {language === 'vi' ? "Gửi tin" : "Send Message"}
+                    
+                    <div className="flex items-center gap-2">
+                        {getStatusBadge()}
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                    <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-48">
+                                <DropdownMenuLabel>
+                                    {language === 'vi' ? "Hành động" : "Actions"}
+                                </DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem asChild>
+                                    <TenantFormEditing tenant={tenant} onUpdate={onUpdate}>
+                                        <div className="flex items-center w-full cursor-pointer">
+                                            <Edit className="h-4 w-4 mr-2" />
+                                            {language === 'vi' ? "Chỉnh sửa" : "Edit Tenant"}
+                                        </div>
+                                    </TenantFormEditing>
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem className="text-red-600">
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                {language === 'vi' ? "Xóa khách thuê" : "Remove Tenant"}
-                                </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                                <Dialog>
+                                    <DialogTrigger asChild>
+                                        <DropdownMenuItem 
+                                            className="text-red-600 focus:text-red-600 focus:bg-red-50" 
+                                            onSelect={(e) => e.preventDefault()}
+                                        >
+                                            <Trash2 className="h-4 w-4 mr-2" />
+                                            {language === 'vi' ? "Xóa khách thuê" : "Delete Tenant"}
+                                        </DropdownMenuItem>
+                                    </DialogTrigger>
+                                    <DialogContent className="sm:max-w-[425px]">
+                                        <DialogHeader>
+                                            <DialogTitle className="flex items-center gap-2 text-red-600">
+                                                <Trash2 className="h-5 w-5" />
+                                                {language === 'vi' ? 'Xác nhận xóa' : 'Confirm Deletion'}
+                                            </DialogTitle>
+                                            <DialogDescription className="text-gray-600">
+                                                {language === 'vi' 
+                                                    ? `Bạn có chắc chắn muốn xóa khách thuê "${tenant.hoTen}"? Hành động này không thể hoàn tác.`
+                                                    : `Are you sure you want to delete tenant "${tenant.hoTen}"? This action cannot be undone.`
+                                                }
+                                            </DialogDescription>
+                                        </DialogHeader>
+                                        <DialogFooter className="gap-2">
+                                            <DialogClose asChild>
+                                                <Button variant="outline">
+                                                    {language === 'vi' ? 'Hủy' : 'Cancel'}
+                                                </Button>
+                                            </DialogClose>
+                                            <Button 
+                                                variant="destructive" 
+                                                disabled={isDeleting}
+                                                className="min-w-20"
+                                                onClick={async () => {
+                                                    if (!tenant.maKhach) return;
+                                                    
+                                                    try {
+                                                        setIsDeleting(true);
+                                                        await deleteTenant(tenant.maKhach);
+                                                        onDelete?.();
+                                                    } catch (error) {
+                                                        console.error('Error deleting tenant:', error);
+                                                        // You can add toast notification here
+                                                    } finally {
+                                                        setIsDeleting(false);
+                                                    }
+                                                }}
+                                            >
+                                                {isDeleting 
+                                                    ? (language === 'vi' ? 'Đang xóa...' : 'Deleting...') 
+                                                    : (language === 'vi' ? 'Xóa' : 'Delete')
+                                                }
+                                            </Button>
+                                        </DialogFooter>
+                                    </DialogContent>
+                                </Dialog>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
                 </div>
             </CardHeader>
-            <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                    <span className="text-gray-600">{language === 'vi' ? "Trạng thái" : "Status"}</span>
-                    <Badge className={
-                        tenant.status === 'isActive' ? "bg-green-400" : 
-                        tenant.status === 'isDeleted' ? "bg-red-400" : "bg-gray-400"
-                    } variant={
-                        tenant.status === 'isActive' ? 'default' : 
-                        tenant.status === 'isPending' ? 'secondary' : 'destructive'
-                    }>
-                    {language === 'vi' ? (
-                        tenant.status === 'isActive' ? "Đang hoạt động" : 
-                        tenant.status === 'isDeleted' ? "Đã bị xóa" : 
-                        "Đang chờ"
-                    ) : "Edit Tenant"}
-                    </Badge>
+            
+            <CardContent className="space-y-2 pt-0">
+                {/* Contact Information */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {/* {tenant.email && (
+                        <div className="flex items-center gap-2 text-sm">
+                            <Mail className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                            <span className="text-gray-600 truncate" title={tenant.email}>
+                                {tenant.email}
+                            </span>
+                        </div>
+                    )} */}
+                    
+                    {tenant.dienThoai && (
+                        <div className="flex items-center gap-2 text-sm">
+                            <Phone className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                            <span className="text-gray-600">
+                                {tenant.dienThoai}
+                            </span>
+                        </div>
+                    )}
                 </div>
-                
+
+                {/* Personal Information */}
                 <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm">
-                    <Mail className="h-6 w-6 text-gray-400" />
-                    <span className="text-gray-600 truncate">{tenant.email}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                    <Phone className="h-6 w-6 text-gray-400" />
-                    <span className="text-gray-600">{tenant.phone}</span>
-                    </div>
+                    {tenant.maCanCuoc && (
+                        <div className="flex items-center gap-2 text-sm">
+                            <CreditCard className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                            <span className="text-gray-500">
+                                {language === 'vi' ? 'CCCD/CMND:' : 'ID Card:'}
+                            </span>
+                            <span className="text-gray-700 font-medium">
+                                {tenant.maCanCuoc}
+                            </span>
+                        </div>
+                    )}
+                    
+                    {tenant.ngaySinh && (
+                        <div className="flex items-center gap-2 text-sm">
+                            <Calendar className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                            <span className="text-gray-500">
+                                {language === 'vi' ? 'Ngày sinh:' : 'Birth date:'}
+                            </span>
+                            <span className="text-gray-700">
+                                {new Date(tenant.ngaySinh).toLocaleDateString(
+                                    language === 'vi' ? 'vi-VN' : 'en-US'
+                                )}
+                            </span>
+                        </div>
+                    )}
+                    
+                    {tenant.thuongTru && (
+                        <div className="flex items-start gap-2 text-sm">
+                            <MapPin className="h-4 w-4 text-gray-400 flex-shrink-0 mt-0.5" />
+                            <div className="flex-1">
+                                <span className="text-gray-500 block">
+                                    {language === 'vi' ? 'Địa chỉ thường trú:' : 'Permanent address:'}
+                                </span>
+                                <span className="text-gray-700">
+                                    {tenant.thuongTru}
+                                </span>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                {/* Action Buttons for Quick Access */}
+                <div className="flex gap-2 pt-2 border-t border-gray-100">
+                    <TenantFormEditing tenant={tenant} onUpdate={onUpdate}>
+                        <Button variant="outline" size="sm" className="flex-1">
+                            <Edit className="h-4 w-4 mr-2" />
+                            {language === 'vi' ? 'Chỉnh sửa' : 'Edit'}
+                        </Button>
+                    </TenantFormEditing>
+                    
+                    {tenant.dienThoai && (
+                        <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => window.open(`tel:${tenant.dienThoai}`, '_blank')}
+                        >
+                            <Phone className="h-4 w-4 mr-2" />
+                            {language === 'vi' ? 'Gọi' : 'Call'}
+                        </Button>
+                    )}
+
+                    <Dialog>
+                        <DialogTrigger asChild>
+                            <Button 
+                                variant="destructive" 
+                                size="sm"
+                                className="hover:bg-red-600"
+                            >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                {language === 'vi' ? 'Xóa' : 'Delete'}
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[425px]">
+                            <DialogHeader>
+                                <DialogTitle className="flex items-center gap-2 text-red-600">
+                                    <Trash2 className="h-5 w-5" />
+                                    {language === 'vi' ? 'Xác nhận xóa' : 'Confirm Deletion'}
+                                </DialogTitle>
+                                <DialogDescription className="text-gray-600">
+                                    {language === 'vi' 
+                                        ? `Bạn có chắc chắn muốn xóa khách thuê "${tenant.hoTen}"? Hành động này không thể hoàn tác.`
+                                        : `Are you sure you want to delete tenant "${tenant.hoTen}"? This action cannot be undone.`
+                                    }
+                                </DialogDescription>
+                            </DialogHeader>
+                            <DialogFooter className="gap-2">
+                                <DialogClose asChild>
+                                    <Button variant="outline">
+                                        {language === 'vi' ? 'Hủy' : 'Cancel'}
+                                    </Button>
+                                </DialogClose>
+                                <Button 
+                                    variant="destructive" 
+                                    disabled={isDeleting}
+                                    className="min-w-20"
+                                    onClick={async () => {
+                                        if (!tenant.maKhach) return;
+                                        
+                                        try {
+                                            setIsDeleting(true);
+                                            await deleteTenant(tenant.maKhach);
+                                            onDelete?.();
+                                        } catch (error) {
+                                            console.error('Error deleting tenant:', error);
+                                            // You can add toast notification here
+                                        } finally {
+                                            setIsDeleting(false);
+                                        }
+                                    }}
+                                >
+                                    {isDeleting 
+                                        ? (language === 'vi' ? 'Đang xóa...' : 'Deleting...') 
+                                        : (language === 'vi' ? 'Xóa' : 'Delete')
+                                    }
+                                </Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
                 </div>
             </CardContent>
         </Card>

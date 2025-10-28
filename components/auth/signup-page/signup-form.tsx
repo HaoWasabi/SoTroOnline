@@ -71,7 +71,7 @@ export default function SignUpForm() {
         }
 
         if(!validateDateOfBirth(new Date(dateOfBirth))) {
-            showError(language === 'vi' ? 'Bạn phải từ 18 tuổi trở lên' : 'You must be at least 18 years old');
+            showError(language === 'vi' ? 'Ngày sinh không hợp lệ' : 'Invalid date of birth');
             return;
         }
 

@@ -12,11 +12,11 @@ import { useLanguageStore } from "@/zustand/language-tranlator"
 import { Toast, ToastContainer } from "@/components/toast"
 import { useToast } from "@/hook/useToast"
 import { validateEmail } from "@/utils/auth-validation"
-import { sendGoogleTokenToBackend, signInApi } from "@/module/QuanLyTaiKhoan/api/api-quan-ly-tai-khoan"
+//import { signInApi } from "@/module/QuanLyTaiKhoan/api/api-quan-ly-tai-khoan"
 import { useRouter } from "next/navigation"
 import { useTaiKhoanStore } from "@/zustand/taikhoan-store"
-import { FaGoogle } from "react-icons/fa";
 import GoogleButton from "./google-button"
+import { login } from "@/module/QuanLyTaiKhoan/api/api-quan-ly-tai-khoan"
 
 export default function LoginForm() {
 
@@ -41,18 +41,16 @@ export default function LoginForm() {
             return;
         }
 
-        const response = await signInApi(email, password);
-        console.log('Full API response:', response);
+        const response = await login(email, password);
 
         if(response.status === 'success') {
-            if (response.user && response.user.email) {
-                setTaiKhoan(response.user);
+            if (response.data && response.data.taiKhoanDTO) {
+                setTaiKhoan(response.data.taiKhoanDTO);
                 showSuccess(language === 'vi' ? 'Đăng nhập thành công' : 'Login successful');
-                console.log('Logged in user:', response.user);
                 setIsSubmitting(false);
                 router.push("/");
             } else {
-                console.error('Invalid user data received:', response.user);
+                console.error('Invalid user data received:', response.data);
                 showError('Invalid user data received from server');
                 setIsSubmitting(false);
             }

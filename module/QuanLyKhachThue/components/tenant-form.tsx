@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label"
 import { useLanguageStore } from "@/zustand/language-tranlator"
 import { Plus } from "lucide-react"
 
-export function TenantFormAsDialog() {
+export function TenantForm() {
 
     const {language} = useLanguageStore()
 
@@ -32,7 +32,7 @@ export function TenantFormAsDialog() {
                 <DialogContent className="sm:min-w-[800px]">
                     <DialogHeader>
                         <DialogTitle>
-                            {language === 'vi' ? 'Thêm khách thuê mới' : 'Add New Tenant'}
+                            {language === 'vi' ? 'Thêm khách thuê' : 'Add Tenant'}
                         </DialogTitle>
                         <DialogDescription>
                             {language === 'vi' ? 'Điền thông tin khách thuê của bạn vào biểu mẫu bên dưới.' : 'Fill out the form below with your tenant information.'}
@@ -43,27 +43,30 @@ export function TenantFormAsDialog() {
                     <CardContent className="space-y-4">
                         <div className="space-y-4 sm:space-y-0 sm:grid grid-cols-2 gap-2">
                             <div className="space-y-2">
-                            <Label htmlFor="name">
-                                {language === 'vi' ? 'Tên' : 'Name'}
-                            </Label>
-                            <Input
-                                //ref={userNameRef}
-                                id="name"
-                                placeholder="John"
-                                required
-                            />
+                                <Label htmlFor="name">
+                                    {language === 'vi' ? 'Tên' : 'Name'}
+                                </Label>
+                                <Input
+                                    //ref={userNameRef}
+                                    id="name"
+                                    placeholder="John"
+                                    required
+                                />
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="email">Email</Label>
+                                <Label htmlFor="representative_tenant_code">
+                                    {language === 'vi' ? 'Mã khách thuê đại diện' : 'Representative Tenant Code'}
+                                </Label>
                                 <Input
                                     //ref={emailRef}
-                                    id="email"
-                                    type="email"
+                                    id="representative_tenant_code"
+                                    type="text"
                                     placeholder="john.doe@example.com"
+                                    disabled={true}
                                     required
                                 />
-                        </div>
+                            </div>
                         </div>
 
                         <div className="space-y-4 sm:space-y-0 sm:grid grid-cols-2 gap-2">
