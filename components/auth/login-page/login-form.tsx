@@ -38,33 +38,43 @@ export default function LoginForm() {
 
         if(!validateEmail(email)) {
             showError(language === 'vi' ? 'Email không hợp lệ' : 'Invalid email address');
+            setIsSubmitting(false);
             return;
         }
 
-        const response = await login(email, password);
+        try {
+            const response = await login(email, password);
 
-        if(response.status === 'success') {
-            if (response.data && response.data.taiKhoanDTO) {
-                setTaiKhoan(response.data.taiKhoanDTO);
-                showSuccess(language === 'vi' ? 'Đăng nhập thành công' : 'Login successful');
-                setIsSubmitting(false);
-                router.push("/");
+            if(response.status === 'success') {
+                if (response.data && response.data.taiKhoanDTO) {
+                    setTaiKhoan(response.data.taiKhoanDTO);
+                    showSuccess(language === 'vi' ? 'Đăng nhập thành công' : 'Login successful');
+                    
+                    // Add a small delay to ensure token storage is complete
+                    setTimeout(() => {
+                        setIsSubmitting(false);
+                        router.push("/");
+                    }, 500);
+                } else {
+                    console.error('Invalid user data received:', response.data);
+                    showError('Invalid user data received from server');
+                    setIsSubmitting(false);
+                }
+                
             } else {
-                console.error('Invalid user data received:', response.data);
-                showError('Invalid user data received from server');
+                const errorMessage = response.message && (language === 'vi' ? (
+                    response.message === 'Account is not exist' ? 'Tài khoản không tồn tại' : 
+                    response.message === 'Wrong account or password' ? 'Sai tài khoản hoặc mật khẩu' : 
+                    response.message === 'Internal server error' ? 'Lỗi máy chủ nội bộ' : response.message
+                ) : 'Login failed');
+                showError(errorMessage);
                 setIsSubmitting(false);
             }
-            
-        } else {
-            const errorMessage = response.message && (language === 'vi' ? (
-                response.message === 'Account is not exist' ? 'Tài khoản không tồn tại' : 
-                response.message === 'Wrong account or password' ? 'Sai tài khoản hoặc mật khẩu' : 
-                response.message === 'Internal server error' ? 'Lỗi máy chủ nội bộ' : response.message
-            ) : 'Login failed');
-            showError(errorMessage);
+        } catch (error) {
+            console.error('💥 Login error:', error);
+            showError('Network error occurred');
             setIsSubmitting(false);
         }
-
     }
 
     return (
@@ -134,9 +144,12 @@ export default function LoginForm() {
                         </CardContent>
             
                         <CardFooter className="flex flex-col space-y-4">
-                           <GoogleButton />
+                           <GoogleButton disabled={isSubmitting} />
                             <Button type="submit" disabled={isSubmitting} className="w-full bg-blue-500 hover:bg-blue-600 cursor-pointer">
-                                {language === 'vi' ? 'Đăng nhập' : 'Sign In'}
+                                {isSubmitting 
+                                    ? (language === 'vi' ? 'Đang đăng nhập...' : 'Signing In...') 
+                                    : (language === 'vi' ? 'Đăng nhập' : 'Sign In')
+                                }
                             </Button>
                         <div className="text-center text-sm text-gray-600">
                             {language === 'vi' ? 'Chưa có tài khoản?' : 'Do not have an account?'}
