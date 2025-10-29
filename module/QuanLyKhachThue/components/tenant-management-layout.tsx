@@ -30,7 +30,7 @@ export default function TenantManagementLayout() {
 
     return (
         <main className="pt-8 px-4 lg:pl-70 flex flex-col gap-5">
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row justify-between items-center">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">
                         {language === 'vi' ? 'Quản lý khách thuê' : 'Tenant Management'}

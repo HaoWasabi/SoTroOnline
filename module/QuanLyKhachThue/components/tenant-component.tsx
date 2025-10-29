@@ -31,29 +31,33 @@ export default function TenantComponent({ tenant, onUpdate, onDelete }: TenantCo
                 className: 'bg-green-100 text-green-800 hover:bg-green-200',
                 text: language === 'vi' ? 'Đang hoạt động' : 'Active'
             },
-            'biKhoa': {
+            'daXoa': {
                 variant: 'destructive' as const,
                 className: 'bg-red-100 text-red-800 hover:bg-red-200',
-                text: language === 'vi' ? 'Bị khóa' : 'Blocked'
-            },
-            'pending': {
-                variant: 'secondary' as const,
-                className: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
-                text: language === 'vi' ? 'Đang chờ' : 'Pending'
+                text: language === 'vi' ? 'Đã xóa' : 'Deleted'
             }
         };
 
-        const config = statusConfig[tenant.trangThai as keyof typeof statusConfig] || statusConfig.pending;
+        const config = statusConfig[tenant.trangThai as keyof typeof statusConfig];
         
+        if (config) {
+            return (
+                <Badge variant={config.variant} className={config.className}>
+                    {config.text}
+                </Badge>
+            );
+        }
+
+        // Fallback for any unexpected values (should not happen based on your data)
         return (
-            <Badge variant={config.variant} className={config.className}>
-                {config.text}
+            <Badge variant="outline" className="bg-gray-50 text-gray-700 hover:bg-gray-100">
+                {tenant.trangThai || (language === 'vi' ? 'Không xác định' : 'Unknown')}
             </Badge>
         );
     };
 
     return (
-        <Card className="w-full hover:shadow-lg transition-all duration-200 border-l-4 border-l-blue-500">
+        <Card className="w-full gap-0 hover:shadow-lg transition-all duration-200 border-l-4 border-l-blue-500">
             <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                     <div className="flex flex-col space-y-1">
@@ -71,89 +75,11 @@ export default function TenantComponent({ tenant, onUpdate, onDelete }: TenantCo
                     
                     <div className="flex items-center gap-2">
                         {getStatusBadge()}
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                    <MoreHorizontal className="h-4 w-4" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-48">
-                                <DropdownMenuLabel>
-                                    {language === 'vi' ? "Hành động" : "Actions"}
-                                </DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem asChild>
-                                    <TenantFormEditing tenant={tenant} onUpdate={onUpdate}>
-                                        <div className="flex items-center w-full cursor-pointer">
-                                            <Edit className="h-4 w-4 mr-2" />
-                                            {language === 'vi' ? "Chỉnh sửa" : "Edit Tenant"}
-                                        </div>
-                                    </TenantFormEditing>
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <Dialog>
-                                    <DialogTrigger asChild>
-                                        <DropdownMenuItem 
-                                            className="text-red-600 focus:text-red-600 focus:bg-red-50" 
-                                            onSelect={(e) => e.preventDefault()}
-                                        >
-                                            <Trash2 className="h-4 w-4 mr-2" />
-                                            {language === 'vi' ? "Xóa khách thuê" : "Delete Tenant"}
-                                        </DropdownMenuItem>
-                                    </DialogTrigger>
-                                    <DialogContent className="sm:max-w-[425px]">
-                                        <DialogHeader>
-                                            <DialogTitle className="flex items-center gap-2 text-red-600">
-                                                <Trash2 className="h-5 w-5" />
-                                                {language === 'vi' ? 'Xác nhận xóa' : 'Confirm Deletion'}
-                                            </DialogTitle>
-                                            <DialogDescription className="text-gray-600">
-                                                {language === 'vi' 
-                                                    ? `Bạn có chắc chắn muốn xóa khách thuê "${tenant.hoTen}"? Hành động này không thể hoàn tác.`
-                                                    : `Are you sure you want to delete tenant "${tenant.hoTen}"? This action cannot be undone.`
-                                                }
-                                            </DialogDescription>
-                                        </DialogHeader>
-                                        <DialogFooter className="gap-2">
-                                            <DialogClose asChild>
-                                                <Button variant="outline">
-                                                    {language === 'vi' ? 'Hủy' : 'Cancel'}
-                                                </Button>
-                                            </DialogClose>
-                                            <Button 
-                                                variant="destructive" 
-                                                disabled={isDeleting}
-                                                className="min-w-20"
-                                                onClick={async () => {
-                                                    if (!tenant.maKhach) return;
-                                                    
-                                                    try {
-                                                        setIsDeleting(true);
-                                                        await deleteTenant(tenant.maKhach);
-                                                        onDelete?.();
-                                                    } catch (error) {
-                                                        console.error('Error deleting tenant:', error);
-                                                        // You can add toast notification here
-                                                    } finally {
-                                                        setIsDeleting(false);
-                                                    }
-                                                }}
-                                            >
-                                                {isDeleting 
-                                                    ? (language === 'vi' ? 'Đang xóa...' : 'Deleting...') 
-                                                    : (language === 'vi' ? 'Xóa' : 'Delete')
-                                                }
-                                            </Button>
-                                        </DialogFooter>
-                                    </DialogContent>
-                                </Dialog>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
                     </div>
                 </div>
             </CardHeader>
             
-            <CardContent className="space-y-2 pt-0">
+            <CardContent className="space-y-2  pt-0">
                 {/* Contact Information */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {/* {tenant.email && (
@@ -229,6 +155,7 @@ export default function TenantComponent({ tenant, onUpdate, onDelete }: TenantCo
                     
                     {tenant.dienThoai && (
                         <Button 
+                            disabled
                             variant="outline" 
                             size="sm"
                             onClick={() => window.open(`tel:${tenant.dienThoai}`, '_blank')}

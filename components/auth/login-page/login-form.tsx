@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 
-import { useEffect, useRef, useState } from "react"
+import { useRef, useState } from "react"
 import { EyeOff, Eye} from "lucide-react"
 import { Button } from "../../ui/button"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../../ui/card"
@@ -12,7 +12,6 @@ import { useLanguageStore } from "@/zustand/language-tranlator"
 import { Toast, ToastContainer } from "@/components/toast"
 import { useToast } from "@/hook/useToast"
 import { validateEmail } from "@/utils/auth-validation"
-//import { signInApi } from "@/module/QuanLyTaiKhoan/api/api-quan-ly-tai-khoan"
 import { useRouter } from "next/navigation"
 import { useTaiKhoanStore } from "@/zustand/taikhoan-store"
 import GoogleButton from "./google-button"
@@ -56,7 +55,7 @@ export default function LoginForm() {
                         router.push("/");
                     }, 500);
                 } else {
-                    console.error('Invalid user data received:', response.data);
+                    //console.error('Invalid user data received:', response.data);
                     showError('Invalid user data received from server');
                     setIsSubmitting(false);
                 }
@@ -64,7 +63,7 @@ export default function LoginForm() {
             } else {
                 const errorMessage = response.message && (language === 'vi' ? (
                     response.message === 'Account is not exist' ? 'Tài khoản không tồn tại' : 
-                    response.message === 'Wrong account or password' ? 'Sai tài khoản hoặc mật khẩu' : 
+                    response.message === 'Invalid credentials' ? 'Sai tài khoản hoặc mật khẩu' : 
                     response.message === 'Internal server error' ? 'Lỗi máy chủ nội bộ' : response.message
                 ) : 'Login failed');
                 showError(errorMessage);

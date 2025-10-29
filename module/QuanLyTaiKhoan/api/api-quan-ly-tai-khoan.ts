@@ -252,7 +252,7 @@ export interface LoginResponse {
 // Login with email and password
 export const login = async (email: string, password: string): Promise<LoginResponse> => {
     try {
-        console.log('🔐 Attempting login for email:', email);
+        //console.log('🔐 Attempting login for email:', email);
         
         const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
             method: 'POST',
@@ -263,11 +263,11 @@ export const login = async (email: string, password: string): Promise<LoginRespo
         });
 
         const data = await response.json();
-        console.log('🔐 Login response from backend:', data);
+        //console.log('🔐 Login response from backend:', data);
         
         // Store tokens in localStorage - check for backend response structure
         if (data.status === 200 && data.data && data.data.accessToken) {
-            console.log('🔐 Storing tokens in localStorage');
+            //console.log('🔐 Storing tokens in localStorage');
             localStorage.setItem('accessToken', data.data.accessToken);
             localStorage.setItem('refreshToken', data.data.refreshToken);
             localStorage.setItem('user', JSON.stringify(data.data.taiKhoanDTO));
@@ -282,7 +282,7 @@ export const login = async (email: string, password: string): Promise<LoginRespo
             data: data.data
         }
     } catch (error) {
-        console.error('💥 Error during login:', error);
+        //console.error('💥 Error during login:', error);
         throw error;
     }
 };
@@ -290,10 +290,20 @@ export const login = async (email: string, password: string): Promise<LoginRespo
 // Logout
 export const logout = async (): Promise<void> => {
     try {
+        //console.log('🚪 Logging out user...');
+        
         // Clear tokens from storage
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('user');
+        
+        // Clear Zustand store
+        if (typeof window !== 'undefined') {
+            // Clear the persisted Zustand store
+            localStorage.removeItem('taikhoan-storage');
+        }
+        
+        //console.log('✅ Logout completed, all data cleared');
         
         // Optionally call backend logout endpoint
         // await fetch(`${API_BASE_URL}/api/auth/logout`, { method: 'POST' });
@@ -302,18 +312,27 @@ export const logout = async (): Promise<void> => {
     }
 };
 
-// Check if user is authenticated
+// Check if user is authenticated (both token and user data exist)
 export const isAuthenticated = (): boolean => {
     if (typeof window !== 'undefined') {
         const token = localStorage.getItem('accessToken');
-        return token !== null;
+        const user = localStorage.getItem('user');
+        const isValid = token !== null && user !== null;
+        
+        /*console.log('🔍 Authentication check:', {
+            hasToken: !!token,
+            hasUser: !!user,
+            isValid
+        });*/
+        
+        return isValid;
     }
     return false;
 };
 
-// Get current user from storage
+// Get current user from storage with validation
 export const getCurrentUser = () => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && isAuthenticated()) {
         const userStr = localStorage.getItem('user');
         return userStr ? JSON.parse(userStr) : null;
     }
@@ -349,7 +368,7 @@ export const refreshToken = async (): Promise<string | null> => {
         
         throw new Error('Invalid refresh response');
     } catch (error) {
-        console.error('Error refreshing token:', error);
+        //console.error('Error refreshing token:', error);
         // Clear invalid tokens
         logout();
         return null;

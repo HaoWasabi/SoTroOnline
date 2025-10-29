@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { Building, Building2, FileText, Home, Menu, Receipt, Search, Settings, User, Users, Wrench } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -27,10 +27,15 @@ const navigation = [
 export function Header() {
 
     const pathName = usePathname();
-    const {taiKhoan} = useTaiKhoanStore();
+    const {taiKhoan, validateAndSyncAuth} = useTaiKhoanStore();
     const {language} = useLanguageStore();
     const [open, setOpen] = React.useState(false);
     const title = navigation.filter((item) => item.href === pathName)
+
+    // Validate authentication state on mount and path changes
+    useEffect(() => {
+        validateAndSyncAuth();
+    }, [pathName, validateAndSyncAuth]);
 
     return (
         <>

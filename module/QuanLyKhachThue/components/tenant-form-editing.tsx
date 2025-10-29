@@ -16,7 +16,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useLanguageStore } from "@/zustand/language-tranlator"
 import { updateTenant } from "../api/api-tenant"
-import { useState } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
+import { Tenant } from "../types/Tenant"
 
 interface TenantFormEditingProps {
     tenant: Tenant;
@@ -29,24 +30,77 @@ export function TenantFormEditing({ tenant, children, onUpdate }: TenantFormEdit
     const { language } = useLanguageStore();
     const [isUpdating, setIsUpdating] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
+    const [hasChanges, setHasChanges] = useState(false);
+    
+    // Use useRef to store original values (more performant than useState for comparison)
+    const originalValuesRef = useRef({
+        hoTen: '',
+        maCanCuoc: '',
+        dienThoai: '',
+        thuongTru: '',
+        ngaySinh: ''
+    });
+
+    // Initialize original values when dialog opens
+    useEffect(() => {
+        if (isOpen) {
+            originalValuesRef.current = {
+                hoTen: tenant.hoTen || '',
+                maCanCuoc: tenant.maCanCuoc || '',
+                dienThoai: tenant.dienThoai || '',
+                thuongTru: tenant.thuongTru || '',
+                ngaySinh: tenant.ngaySinh ? new Date(tenant.ngaySinh).toISOString().split('T')[0] : ''
+            };
+            setHasChanges(false);
+        }
+    }, [isOpen, tenant]);
+
+    // Optimized change detection with useCallback to prevent unnecessary re-renders
+    const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        const originalValue = originalValuesRef.current[name as keyof typeof originalValuesRef.current];
+        
+        // Quick check: if this specific field changed, enable button immediately
+        if (value !== originalValue) {
+            if (!hasChanges) {
+                setHasChanges(true);
+            }
+            return;
+        }
+        
+        // If this field matches original, check all other fields
+        // Only do full form check when a field reverts to original value
+        const form = e.target.form;
+        if (form) {
+            const formData = new FormData(form);
+            const hasAnyChanges = Object.keys(originalValuesRef.current).some(
+                key => {
+                    const currentValue = formData.get(key) as string || '';
+                    const originalValue = originalValuesRef.current[key as keyof typeof originalValuesRef.current];
+                    return currentValue !== originalValue;
+                }
+            );
+            
+            setHasChanges(hasAnyChanges);
+        }
+    }, [hasChanges]);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (!tenant.id) return;
+        if (!tenant.maKhach) return;
 
         const formData = new FormData(e.currentTarget);
         const updatedData = {
-            name: formData.get('name') as string,
-            email: formData.get('email') as string,
-            tenant_cccd: formData.get('cccd') as string,
-            phone: formData.get('phone') as string,
-            address: formData.get('address') as string,
-            dateOfBirth: formData.get('dateOfBirth') as string,
+            hoTen: formData.get('hoTen') as string,
+            maCanCuoc: formData.get('maCanCuoc') as string,
+            dienThoai: formData.get('dienThoai') as string,
+            thuongTru: formData.get('thuongTru') as string,
+            ngaySinh: formData.get('ngaySinh') as string,
         };
 
         try {
             setIsUpdating(true);
-            await updateTenant(tenant.id, updatedData);
+            await updateTenant(tenant.maKhach, updatedData);
             setIsOpen(false);
             onUpdate?.();
         } catch (error) {
@@ -76,26 +130,30 @@ export function TenantFormEditing({ tenant, children, onUpdate }: TenantFormEdit
                         <CardContent className="space-y-4">
                             <div className="space-y-4 sm:space-y-0 sm:grid grid-cols-2 gap-2">
                                 <div className="space-y-2">
-                                <Label htmlFor="name">
-                                    {language === 'vi' ? 'Tên' : 'Name'}
+                                <Label htmlFor="hoTen">
+                                    {language === 'vi' ? 'Họ và tên' : 'Full Name'}
                                 </Label>
                                 <Input
-                                    id="name"
-                                    name="name"
-                                    placeholder="John"
-                                    defaultValue={tenant.name}
+                                    id="hoTen"
+                                    name="hoTen"
+                                    placeholder={language === 'vi' ? 'Nguyễn Văn A' : 'John Doe'}
+                                    defaultValue={tenant.hoTen || ''}
+                                    onChange={handleInputChange}
                                     required
                                 />
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="email">Email</Label>
+                                    <Label htmlFor="maCanCuoc">
+                                        {language === 'vi' ? 'Căn cước công dân' : 'ID Card'}
+                                    </Label>
                                     <Input
-                                        id="email"
-                                        name="email"
-                                        type="email"
-                                        placeholder="john.doe@example.com"
-                                        defaultValue={tenant.email}
+                                        id="maCanCuoc"
+                                        name="maCanCuoc"
+                                        type="text"
+                                        placeholder={language === 'vi' ? '001234567890' : '001234567890'}
+                                        defaultValue={tenant.maCanCuoc || ''}
+                                        onChange={handleInputChange}
                                         required
                                     />
                                 </div>
@@ -103,56 +161,47 @@ export function TenantFormEditing({ tenant, children, onUpdate }: TenantFormEdit
 
                             <div className="space-y-4 sm:space-y-0 sm:grid grid-cols-2 gap-2">
                                 <div className="space-y-2">
-                                    <Label htmlFor="cccd">Cccd</Label>
-                                    <Input
-                                        id="cccd"
-                                        name="cccd"
-                                        type="text"
-                                        placeholder={ language === 'vi' ? 'Nhập số căn cước công dân ở đây!' : 'Enter cccd code here!'}
-                                        defaultValue={tenant.tenant_cccd}
-                                        required
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="phone">
-                                        { language === 'vi' ? 'Số điện thoại' : 'Phone Number'}
+                                    <Label htmlFor="dienThoai">
+                                        {language === 'vi' ? 'Số điện thoại' : 'Phone Number'}
                                     </Label>
                                     <Input
-                                        id="phone"
-                                        name="phone"
+                                        id="dienThoai"
+                                        name="dienThoai"
                                         type="tel"
-                                        placeholder="+1 (555) 123-4567"
-                                        defaultValue={tenant.phone}
+                                        placeholder={language === 'vi' ? '0123456789' : '+1 (555) 123-4567'}
+                                        defaultValue={tenant.dienThoai || ''}
+                                        onChange={handleInputChange}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="thuongTru">
+                                        {language === 'vi' ? 'Địa chỉ thường trú' : 'Permanent Address'}
+                                    </Label>
+                                    <Input
+                                        id="thuongTru"
+                                        name="thuongTru"
+                                        type="text"
+                                        placeholder={language === 'vi' ? '123 An Dương Vương, Hà Nội' : '123 Main Street, City'}
+                                        defaultValue={tenant.thuongTru || ''}
+                                        onChange={handleInputChange}
                                         required
                                     />
                                 </div>
                             </div>
 
-                            <div className="space-y-4 sm:space-y-0 sm:grid grid-cols-2 gap-2">
+                            <div className="space-y-4 sm:space-y-0 sm:grid grid-cols-1 gap-2">
                                 <div className="space-y-2">
-                                    <Label htmlFor="address">
-                                        { language === 'vi' ? 'Địa chỉ' : 'Address'}
+                                    <Label htmlFor="ngaySinh">
+                                        {language === 'vi' ? 'Ngày sinh' : 'Date of Birth'}
                                     </Label>
                                     <Input
-                                        id="address"
-                                        name="address"
-                                        type="text"
-                                        placeholder={ language === 'vi' ? '123 An Duong Vuong' : '123 No Street'}
-                                        defaultValue={tenant.address}
-                                        required
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="dateOfBirth">
-                                        { language === 'vi' ? 'Ngày sinh' : 'Date of birth'}
-                                    </Label>
-                                    <Input
-                                        id="dateOfBirth"
-                                        name="dateOfBirth"
+                                        id="ngaySinh"
+                                        name="ngaySinh"
                                         type="date"
-                                        defaultValue={tenant.dateOfBirth}
+                                        defaultValue={tenant.ngaySinh ? new Date(tenant.ngaySinh).toISOString().split('T')[0] : ''}
+                                        onChange={handleInputChange}
                                         required
                                     />
                                 </div>
@@ -165,7 +214,7 @@ export function TenantFormEditing({ tenant, children, onUpdate }: TenantFormEdit
                                     {language === 'vi' ? 'Hủy' : 'Cancel'}
                                 </Button>
                             </DialogClose>
-                            <Button type="submit" disabled={isUpdating}>
+                            <Button type="submit" disabled={isUpdating || !hasChanges}>
                                 {isUpdating 
                                     ? (language === 'vi' ? 'Đang cập nhật...' : 'Updating...') 
                                     : (language === 'vi' ? 'Cập nhật' : 'Update')

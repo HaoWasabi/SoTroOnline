@@ -6,9 +6,11 @@ import { Tenant } from "../types/Tenant";
 import { useLanguageStore } from "@/zustand/language-tranlator";
 import TenantComponent from "./tenant-component";
 import Pagination from "./pagination";
+import { useAuthGuard } from "@/hook/useAuthGuard";
 
 export default function ListOfTenants() {
     const { language } = useLanguageStore();
+    const { isAuthenticated } = useAuthGuard();
     const [tenants, setTenants] = useState<Tenant[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -49,8 +51,11 @@ export default function ListOfTenants() {
     };
 
     useEffect(() => {
-        loadTenants();
-    }, []);
+        // Only load tenants if authenticated
+        if (isAuthenticated) {
+            loadTenants();
+        }
+    }, [isAuthenticated]);
 
     const handlePageChange = (newPage: number) => {
         loadTenants(newPage);

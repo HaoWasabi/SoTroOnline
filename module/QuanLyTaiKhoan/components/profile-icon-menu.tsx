@@ -16,10 +16,27 @@ export default function ProfileIconMenu() {
     const { clearTaiKhoan} = useTaiKhoanStore()
     const {language} = useLanguageStore()
 
-    const handleLogout = useCallback(() => {
-        logout();
-        router.push('/login-page')
-    }, [])
+    const handleLogout = useCallback(async () => {
+        try {
+            console.log('🚪 Starting logout process...');
+            
+            // Clear all authentication data
+            await logout();
+            
+            // Clear the Zustand store
+            clearTaiKhoan();
+            
+            console.log('✅ Logout completed, redirecting...');
+            
+            // Redirect to login page
+            router.push('/login-page');
+        } catch (error) {
+            console.error('❌ Error during logout:', error);
+            // Still clear local state and redirect even if logout fails
+            clearTaiKhoan();
+            router.push('/login-page');
+        }
+    }, [clearTaiKhoan, router])
 
     return (
         <DropdownMenu>
