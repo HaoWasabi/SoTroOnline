@@ -192,5 +192,9 @@ public class KhachThueService {
             (khachThueRequest.getMaCanCuoc().trim().isEmpty() || khachThueRequest.getMaCanCuoc().length() != 12)) {
             throw new InvalidKhachThueDataException("Mã căn cước phải có 12 ký tự");
         }
+
+        if(khachThueRequest.getNgaySinh() != null || khachThueRequest.getNgaySinh().trim().isEmpty()) {
+            throw new InvalidKhachThueDataException("Ngày sinh không được để trống");
+        }
     }
 }

@@ -16,9 +16,11 @@ public class KhachThueMapper {
                 khachThue.getMaKhachDaiDien(),
                 khachThue.getMaCanCuoc(),
                 khachThue.getHoTen(),
+                khachThue.getDienThoai(),
                 khachThue.getThuongTru(),
                 khachThue.getNgaySinh() != null ? DATE_FORMAT.format(khachThue.getNgaySinh()) : null,
-                khachThue.getNgayTao() != null ? khachThue.getNgayTao().toString() : null
+                khachThue.getNgayTao() != null ? khachThue.getNgayTao().toString() : null,
+                khachThue.getTrangThai()
         );
     }
 

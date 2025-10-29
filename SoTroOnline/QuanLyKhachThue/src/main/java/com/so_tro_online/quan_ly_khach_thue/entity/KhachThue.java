@@ -1,9 +1,6 @@
 package com.so_tro_online.quan_ly_khach_thue.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.time.Instant;
 import java.util.Date;
@@ -25,6 +22,9 @@ public class KhachThue {
     @Column(name = "hoTen")
     private String hoTen;
 
+    @Column(name = "dienThoai")
+    private String dienThoai;
+
     @Column(name = "thuongTru")
     private String thuongTru;
 
@@ -34,15 +34,21 @@ public class KhachThue {
     @Column(name = "ngayTao")
     private Instant ngayTao;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "trangThai")
+    private TrangThai trangThai;
+
+
     public KhachThue() {
 
     }
 
-    public KhachThue(int maKhach, String maKhachDaiDien, String maCanCuoc, String hoTen, String thuongTru, Date ngaySinh, Instant ngayTao) {
+    public KhachThue(int maKhach, String maKhachDaiDien, String maCanCuoc, String hoTen, String dienThoai, String thuongTru, Date ngaySinh, Instant ngayTao) {
         this.maKhach = maKhach;
         this.maKhachDaiDien = maKhachDaiDien;
         this.maCanCuoc = maCanCuoc;
         this.hoTen = hoTen;
+        this.dienThoai = dienThoai;
         this.thuongTru = thuongTru;
         this.ngaySinh = ngaySinh;
         this.ngayTao = ngayTao;
@@ -104,5 +110,19 @@ public class KhachThue {
         this.ngayTao = ngayTao;
     }
 
+    public TrangThai getTrangThai() {
+        return trangThai;
+    }
 
+    public void setTrangThai(TrangThai trangThai) {
+        this.trangThai = trangThai;
+    }
+
+    public String getDienThoai() {
+        return dienThoai;
+    }
+
+    public void setDienThoai(String dienThoai) {
+        this.dienThoai = dienThoai;
+    }
 }
