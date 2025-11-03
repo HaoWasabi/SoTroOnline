@@ -7,10 +7,10 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 const getAuthToken = (): string | null => {
     if (typeof window !== 'undefined') {
         const token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
-        console.log('🔍 Checking for auth token in storage. Token found:', !!token);
+        /*console.log('🔍 Checking for auth token in storage. Token found:', !!token);
         if (token) {
             console.log('🔍 Token preview:', token.substring(0, 20) + '...');
-        }
+        }*/
         return token;
     }
     return null;
@@ -25,9 +25,9 @@ const getAuthHeaders = (): HeadersInit => {
     
     if (token) {
         headers['Authorization'] = `Bearer ${token}`;
-        console.log('🔑 Auth token found and added to headers:', token.substring(0, 20) + '...');
+        //console.log('🔑 Auth token found and added to headers:', token.substring(0, 20) + '...');
     } else {
-        console.warn('⚠️ No auth token found in storage');
+        //console.warn('⚠️ No auth token found in storage');
     }
     
     return headers;
@@ -66,10 +66,10 @@ export const debugAuthStatus = () => {
         const refreshToken = localStorage.getItem('refreshToken');
         const user = localStorage.getItem('user');
         
-        console.log('🔍 Debug Auth Status:');
+        /*console.log('🔍 Debug Auth Status:');
         console.log('  - Access Token:', accessToken ? accessToken.substring(0, 20) + '...' : 'NOT FOUND');
         console.log('  - Refresh Token:', refreshToken ? refreshToken.substring(0, 20) + '...' : 'NOT FOUND');
-        console.log('  - User Data:', user ? JSON.parse(user) : 'NOT FOUND');
+        console.log('  - User Data:', user ? JSON.parse(user) : 'NOT FOUND');*/
         
         return {
             hasAccessToken: !!accessToken,
@@ -93,14 +93,14 @@ export const fetchTenants = async (page: number = 0, search?: string): Promise<T
         }
 
         const headers = getAuthHeaders();
-        console.log('📡 Making request to /api/tenants with headers:', headers);
+        //console.log('📡 Making request to /api/tenants with headers:', headers);
 
         const response = await fetch(`${API_BASE_URL}/api/tenants?${params.toString()}`, {
             method: 'GET',
             headers: headers,
         });
 
-        console.log('📡 Response status:', response.status, response.statusText);
+        //console.log('📡 Response status:', response.status, response.statusText);
 
         if (!response.ok) {
             const errorText = await response.text();
@@ -109,10 +109,10 @@ export const fetchTenants = async (page: number = 0, search?: string): Promise<T
         }
 
         const data = await response.json();
-        console.log('✅ Tenant data received:', data);
+        //console.log('✅ Tenant data received:', data);
         return data;
     } catch (error) {
-        console.error('💥 Error fetching tenants:', error);
+        //console.error('💥 Error fetching tenants:', error);
         throw error;
     }
 };
@@ -132,7 +132,7 @@ export const fetchTenantById = async (id: number): Promise<SingleTenantResponse>
         const data = await response.json();
         return data;
     } catch (error) {
-        console.error('Error fetching tenant:', error);
+        //console.error('Error fetching tenant:', error);
         throw error;
     }
 };
@@ -153,7 +153,7 @@ export const createTenant = async (tenantData: Omit<Tenant, 'id'>): Promise<Sing
         const data = await response.json();
         return data;
     } catch (error) {
-        console.error('Error creating tenant:', error);
+        //console.error('Error creating tenant:', error);
         throw error;
     }
 };
@@ -174,7 +174,7 @@ export const updateTenant = async (id: number, tenantData: Partial<Tenant>): Pro
         const data = await response.json();
         return data;
     } catch (error) {
-        console.error('Error updating tenant:', error);
+        //console.error('Error updating tenant:', error);
         throw error;
     }
 };
@@ -194,7 +194,7 @@ export const deleteTenant = async (id: number): Promise<ApiResponse<null>> => {
         const data = await response.json();
         return data;
     } catch (error) {
-        console.error('Error deleting tenant:', error);
+        //console.error('Error deleting tenant:', error);
         throw error;
     }
 };

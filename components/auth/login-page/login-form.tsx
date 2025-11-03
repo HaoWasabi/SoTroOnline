@@ -70,7 +70,7 @@ export default function LoginForm() {
                 setIsSubmitting(false);
             }
         } catch (error) {
-            console.error('💥 Login error:', error);
+            //console.error('💥 Login error:', error);
             showError('Network error occurred');
             setIsSubmitting(false);
         }

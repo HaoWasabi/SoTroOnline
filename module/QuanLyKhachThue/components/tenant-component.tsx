@@ -69,7 +69,7 @@ export default function TenantComponent({ tenant, onUpdate, onDelete }: TenantCo
                         </div>
                         <div className="flex items-center gap-2 text-sm text-gray-600">
                             <CreditCard className="h-4 w-4" />
-                            <span>ID: {tenant.maKhachDaiDien || tenant.maKhach}</span>
+                            <span>{language === 'vi' ? 'Mã đại diện:' : 'Representative ID:'} {tenant.maKhachDaiDien}</span>
                         </div>
                     </div>
                     

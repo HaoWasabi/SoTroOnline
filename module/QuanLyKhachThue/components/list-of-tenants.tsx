@@ -8,10 +8,16 @@ import TenantComponent from "./tenant-component";
 import Pagination from "./pagination";
 import { useAuthGuard } from "@/hook/useAuthGuard";
 
-export default function ListOfTenants() {
+interface ListOfTenantsProps {
+    searchTerm: string;
+    statusFilter: string;
+}
+
+export default function ListOfTenants({ searchTerm, statusFilter }: ListOfTenantsProps) {
     const { language } = useLanguageStore();
     const { isAuthenticated } = useAuthGuard();
-    const [tenants, setTenants] = useState<Tenant[]>([]);
+    const [allTenants, setAllTenants] = useState<Tenant[]>([]);
+    const [filteredTenants, setFilteredTenants] = useState<Tenant[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [pagination, setPagination] = useState({
@@ -30,7 +36,7 @@ export default function ListOfTenants() {
             const response: TenantResponse = await fetchTenants(page, search);
             
             if (response.success) {
-                setTenants(response.data.content);
+                setAllTenants(response.data.content);
                 setPagination({
                     currentPage: response.data.currentPage,
                     totalPages: response.data.totalPages,
@@ -50,6 +56,25 @@ export default function ListOfTenants() {
         }
     };
 
+    // Filter tenants based on status
+    const filterTenants = (tenants: Tenant[], statusFilter: string) => {
+        if (!statusFilter) return tenants;
+        
+        return tenants.filter(tenant => {
+            if (statusFilter === "unknown") {
+                // Check for tenants with unknown status (not 'hoatDong' or 'daXoa')
+                return tenant.trangThai !== 'hoatDong' && tenant.trangThai !== 'daXoa';
+            }
+            return tenant.trangThai === statusFilter;
+        });
+    };
+
+    // Update filtered tenants when allTenants or statusFilter changes
+    useEffect(() => {
+        const filtered = filterTenants(allTenants, statusFilter);
+        setFilteredTenants(filtered);
+    }, [allTenants, statusFilter]);
+
     useEffect(() => {
         // Only load tenants if authenticated
         if (isAuthenticated) {
@@ -57,8 +82,19 @@ export default function ListOfTenants() {
         }
     }, [isAuthenticated]);
 
+    // Effect to handle search term changes
+    useEffect(() => {
+        if (isAuthenticated) {
+            const timeoutId = setTimeout(() => {
+                loadTenants(0, searchTerm);
+            }, 500); // Debounce search for 500ms
+
+            return () => clearTimeout(timeoutId);
+        }
+    }, [searchTerm, isAuthenticated]);
+
     const handlePageChange = (newPage: number) => {
-        loadTenants(newPage);
+        loadTenants(newPage, searchTerm);
     };
 
     if (loading) {
@@ -88,11 +124,14 @@ export default function ListOfTenants() {
         );
     }
 
-    if (tenants.length === 0) {
+    if (filteredTenants.length === 0) {
         return (
             <div className="flex justify-center items-center h-48">
                 <p className="text-gray-600">
-                    {language === 'vi' ? 'Không có khách thuê nào' : 'No tenants found'}
+                    {searchTerm || statusFilter
+                        ? (language === 'vi' ? 'Không tìm thấy khách thuê' : 'No tenant found')
+                        : (language === 'vi' ? 'Không có khách thuê nào' : 'No tenants found')
+                    }
                 </p>
             </div>
         );
@@ -100,13 +139,46 @@ export default function ListOfTenants() {
 
     return (
         <div className="space-y-6">
+            {/* Results summary */}
+            {(searchTerm || statusFilter) && (
+                <div className="flex items-center justify-between text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
+                    <span>
+                        {language === 'vi' 
+                            ? `Hiển thị ${filteredTenants.length} kết quả`
+                            : `Showing ${filteredTenants.length} results`
+                        }
+                        {searchTerm && (
+                            <span className="ml-1">
+                                {language === 'vi' ? 'cho' : 'for'} "{searchTerm}"
+                            </span>
+                        )}
+                        {statusFilter && (
+                            <span className="ml-1">
+                                {language === 'vi' ? 'với trạng thái' : 'with status'} "
+                                {statusFilter === 'hoatDong' ? (language === 'vi' ? 'Đang hoạt động' : 'Active') :
+                                 statusFilter === 'daXoa' ? (language === 'vi' ? 'Đã xóa' : 'Deleted') :
+                                 statusFilter === 'unknown' ? (language === 'vi' ? 'Không xác định' : 'Unknown') : statusFilter}"
+                            </span>
+                        )}
+                    </span>
+                    {allTenants.length > 0 && (
+                        <span>
+                            {language === 'vi' 
+                                ? `từ tổng số ${allTenants.length} khách thuê`
+                                : `out of ${allTenants.length} total tenants`
+                            }
+                        </span>
+                    )}
+                </div>
+            )}
+            
             <div className="grid grid-col-1 lg:grid-cols-3 gap-4">
-                {tenants.map((tenant) => (
+                {filteredTenants.map((tenant: Tenant) => (
                     <TenantComponent 
                         key={tenant.maKhach} 
                         tenant={tenant}
-                        onUpdate={() => loadTenants(pagination.currentPage)}
-                        onDelete={() => loadTenants(pagination.currentPage)}
+                        onUpdate={() => loadTenants(pagination.currentPage, searchTerm)}
+                        onDelete={() => loadTenants(pagination.currentPage, searchTerm)}
                     />
                 ))}
             </div>
