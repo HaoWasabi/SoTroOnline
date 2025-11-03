@@ -1,8 +1,10 @@
 package com.so_tro_online.quan_ly_khach_thue.service;
 
+import com.so_tro_online.dung_chung.utils.IdGenerator;
 import com.so_tro_online.quan_ly_khach_thue.dto.KhachThueDto;
 import com.so_tro_online.quan_ly_khach_thue.dto.KhachThueRequest;
 import com.so_tro_online.quan_ly_khach_thue.entity.KhachThue;
+import com.so_tro_online.quan_ly_khach_thue.entity.TrangThai;
 import com.so_tro_online.quan_ly_khach_thue.repository.KhachThueRepository;
 import com.so_tro_online.quan_ly_khach_thue.exception.DuplicateCanCuocException;
 import com.so_tro_online.quan_ly_khach_thue.exception.InvalidKhachThueDataException;
@@ -17,6 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -35,21 +40,17 @@ public class KhachThueService {
         try {
             validateKhachThueData(khachThueRequest);
 
+            // Generate unique MaKhachDaiDien with better performance
+            String newMaKhachDaiDien = generateUniqueMaKhachDaiDien();
+
             // Check for duplicate maCanCuoc
             if (khachThueRequest.getMaCanCuoc() != null &&
-                khachThueRepository.existsByMaCanCuoc(khachThueRequest.getMaCanCuoc())) {
-                throw new DuplicateCanCuocException(khachThueRequest.getMaCanCuoc());
+                khachThueRepository.existsByMaCanCuoc(khachThueRequest.getMaCanCuoc().trim())) {
+                throw new DuplicateCanCuocException(khachThueRequest.getMaCanCuoc().trim());
             }
 
-            KhachThueDto khachThueDto = new KhachThueDto();
-            khachThueDto.setMaKhachDaiDien(khachThueRequest.getMaKhachDaiDien());
-            khachThueDto.setMaCanCuoc(khachThueRequest.getMaCanCuoc());
-            khachThueDto.setHoTen(khachThueRequest.getHoTen());
-            khachThueDto.setThuongTru(khachThueRequest.getThuongTru());
-            khachThueDto.setNgaySinh(khachThueRequest.getNgaySinh());
-
-            KhachThue khachThue = KhachThueMapper.toEntity(khachThueDto);
-            khachThue.setNgayTao(Instant.now());
+            // Create entity using mapper
+            KhachThue khachThue = KhachThueMapper.createEntityFromRequest(khachThueRequest, newMaKhachDaiDien);
 
             KhachThue savedKhachThue = khachThueRepository.save(khachThue);
             return KhachThueMapper.toDto(savedKhachThue);
@@ -59,6 +60,26 @@ public class KhachThueService {
             }
             throw new RuntimeException("Error creating new tenant : " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * Generate unique MaKhachDaiDien with optimized retry logic
+     */
+    private String generateUniqueMaKhachDaiDien() {
+        int maxRetries = 10; // Prevent infinite loop
+        int attempts = 0;
+        
+        while (attempts < maxRetries) {
+            String maKhachDaiDien = IdGenerator.generateId(6);
+            if (!khachThueRepository.existsByMaKhachDaiDien(maKhachDaiDien)) {
+                return maKhachDaiDien;
+            }
+            attempts++;
+        }
+        
+        // Fallback: use timestamp-based ID if all attempts fail
+        String timestampId = "KT" + System.currentTimeMillis() % 10000;
+        return timestampId;
     }
 
     /**
@@ -105,7 +126,6 @@ public class KhachThueService {
             if (existingKhachThue.isEmpty()) {
                 throw new KhachThueNotFoundException(maKhach);
             }
-
             validateKhachThueDataForUpdate(khachThueRequest);
 
             // Check for duplicate maCanCuoc (excluding current tenant)
@@ -116,8 +136,30 @@ public class KhachThueService {
             }
 
             KhachThue khachThue = existingKhachThue.get();
-            KhachThueDto khachThueDto = KhachThueMapper.toDto(khachThue);
-            KhachThueMapper.updateEntityFromDto(khachThue, khachThueDto);
+            
+            // Update fields from request
+            if (khachThueRequest.getHoTen() != null && !khachThueRequest.getHoTen().trim().isEmpty()) {
+                khachThue.setHoTen(khachThueRequest.getHoTen().trim());
+            }
+            if (khachThueRequest.getMaCanCuoc() != null && !khachThueRequest.getMaCanCuoc().trim().isEmpty()) {
+                khachThue.setMaCanCuoc(khachThueRequest.getMaCanCuoc().trim());
+            }
+            if (khachThueRequest.getDienThoai() != null && !khachThueRequest.getDienThoai().trim().isEmpty()) {
+                khachThue.setDienThoai(khachThueRequest.getDienThoai().trim());
+            }
+            if (khachThueRequest.getThuongTru() != null && !khachThueRequest.getThuongTru().trim().isEmpty()) {
+                khachThue.setThuongTru(khachThueRequest.getThuongTru().trim());
+            }
+            if (khachThueRequest.getNgaySinh() != null && !khachThueRequest.getNgaySinh().trim().isEmpty()) {
+                try {
+                    // Parse date string (expected format: "YYYY-MM-DD")
+                    LocalDate localDate = LocalDate.parse(khachThueRequest.getNgaySinh().trim());
+                    Date ngaySinh = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+                    khachThue.setNgaySinh(ngaySinh);
+                } catch (Exception dateException) {
+                    throw new InvalidKhachThueDataException("Định dạng ngày sinh không hợp lệ. Vui lòng sử dụng định dạng YYYY-MM-DD");
+                }
+            }
 
             KhachThue updatedKhachThue = khachThueRepository.save(khachThue);
             return KhachThueMapper.toDto(updatedKhachThue);
@@ -164,6 +206,24 @@ public class KhachThueService {
     }
 
     /**
+     * Enhanced search tenants by multiple fields (maKhach, maCanCuoc, maKhachDaiDien, hoTen)
+     */
+    public Page<KhachThueDto> searchKhachThue(String searchTerm, int page) {
+        try {
+            if (page < 0) {
+                page = 0;
+            }
+
+            Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("ngayTao").descending());
+            Page<KhachThue> khachThuePage = khachThueRepository.findByMultipleFields(searchTerm.trim(), pageable);
+
+            return khachThuePage.map(KhachThueMapper::toDto);
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi khi tìm kiếm khách thuê: " + e.getMessage(), e);
+        }
+    }
+
+    /**
      * Validate tenant data for creation
      */
     private void validateKhachThueData(KhachThueRequest khachThueRequest) {
@@ -175,8 +235,25 @@ public class KhachThueService {
             throw new InvalidKhachThueDataException("Mã căn cước không được để trống");
         }
 
-        if (khachThueRequest.getMaCanCuoc().length() != 12) {
+        if (khachThueRequest.getMaCanCuoc().trim().length() != 12) {
             throw new InvalidKhachThueDataException("Mã căn cước phải có 12 ký tự");
+        }
+
+        // Validate date format if provided
+        if (khachThueRequest.getNgaySinh() != null && !khachThueRequest.getNgaySinh().trim().isEmpty()) {
+            try {
+                LocalDate.parse(khachThueRequest.getNgaySinh().trim());
+            } catch (Exception e) {
+                throw new InvalidKhachThueDataException("Định dạng ngày sinh không hợp lệ. Vui lòng sử dụng định dạng YYYY-MM-DD");
+            }
+        }
+
+        // Validate phone number format if provided
+        if (khachThueRequest.getDienThoai() != null && !khachThueRequest.getDienThoai().trim().isEmpty()) {
+            String phoneNumber = khachThueRequest.getDienThoai().trim();
+            if (phoneNumber.length() < 10 || phoneNumber.length() > 15) {
+                throw new InvalidKhachThueDataException("Số điện thoại phải có từ 10 đến 15 ký tự");
+            }
         }
     }
 
@@ -193,7 +270,7 @@ public class KhachThueService {
             throw new InvalidKhachThueDataException("Mã căn cước phải có 12 ký tự");
         }
 
-        if(khachThueRequest.getNgaySinh() != null || khachThueRequest.getNgaySinh().trim().isEmpty()) {
+        if(khachThueRequest.getNgaySinh() != null && khachThueRequest.getNgaySinh().trim().isEmpty()) {
             throw new InvalidKhachThueDataException("Ngày sinh không được để trống");
         }
     }

@@ -123,7 +123,7 @@ public class KhachThueController {
             Page<KhachThueDto> khachThuePage;
 
             if (search != null && !search.trim().isEmpty()) {
-                khachThuePage = khachThueService.searchKhachThueByName(search.trim(), page);
+                khachThuePage = khachThueService.searchKhachThue(search.trim(), page);
             } else {
                 khachThuePage = khachThueService.getAllKhachThue(page);
             }
@@ -152,31 +152,44 @@ public class KhachThueController {
      * Update tenant
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> updateKhachThue(
+    public ResponseEntity<ApiResponse<KhachThueDto>> updateKhachThue(
             @PathVariable int id,
             @RequestBody KhachThueRequest khachThueRequest) {
-        Map<String, Object> response = new HashMap<>();
         try {
             KhachThueDto updatedKhachThue = khachThueService.updateKhachThue(id, khachThueRequest);
-            response.put("success", true);
-            response.put("message", "Cập nhật khách thuê thành công");
-            response.put("data", updatedKhachThue);
+            ApiResponse<KhachThueDto> response = new ApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "Cập nhật khách thuê thành công",
+                    updatedKhachThue
+            );
             return ResponseEntity.ok(response);
         } catch (KhachThueNotFoundException e) {
-            response.put("success", false);
-            response.put("message", e.getMessage());
+            ApiResponse<KhachThueDto> response = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(),
+                    e.getMessage(),
+                    null
+            );
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         } catch (DuplicateCanCuocException e) {
-            response.put("success", false);
-            response.put("message", e.getMessage());
+            ApiResponse<KhachThueDto> response = new ApiResponse<>(
+                    HttpStatus.CONFLICT.value(),
+                    e.getMessage(),
+                    null
+            );
             return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
         } catch (InvalidKhachThueDataException e) {
-            response.put("success", false);
-            response.put("message", e.getMessage());
+            ApiResponse<KhachThueDto> response = new ApiResponse<>(
+                    HttpStatus.BAD_REQUEST.value(),
+                    e.getMessage(),
+                    null
+            );
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         } catch (Exception e) {
-            response.put("success", false);
-            response.put("message", "Lỗi hệ thống: " + e.getMessage());
+            ApiResponse<KhachThueDto> response = new ApiResponse<>(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "Lỗi hệ thống: " + e.getMessage(),
+                    null
+            );
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }

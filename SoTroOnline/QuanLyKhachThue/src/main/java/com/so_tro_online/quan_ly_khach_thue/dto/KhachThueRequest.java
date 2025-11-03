@@ -1,29 +1,21 @@
 package com.so_tro_online.quan_ly_khach_thue.dto;
 
 public class KhachThueRequest {
-    private String maKhachDaiDien;
     private String maCanCuoc;
     private String hoTen;
     private String thuongTru;
     private String ngaySinh;
+    private String dienThoai;
 
     public KhachThueRequest() {}
 
     public KhachThueRequest(String maKhachDaiDien, String maCanCuoc, String hoTen,
-                           String thuongTru, String ngaySinh) {
-        this.maKhachDaiDien = maKhachDaiDien;
+                           String thuongTru, String ngaySinh, String dienThoai) {
         this.maCanCuoc = maCanCuoc;
         this.hoTen = hoTen;
         this.thuongTru = thuongTru;
         this.ngaySinh = ngaySinh;
-    }
-
-    public String getMaKhachDaiDien() {
-        return maKhachDaiDien;
-    }
-
-    public void setMaKhachDaiDien(String maKhachDaiDien) {
-        this.maKhachDaiDien = maKhachDaiDien;
+        this.dienThoai = dienThoai;
     }
 
     public String getMaCanCuoc() {
@@ -56,5 +48,13 @@ public class KhachThueRequest {
 
     public void setNgaySinh(String ngaySinh) {
         this.ngaySinh = ngaySinh;
+    }
+
+    public String getDienThoai() {
+        return dienThoai;
+    }
+
+    public void setDienThoai(String dienThoai) {
+        this.dienThoai = dienThoai;
     }
 }
