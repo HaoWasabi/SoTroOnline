@@ -1,4 +1,4 @@
-import SignUpPageLayout from "@/components/auth/signup-page/signup-page-layout";
+import SignUpPageLayout from "@/module/QuanLyTaiKhoan/components/auth/signup-page/signup-page-layout";
 
 export default function SignUpPage() {
     return (

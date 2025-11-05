@@ -104,7 +104,7 @@ export const fetchTenants = async (page: number = 0, search?: string): Promise<T
 
         if (!response.ok) {
             const errorText = await response.text();
-            console.error('❌ API Error Response:', errorText);
+            //console.error('❌ API Error Response:', errorText);
             throw new Error(`HTTP error! status: ${response.status}, response: ${errorText}`);
         }
 

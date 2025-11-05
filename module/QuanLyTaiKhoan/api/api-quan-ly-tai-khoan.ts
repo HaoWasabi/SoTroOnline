@@ -1,95 +1,3 @@
-/*export async function signUpApi(
-    email: string,
-    cccdCode: string,
-    password: string,
-    hoTen: string,
-    dienThoai: string,
-    thuongTru: string,
-    ngaySinh: Date,
-    trangThai: 'hoatDong'
-):Promise<{status: string; message: string, user?: TaiKhoan | null}> {
-    try {
-        const response = await fetch('http://localhost:8080/api/auth/signup', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                email: email,
-                cccdCode: cccdCode,
-                password: password,
-                hoTen: hoTen,
-                dienThoai: dienThoai,
-                thuongTru: thuongTru,
-                ngaySinh: ngaySinh,
-                trangThai: trangThai
-            })
-        });
-
-        const data = await response.json();
-
-        return {
-            status: data.status === 200 ? 'success' : 'error',
-            message: data.message || 'User registered successfully',
-            user: data.data || null
-        };
-
-    } catch (error) {
-        return {
-            status: 'error',
-            message: error instanceof Error ? error.message : 'Network error occurred',
-            user: null
-        };
-    }
-}/*
-
-/*
-export async function signInApi(email: string, password: string): Promise<{status: string; message: string, user?: TaiKhoan | null}> {
-    try {
-        const response = await fetch('http://localhost:8080/api/auth/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                email: email,
-                password: password
-            })
-        });
-
-        const data = await response.json();
-
-       if (data.status === 200 && data.data && data.data.maTaiKhoan) {
-            return {
-                status: 'success',
-                message: data.message,
-                user: {
-                    maCanCuoc: data.data.maCanCuoc,
-                    email: data.data.email,
-                    hoTen: data.data.hoTen,
-                    dienThoai: data.data.dienThoai,
-                    thuongTru: data.data.thuongTru,
-                    ngaySinh: data.data.ngaySinh,
-                    ngayTao: data.data.ngayTao,
-                    trangThai: data.data.trangThai
-                }
-            };
-        } else {
-            return {
-                status: 'error',
-                message: data.message || 'Invalid response from server',
-                user: null
-            };
-        }
-
-    } catch (error) {
-        return {
-            status: 'error',
-            message: error instanceof Error ? error.message : 'Network error occurred'
-        };
-    }
-}
-*/
 
 export async function resetPasswordApi(email: string): Promise<{status: string; message: string}> {
     try {
@@ -271,9 +179,9 @@ export const login = async (email: string, password: string): Promise<LoginRespo
             localStorage.setItem('accessToken', data.data.accessToken);
             localStorage.setItem('refreshToken', data.data.refreshToken);
             localStorage.setItem('user', JSON.stringify(data.data.taiKhoanDTO));
-            console.log('✅ Tokens stored successfully');
+            //console.log('✅ Tokens stored successfully');
         } else {
-            console.warn('⚠️ No tokens to store. Response data:', data);
+            //console.warn('⚠️ No tokens to store. Response data:', data);
         }
         
         return {
@@ -308,7 +216,7 @@ export const logout = async (): Promise<void> => {
         // Optionally call backend logout endpoint
         // await fetch(`${API_BASE_URL}/api/auth/logout`, { method: 'POST' });
     } catch (error) {
-        console.error('Error during logout:', error);
+        //console.error('Error during logout:', error);
     }
 };
 
@@ -374,3 +282,83 @@ export const refreshToken = async (): Promise<string | null> => {
         return null;
     }
 };
+
+// New API functions for password reset with token
+export async function requestPasswordResetApi(email: string): Promise<{status: string; message: string}> {
+    try {
+        const response = await fetch('http://localhost:8080/api/auth/request-password-reset', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email: email,
+            })
+        });
+
+        const data = await response.json();
+
+        return {
+            status: data.status === 200 ? 'success' : 'error',
+            message: data.message
+        };
+
+    } catch (error) {
+        return {
+            status: 'error',
+            message: error instanceof Error ? error.message : 'Network error occurred'
+        };
+    }
+}
+
+export async function validateResetTokenApi(token: string): Promise<{status: string; message: string}> {
+    try {
+        const response = await fetch(`http://localhost:8080/api/auth/validate-reset-token?token=${encodeURIComponent(token)}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+
+        const data = await response.json();
+
+        return {
+            status: data.status === 200 ? 'success' : 'error',
+            message: data.message
+        };
+
+    } catch (error) {
+        return {
+            status: 'error',
+            message: error instanceof Error ? error.message : 'Network error occurred'
+        };
+    }
+}
+
+export async function resetPasswordWithTokenApi(token: string, newPassword: string): Promise<{status: string; message: string}> {
+    try {
+        const response = await fetch('http://localhost:8080/api/auth/reset-password-with-token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                token: token,
+                newPassword: newPassword
+            })
+        });
+
+        const data = await response.json();
+
+        return {
+            status: data.status === 200 ? 'success' : 'error',
+            message: data.message
+        };
+
+    } catch (error) {
+        return {
+            status: 'error',
+            message: error instanceof Error ? error.message : 'Network error occurred'
+        };
+    }
+}
