@@ -4,6 +4,7 @@ import com.so_tro_online.dung_chung.utils.SecureRandomString;
 import com.so_tro_online.quan_ly_tai_khoan.dto.LoginRequest;
 import com.so_tro_online.quan_ly_tai_khoan.dto.LoginResponse;
 import com.so_tro_online.quan_ly_tai_khoan.dto.TaiKhoanDto;
+import com.so_tro_online.quan_ly_tai_khoan.entity.PasswordResetToken;
 import com.so_tro_online.quan_ly_tai_khoan.entity.TaiKhoan;
 import com.so_tro_online.quan_ly_tai_khoan.entity.TrangThai;
 import com.so_tro_online.quan_ly_tai_khoan.exception.DuplicateEmailException;
@@ -11,6 +12,7 @@ import com.so_tro_online.quan_ly_tai_khoan.exception.InvalidPasswordException;
 import com.so_tro_online.quan_ly_tai_khoan.exception.NoAccountFoundException;
 import com.so_tro_online.quan_ly_tai_khoan.exception.NoEmailFoundException;
 import com.so_tro_online.quan_ly_tai_khoan.mapper.UserMapper;
+import com.so_tro_online.quan_ly_tai_khoan.repository.PasswordResetTokenRepository;
 import com.so_tro_online.quan_ly_tai_khoan.repository.TaiKhoanRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,20 +22,25 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.UUID;
 
 @Service
 public class TaiKhoanService {
     private static final Logger logger = LoggerFactory.getLogger(TaiKhoanService.class);
     
     private final TaiKhoanRepository taiKhoanRepository;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final JwtService jwtService;
 
     @Autowired
-    public TaiKhoanService(TaiKhoanRepository taiKhoanRepository, PasswordEncoder passwordEncoder, 
+    public TaiKhoanService(TaiKhoanRepository taiKhoanRepository, 
+                          PasswordResetTokenRepository passwordResetTokenRepository,
+                          PasswordEncoder passwordEncoder, 
                           EmailService emailService, JwtService jwtService) {
         this.taiKhoanRepository = taiKhoanRepository;
+        this.passwordResetTokenRepository = passwordResetTokenRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
         this.jwtService = jwtService;
@@ -83,18 +90,52 @@ public class TaiKhoanService {
     }
 
     @Transactional
-    public void requestTemporaryPassword(String email) {
+    public void requestPasswordReset(String email) {
         TaiKhoan taiKhoan = taiKhoanRepository.findByEmail(email);
 
         if(taiKhoan == null) {
             throw new NoEmailFoundException();
         }
 
-        String randomString = SecureRandomString.generate(12);
+        // Invalidate any existing tokens for this email
+        passwordResetTokenRepository.markAllTokensAsUsedByEmail(email);
 
-        taiKhoan.setMatKhau(passwordEncoder.encode(randomString));
+        // Generate a new reset token
+        String resetToken = UUID.randomUUID().toString();
+        LocalDateTime expiryDate = LocalDateTime.now().plusHours(1); // Token expires in 1 hour
+
+        PasswordResetToken passwordResetToken = new PasswordResetToken(resetToken, email, expiryDate);
+        passwordResetTokenRepository.save(passwordResetToken);
+
+        // Send reset link via email
+        String resetLink = "http://localhost:3000/reset-password?token=" + resetToken;
+        emailService.sendPasswordResetLink(email, resetLink);
+    }
+
+    @Transactional
+    public boolean validateResetToken(String token) {
+        return passwordResetTokenRepository.findValidToken(token, LocalDateTime.now()).isPresent();
+    }
+
+    @Transactional
+    public void resetPasswordWithToken(String token, String newPassword) {
+        PasswordResetToken resetToken = passwordResetTokenRepository.findValidToken(token, LocalDateTime.now())
+                .orElseThrow(() -> new RuntimeException("Invalid or expired token"));
+
+        TaiKhoan taiKhoan = taiKhoanRepository.findByEmail(resetToken.getEmail());
+        if (taiKhoan == null) {
+            throw new NoEmailFoundException();
+        }
+
+        // Update password
+        taiKhoan.setMatKhau(passwordEncoder.encode(newPassword));
         taiKhoanRepository.save(taiKhoan);
-        emailService.sendTemporaryPassword(email, randomString);
+
+        // Mark token as used
+        resetToken.setUsed(true);
+        passwordResetTokenRepository.save(resetToken);
+
+        logger.info("Password reset successfully for email: {}", resetToken.getEmail());
     }
 
     @Transactional

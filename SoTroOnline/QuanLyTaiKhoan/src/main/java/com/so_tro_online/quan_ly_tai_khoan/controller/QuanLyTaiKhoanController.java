@@ -41,83 +41,8 @@ public class QuanLyTaiKhoanController {
         this.jwtService = jwtService;
     }
 
-    /*@PostMapping("/login/google")
-    public ResponseEntity<?> loginWithGoogle(@RequestBody Map<String, String> body) {
-        try {
-            String token = body.get("token");
-            TaiKhoan taiKhoan = googleService.verifyGoogleTokenAndGenerateJwt(token);
-
-            return new ResponseEntity<>(
-                    new ApiResponse<>(201, "Log in successfully", taiKhoan),
-                    HttpStatus.CREATED
-            );
-        }catch(DuplicateEmailException ex) {
-            ApiResponse<TaiKhoanDTO> apiResponse = new ApiResponse<>(
-                    409,
-                    "Account with this email is already exist!",
-                    null
-            );
-
-            return new ResponseEntity<>(apiResponse, HttpStatus.CONFLICT);
-        } catch (Exception ex) {
-            ApiResponse<TaiKhoanDTO> apiResponse = new ApiResponse<>(
-                    409,
-                    "Internal server error",
-                    null
-            );
-
-            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }*/
-
-    /*@PostMapping("/login")
-    public ResponseEntity<?> signIn(@RequestBody SignInRequest signInRequest) {
-        try {
-            TaiKhoan taiKhoan = taiKhoanService.signIn(signInRequest.getEmail(), signInRequest.getPassword());
-
-            // Generate JWT token
-            String jwtToken = jwtService.generateToken(taiKhoan.getEmail());
-
-            // Create response with both user data and token
-            TaiKhoanDTO userDto = UserMapper.toDto(taiKhoan);
-            userDto.setToken(jwtToken); // Add token to DTO
-
-            ApiResponse<TaiKhoanDTO> apiResponse = new ApiResponse<>(
-                    200,
-                    "Log in successfully",
-                    userDto
-            );
-
-            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-        } catch (NoEmailFoundException ex) {
-            ApiResponse<TaiKhoanDTO> apiResponse = new ApiResponse<>(
-                    404,
-                    "Account is not exist",
-                    null
-            );
-
-            return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
-        } catch (InvalidPasswordException ex) {
-            ApiResponse<TaiKhoanDTO> apiResponse = new ApiResponse<>(
-                    409,
-                    "Wrong account or password",
-                    null
-            );
-
-            return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
-        } catch (Exception ex) {
-            ApiResponse<TaiKhoanDTO> apiResponse = new ApiResponse<>(
-                    409,
-                    "Internal server error",
-                    null
-            );
-
-            return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }/*
-
     /**
-     * Alternative login endpoint with LoginRequest format (for consistency with frontend)
+     * Login
      */
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<Object>> login(@RequestBody LoginRequest loginRequest) {
@@ -199,29 +124,82 @@ public class QuanLyTaiKhoanController {
         }
     }
 
-    /**
-     * Test endpoint to verify auth module is working
+    /*
+        Password recovery request processing
      */
-
-    @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> body) {
-
+    @PostMapping("/request-password-reset")
+    public ResponseEntity<?> requestPasswordReset(@RequestBody Map<String, String> body) {
         try {
-            taiKhoanService.requestTemporaryPassword(body.get("email"));
+            taiKhoanService.requestPasswordReset(body.get("email"));
 
             return ResponseEntity.ok(
-                    new ApiResponse<>(200, "New temporary password are sent to your email", null)
+                    new ApiResponse<>(200, "Password reset link has been sent to your email", null)
             );
-        } catch (EmailSendFailedException ex) {
+        } catch (NoEmailFoundException ex) {
             return new ResponseEntity<>(
-                    new ApiResponse<>(200, "Internal server error", null),
+                    new ApiResponse<>(404, "Email not found", null),
+                    HttpStatus.NOT_FOUND
+            );
+        } catch (Exception ex) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(500, "Internal server error", null),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    /*
+        Validate reset token
+    **/
+    @GetMapping("/validate-reset-token")
+    public ResponseEntity<?> validateResetToken(@RequestParam String token) {
+        try {
+            boolean isValid = taiKhoanService.validateResetToken(token);
+            
+            if (isValid) {
+                return ResponseEntity.ok(
+                        new ApiResponse<>(200, "Token is valid", null)
+                );
+            } else {
+                return new ResponseEntity<>(
+                        new ApiResponse<>(400, "Invalid or expired token", null),
+                        HttpStatus.BAD_REQUEST
+                );
+            }
+        } catch (Exception ex) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(500, "Internal server error", null),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    /*
+        Reset password with token
+    * */
+    @PostMapping("/reset-password-with-token")
+    public ResponseEntity<?> resetPasswordWithToken(@RequestBody ResetPasswordRequest request) {
+        try {
+            taiKhoanService.resetPasswordWithToken(request.getToken(), request.getNewPassword());
+
+            return ResponseEntity.ok(
+                    new ApiResponse<>(200, "Password reset successfully", null)
+            );
+        } catch (RuntimeException ex) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(400, ex.getMessage(), null),
+                    HttpStatus.BAD_REQUEST
+            );
+        } catch (Exception ex) {
+            return new ResponseEntity<>(
+                    new ApiResponse<>(500, "Internal server error", null),
                     HttpStatus.INTERNAL_SERVER_ERROR
             );
         }
     }
 
     @PutMapping("/update-user-information")
-    public ResponseEntity<?> udateUserInformation(@RequestBody TaiKhoanDto taiKhoanDTO) {
+    public ResponseEntity<?> updateUserInformation(@RequestBody TaiKhoanDto taiKhoanDTO) {
         try {
             taiKhoanService.updateUserInformation(
                     taiKhoanDTO.getMaTaiKhoan(),

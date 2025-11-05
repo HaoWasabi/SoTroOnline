@@ -22,4 +22,18 @@ public class EmailService {
         javaMailSender.send(msg);
     }
 
+    public void sendPasswordResetLink(String to, String resetLink) {
+        SimpleMailMessage msg = new SimpleMailMessage();
+        msg.setTo(to);
+        msg.setSubject("Password Reset Request");
+        msg.setText("Dear User,\n\n"
+                + "You have requested to reset your password. Please click the link below to reset your password:\n\n"
+                + resetLink + "\n\n"
+                + "This link will expire in 1 hour.\n\n"
+                + "If you did not request this password reset, please ignore this email.\n\n"
+                + "Best regards,\n"
+                + "SoTroOnline Team");
+        javaMailSender.send(msg);
+    }
+
 }
