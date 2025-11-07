@@ -3,8 +3,10 @@ package com.so_tro_online.quan_ly_hop_dong_phong.service;
 import com.deepoove.poi.XWPFTemplate;
 import com.so_tro_online.quan_ly_hop_dong_phong.dto.HopDongPhongRequest;
 import com.so_tro_online.quan_ly_hop_dong_phong.dto.HopDongPhongResponse;
+import com.so_tro_online.quan_ly_hop_dong_phong.dto.RentRoomMessage;
 import com.so_tro_online.quan_ly_hop_dong_phong.entity.HopDongPhong;
 import com.so_tro_online.quan_ly_hop_dong_phong.exception.HopDongAlreadyExists;
+import com.so_tro_online.quan_ly_hop_dong_phong.notification.NotificationService;
 import com.so_tro_online.quan_ly_hop_dong_phong.repository.HopDongPhongRepository;
 import com.so_tro_online.quan_ly_khach_thue.entity.KhachThue;
 
@@ -22,19 +24,20 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
 public class HopDongPhongService implements IHopDongPhongService {
-    public HopDongPhongService(KhachThueRepository khachThueRepository, PhongRepository phongRepository, TaiKhoanRepository taiKhoanRepository, HopDongPhongRepository hopDongPhongRepository) {
+    public HopDongPhongService(NotificationService notificationService, KhachThueRepository khachThueRepository, PhongRepository phongRepository, TaiKhoanRepository taiKhoanRepository, HopDongPhongRepository hopDongPhongRepository) {
+        this.notificationService = notificationService;
         this.khachThueRepository = khachThueRepository;
         this.phongRepository = phongRepository;
         this.taiKhoanRepository = taiKhoanRepository;
         this.hopDongPhongRepository = hopDongPhongRepository;
     }
+    private final NotificationService notificationService;
     private final SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
     private final KhachThueRepository khachThueRepository;
     private final PhongRepository phongRepository;
@@ -105,7 +108,19 @@ public class HopDongPhongService implements IHopDongPhongService {
         hopDongPhong.setNgayKetThuc(hopDongRequest.getNgayKetThuc());
         hopDongPhong.setTrangThai(hopDongRequest.getTrangThai());
         hopDongPhong.setNgayTao(LocalDate.now());
-        return mapToHopDongPhongResponse(hopDongPhongRepository.save(hopDongPhong));
+        HopDongPhong saved=hopDongPhongRepository.save(hopDongPhong);
+        RentRoomMessage rentRoomMessage=new RentRoomMessage();
+        rentRoomMessage.setMaHopDongPhong(saved.getMaHopDongPhong());
+        rentRoomMessage.setPhong(phong);
+        rentRoomMessage.setTienPhong(saved.getTienPhong());
+        rentRoomMessage.setKhachThue(khachThue);
+        rentRoomMessage.setTienCoc(saved.getTienCoc());
+        rentRoomMessage.setNgayBatDau(saved.getNgayBatDau());
+        rentRoomMessage.setNgayKetThuc(saved.getNgayKetThuc());
+        rentRoomMessage.setTaiKhoan(taiKhoan);
+        rentRoomMessage.setNgayTao(LocalDate.now());
+        notificationService.sentRentConfirm(rentRoomMessage);
+        return mapToHopDongPhongResponse(saved);
     }
 
     @Override

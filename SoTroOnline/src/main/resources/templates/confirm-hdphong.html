@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Xác nhận hợp đồng thuê phòng</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f8fa;
+            margin: 0;
+            padding: 0;
+        }
+        .email-container {
+            max-width: 650px;
+            margin: 30px auto;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background-color: #2b6cb0;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .content {
+            padding: 30px;
+            color: #333;
+        }
+        .content h2 {
+            color: #2b6cb0;
+        }
+        .details {
+            margin-top: 15px;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        .details td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .footer {
+            background-color: #f1f5f9;
+            text-align: center;
+            padding: 15px;
+            font-size: 13px;
+            color: #666;
+        }
+        .highlight {
+            color: #2b6cb0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="email-container">
+    <div class="header">
+        <h1>Xác nhận  thuê phòng</h1>
+    </div>
+    <div class="content">
+        <p>Xin chào <span th:text="${khachThue}">Nguyễn Văn A</span>,</p>
+
+        <p>Bạn đã đăng ký thuê phòng thành công. Dưới đây là thông tin chi tiết hợp đồng:</p>
+
+        <!-- 🔹 Thông tin hợp đồng -->
+        <table class="details">
+            <tr>
+                <td><strong>Mã hợp đồng:</strong></td>
+                <td th:text="${maHopDongPhong}">HD123</td>
+            </tr>
+            <tr>
+                <td><strong>Người quản lý:</strong></td>
+                <td th:text="${taiKhoan}">admin</td>
+            </tr>
+            <tr>
+                <td><strong>Người thuê:</strong></td>
+                <td th:text="${khachThue}">admin</td>
+            </tr>
+            <tr>
+                <td><strong>Tiền phòng:</strong></td>
+                <td th:text="${#numbers.formatDecimal(tienPhong, 0, 'COMMA', 0, 'POINT')} + ' VND'">2,000,000 VND</td>
+            </tr>
+            <tr>
+                <td><strong>Tiền cọc:</strong></td>
+                <td th:text="${#numbers.formatDecimal(tienCoc, 0, 'COMMA', 0, 'POINT')} + ' VND'">1,000,000 VND</td>
+            </tr>
+            <tr>
+                <td><strong>Ngày bắt đầu:</strong></td>
+                <td th:text="${#temporals.format(ngayBatDau, 'dd/MM/yyyy')}">07/11/2025</td>
+            </tr>
+            <tr>
+                <td><strong>Ngày kết thúc:</strong></td>
+                <td th:text="${#temporals.format(ngayKetThuc, 'dd/MM/yyyy')}">07/11/2026</td>
+            </tr>
+        </table>
+
+        <br>
+        <!-- 🔹 Thông tin phòng -->
+        <h3 style="margin-top:25px; color:#2b6cb0;">Thông tin phòng thuê</h3>
+        <table class="details">
+            <tr>
+                <td><strong>Tên phòng:</strong></td>
+                <td th:text="${phong}">Phòng A101</td>
+            </tr>
+            <tr>
+                <td><strong>Loại phòng:</strong></td>
+                <td th:text="${loaiPhong}">Phòng đơn</td>
+            </tr>
+            <tr>
+                <td><strong>Địa chỉ:</strong></td>
+                <td th:text="${diaChi}">123 Nguyễn Trãi, Hà Nội</td>
+            </tr>
+            <tr>
+                <td><strong>Kích thước:</strong></td>
+                <td th:text="${chieuDai + 'm x ' + chieuRong + 'm'}">4m x 3.5m</td>
+            </tr>
+            <tr>
+                <td><strong>Vật dụng đi kèm:</strong></td>
+                <td th:text="${vatDung}">Giường, bàn, tủ, điều hòa</td>
+            </tr>
+        </table>
+
+        <p style="margin-top: 20px;">Nếu thông tin trên chưa chính xác, vui lòng liên hệ lại với quản lý để được điều chỉnh.</p>
+
+        <p>Xin cảm ơn,<br><strong>Hệ thống Quản lý Nhà trọ</strong></p>
+    </div>
+    <div class="footer">
+        © 2025 Quản lý Nhà trọ | Email tự động, vui lòng không trả lời lại email này.
+    </div>
+</div>
+</body>
+</html>
