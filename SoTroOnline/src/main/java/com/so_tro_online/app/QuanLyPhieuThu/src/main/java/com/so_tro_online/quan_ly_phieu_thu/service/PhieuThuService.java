@@ -59,7 +59,7 @@ public class PhieuThuService implements IPhieuThuService{
     public PhieuThuResponse createPhieuThu(PhieuThuRequest req) {
         HoaDon hoaDon=hoaDonRepository.findById(req.getMaHoaDon())
                 .orElseThrow(()->new ReseourceNotFoundException("không tìm thấy hóa đơn với id:"+req.getMaHoaDon()));
-        KhachThue khachThue=khachThueRepository.findById(req.getMaKhachHang())
+        KhachThue khachThue=khachThueRepository.findByMaKhachAndTrangThai(req.getMaKhachHang(),com.so_tro_online.quan_ly_khach_thue.entity.TrangThai.hoatDong)
                 .orElseThrow(()->new ReseourceNotFoundException("không tìm thấy khách thuê với id:"+req.getMaKhachHang()));
         if(hoaDon.getTienConNo().compareTo(req.getSoTienThu())<0){
             throw new BusinessException("Số tiền thu vượt quá số tiền còn nợ của hóa đơn");
@@ -126,7 +126,9 @@ public class PhieuThuService implements IPhieuThuService{
 
     @Override
     public List<PhieuThuResponse> thuTienTuDong(Integer maHopDongPhong, BigDecimal soTienThu) {
-        HopDongPhong hopDong = hopDongPhongRepo.findById(maHopDongPhong)
+        HopDongPhong hopDong = hopDongPhongRepo.findByMaHopDongPhongAndTrangThai(
+                        maHopDongPhong,
+                        com.so_tro_online.quan_ly_hop_dong_phong.entity.TrangThai.hoatDong)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy hợp đồng"));
         KhachThue khach = hopDong.getKhachThue();
 

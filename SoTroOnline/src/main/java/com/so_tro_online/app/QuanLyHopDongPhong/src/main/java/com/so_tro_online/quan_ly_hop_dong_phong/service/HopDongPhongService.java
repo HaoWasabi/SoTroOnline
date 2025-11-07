@@ -90,7 +90,7 @@ public class HopDongPhongService implements IHopDongPhongService {
                 .orElseThrow(()->new ReseourceNotFoundException("không tìm thấy người dùng với id: "+hopDongRequest.getMaTaiKhoan()));
         Phong phong=phongRepository.findByMaPhongAndTrangThai(hopDongRequest.getMaPhong(), TrangThai.hoatDong)
                 .orElseThrow(()->new ReseourceNotFoundException("không tìm thấy phòng với id: "+hopDongRequest.getMaPhong()));
-        KhachThue khachThue=khachThueRepository.findById(hopDongRequest.getMaKhachThue())
+        KhachThue khachThue=khachThueRepository.findByMaKhachAndTrangThai(hopDongRequest.getMaKhachThue(), com.so_tro_online.quan_ly_khach_thue.entity.TrangThai.hoatDong)
                 .orElseThrow(()->new ReseourceNotFoundException("không tìm thấy khách hàng với id: "+hopDongRequest.getMaKhachThue()));
         if(hopDongPhongRepository.existsByPhongAndTrangThai(phong, com.so_tro_online.quan_ly_hop_dong_phong.entity.TrangThai.hoatDong)){
             throw new HopDongAlreadyExists("phòng này đã được thuê");

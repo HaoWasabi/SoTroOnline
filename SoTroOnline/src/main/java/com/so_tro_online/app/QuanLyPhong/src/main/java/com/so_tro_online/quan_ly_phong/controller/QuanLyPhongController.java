@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -73,5 +74,9 @@ public class QuanLyPhongController {
             @RequestParam(required = false) BigDecimal giaThueCoBan){
         List<RoomResponse>list=phongService.searchRoom(tenPhong, loaiPhong, diaChi, chieuDai, chieuRong, vatDung, giaThueCoBan);
         return ResponseEntity.ok(new ApiResponse("success",list));
+    }
+    @GetMapping("/sendReminder")
+    public void sendReminder(@RequestParam LocalDate ngay) {
+        phongService.sendEmailReminderForRooms(ngay);
     }
 }

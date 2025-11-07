@@ -4,9 +4,11 @@ import com.so_tro_online.quan_ly_phong.entity.Phong;
 import com.so_tro_online.quan_ly_phong.entity.TrangThai;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,5 +29,16 @@ public interface PhongRepository extends JpaRepository<Phong,Integer> {
             "p.trangThai = 'hoatDong'")
     List<Phong>searchRoom(String tenPhong, String loaiPhong, String diaChi,
                           BigDecimal chieuDai, BigDecimal chieuRong, String vatDung, BigDecimal giaThueCoBan);
+    @Query(value = """
+    SELECT hdp.ma_phong
+    FROM hop_dong_phong hdp
+    LEFT JOIN su_dung_dich_vu sddv
+        ON hdp.ma_phong = sddv.phong_ma_phong
+        AND YEAR(sddv.thang_nam) = YEAR(:ngay)
+        AND MONTH(sddv.thang_nam) = MONTH(:ngay)
+    WHERE hdp.trang_thai = 'hoatDong'
+      AND sddv.phong_ma_phong IS NULL
+    """, nativeQuery = true)
+    List<String> findPhongChuaCoChiSoDien(@Param("ngay") LocalDate ngay);
 
 }

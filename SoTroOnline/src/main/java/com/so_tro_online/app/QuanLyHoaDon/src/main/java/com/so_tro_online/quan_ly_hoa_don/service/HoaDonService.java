@@ -161,7 +161,7 @@ public class HoaDonService implements IHoaDonService{
 
     @Override
     public HoaDonResponse createHoaDon(HoaDonRequest request) {
-        HopDongPhong item=hopDongPhongRepository.findById(request.getMaHopDongPhong())
+        HopDongPhong item=hopDongPhongRepository.findByMaHopDongPhongAndTrangThai(request.getMaHopDongPhong(), com.so_tro_online.quan_ly_hop_dong_phong.entity.TrangThai.hoatDong)
                 .orElseThrow(()->new ReseourceNotFoundException("không tìm thấy hợp đồng với mã"+request.getMaHopDongPhong()));
         YearMonth ngayBatDau=YearMonth.of(item.getNgayBatDau().getYear(),item.getNgayBatDau().getMonth());
         YearMonth ngayKetThuc= YearMonth.of(item.getNgayKetThuc().getYear(),item.getNgayKetThuc().getMonth());
@@ -266,6 +266,13 @@ public class HoaDonService implements IHoaDonService{
         hoaDon.setThang(request.getThang());
         hoaDon.setNam(request.getNam());
         return mapToResponse(hoaDonRepository.save(hoaDon));
+    }
+
+    @Override
+    public void deleteHoaDon(Integer id) {
+        HoaDon hoaDon=hoaDonRepository.findById(id)
+                .orElseThrow(()->new ReseourceNotFoundException("không tìm thấy hóa đơn với id"+id));
+        hoaDonRepository.delete(hoaDon);
     }
 
     public HoaDonResponse mapToResponse(HoaDon hoaDon){

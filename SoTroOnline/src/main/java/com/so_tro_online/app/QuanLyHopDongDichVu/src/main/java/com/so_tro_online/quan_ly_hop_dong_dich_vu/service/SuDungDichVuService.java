@@ -83,6 +83,7 @@ public class SuDungDichVuService implements ISuDungDichVuService {
         suDungDichVu.setChiSoDienMoi(req.getChiSoDienMoi());
         suDungDichVu.setChiSoNuocCu(req.getChiSoNuocCu());
         suDungDichVu.setChiSoNuocMoi(req.getChiSoNuocMoi());
+        suDungDichVu.setTrangThai(req.getTrangThai());
         return mapToResponse(suDungDichVuRepository.save(suDungDichVu));
     }
 
@@ -95,7 +96,7 @@ public class SuDungDichVuService implements ISuDungDichVuService {
 
     @Override
     public void deleteSuDungDichVu(Integer id) {
-        SuDungDichVu suDungDichVu=suDungDichVuRepository.findById(id)
+        SuDungDichVu suDungDichVu=suDungDichVuRepository.findByIdAndTrangThai(id,TrangThai.hoatDong)
                 .orElseThrow(()->new ReseourceNotFoundException("không tìm thấy sử dụng dịch vụ id: "+id));
         suDungDichVu.setTrangThai(TrangThai.daXoa);
         suDungDichVuRepository.save(suDungDichVu);

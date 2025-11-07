@@ -27,4 +27,6 @@ public interface SuDungDichVuRepository extends JpaRepository<SuDungDichVu,Integ
             @Param("trangThai") TrangThai trangThai);
 
     List<SuDungDichVu> findByPhongMaPhongAndTrangThaiOrderByThangNamDesc(Integer maPhong, TrangThai trangThai);
+
+    Optional<SuDungDichVu> findByIdAndTrangThai(Integer id, TrangThai trangThai);
 }

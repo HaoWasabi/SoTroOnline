@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -28,12 +29,12 @@ import java.util.List;
 public class PhongService implements IPhongService{
     private final TaiKhoanRepository taiKhoanRepository;
     private final PhongRepository phongRepository;
+    private final EmailService emailService;
 
-
-    public PhongService(TaiKhoanRepository taiKhoanRepository, PhongRepository phongRepository) {
+    public PhongService(TaiKhoanRepository taiKhoanRepository, PhongRepository phongRepository, EmailService emailService) {
         this.taiKhoanRepository = taiKhoanRepository;
         this.phongRepository = phongRepository;
-
+        this.emailService = emailService;
     }
 
     @Override
@@ -128,7 +129,7 @@ public class PhongService implements IPhongService{
                 try {
                     Phong phong = new Phong();
                     int maQuanLy = (int) row.getCell(0).getNumericCellValue();
-                    TaiKhoan taiKhoan = taiKhoanRepository.findById(maQuanLy).
+                    TaiKhoan taiKhoan = taiKhoanRepository.findByMaTaiKhoanAndTrangThai(maQuanLy, com.so_tro_online.quan_ly_tai_khoan.entity.TrangThai.hoatDong).
                             orElseThrow(()->new ReseourceNotFoundException("không tìm thấy người dùng với id: "+maQuanLy));
                     phong.setTaiKhoan(taiKhoan);
                     if(phongRepository.existsByTenPhongAndTrangThai(row.getCell(1).getStringCellValue(),TrangThai.hoatDong)){
@@ -193,6 +194,15 @@ public class PhongService implements IPhongService{
     public List<RoomResponse> searchRoom(String tenPhong, String loaiPhong, String diaChi, BigDecimal chieuDai, BigDecimal chieuRong, String vatDung, BigDecimal giaThueCoBan) {
         return phongRepository.searchRoom(tenPhong,loaiPhong,diaChi,chieuDai,chieuRong,vatDung,giaThueCoBan)
                 .stream().map(this::mapToRoomResponse).toList();
+    }
+
+    @Override
+        public void sendEmailReminderForRooms(LocalDate ngay) {
+            List<String> phongChuaCoChiSoDien = phongRepository.findPhongChuaCoChiSoDien(ngay);
+            String subject = "Nhắc nhở: Phòng chưa có chỉ số điện";
+            String body = "Danh sách phòng chưa có chỉ số điện cho tháng " + ngay.getMonthValue() + "/" + ngay.getYear() + ":\n"
+                    + String.join("\n", phongChuaCoChiSoDien);
+            emailService.sendMail("admin@gmail.com", subject, body);
     }
 
     public RoomResponse mapToRoomResponse(Phong phong) {
