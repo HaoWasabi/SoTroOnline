@@ -44,6 +44,10 @@ public class CustomOidcUserService extends OidcUserService {
                 newTaiKhoan.setHoTen(name);
             }
 
+            // Set placeholder values for required fields that are not available from OIDC
+            newTaiKhoan.setDienThoai("000000000"); // Set placeholder phone number (9 digits)
+            newTaiKhoan.setMaCanCuoc("000000000000"); // Set placeholder ID number (12 digits)
+
             TaiKhoan savedAccount = taiKhoanRepository.save(newTaiKhoan);
             System.out.println("OIDC - Account saved with ID: " + savedAccount.getMaTaiKhoan());
         }

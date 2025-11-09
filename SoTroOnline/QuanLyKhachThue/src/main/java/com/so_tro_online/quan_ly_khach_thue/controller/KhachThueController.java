@@ -111,19 +111,29 @@ public class KhachThueController {
     }
 
     /**
-     * Get all tenants with pagination
+     * Get all tenants with pagination - including both active and deleted
      */
     @GetMapping
     public ResponseEntity<Map<String, Object>> getAllKhachThue(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(required = false) String search) {
-        logger.info("Received request for getAllKhachThue with page: {} and search: {}", page, search);
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String status) {
+        logger.info("Received request for getAllKhachThue with page: {}, search: {}, status: {}", page, search, status);
         Map<String, Object> response = new HashMap<>();
         try {
             Page<KhachThueDto> khachThuePage;
 
             if (search != null && !search.trim().isEmpty()) {
                 khachThuePage = khachThueService.searchKhachThue(search.trim(), page);
+            } else if (status != null && !status.trim().isEmpty()) {
+                // Filter by status if provided
+                if ("active".equalsIgnoreCase(status.trim()) || "hoatDong".equalsIgnoreCase(status.trim())) {
+                    khachThuePage = khachThueService.getActiveKhachThue(page);
+                } else if ("deleted".equalsIgnoreCase(status.trim()) || "daXoa".equalsIgnoreCase(status.trim())) {
+                    khachThuePage = khachThueService.getDeletedKhachThue(page);
+                } else {
+                    khachThuePage = khachThueService.getAllKhachThue(page);
+                }
             } else {
                 khachThuePage = khachThueService.getAllKhachThue(page);
             }
@@ -138,7 +148,38 @@ public class KhachThueController {
             pageInfo.put("hasPrevious", khachThuePage.hasPrevious());
 
             response.put("success", true);
-            response.put("message", "Lấy danh sách khách thuê thành công");
+            response.put("message", "Lấy danh sách tất cả khách thuê thành công");
+            response.put("data", pageInfo);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi hệ thống: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    /**
+     * Get all deleted tenants with pagination - for admin purposes
+     */
+    @GetMapping("/deleted")
+    public ResponseEntity<Map<String, Object>> getDeletedKhachThue(
+            @RequestParam(defaultValue = "0") int page) {
+        logger.info("Received request for getDeletedKhachThue with page: {}", page);
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Page<KhachThueDto> khachThuePage = khachThueService.getDeletedKhachThue(page);
+
+            Map<String, Object> pageInfo = new HashMap<>();
+            pageInfo.put("content", khachThuePage.getContent());
+            pageInfo.put("totalElements", khachThuePage.getTotalElements());
+            pageInfo.put("totalPages", khachThuePage.getTotalPages());
+            pageInfo.put("currentPage", khachThuePage.getNumber());
+            pageInfo.put("size", khachThuePage.getSize());
+            pageInfo.put("hasNext", khachThuePage.hasNext());
+            pageInfo.put("hasPrevious", khachThuePage.hasPrevious());
+
+            response.put("success", true);
+            response.put("message", "Lấy danh sách khách thuê đã xóa thành công");
             response.put("data", pageInfo);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -203,7 +244,7 @@ public class KhachThueController {
         try {
             khachThueService.deleteKhachThue(id);
             response.put("success", true);
-            response.put("message", "Xóa khách thuê thành công");
+            response.put("message", "Khách thuê đã được đánh dấu xóa thành công");
             return ResponseEntity.ok(response);
         } catch (KhachThueNotFoundException e) {
             response.put("success", false);
@@ -212,6 +253,43 @@ public class KhachThueController {
         } catch (Exception e) {
             response.put("success", false);
             response.put("message", "Lỗi hệ thống: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    /**
+     * Restore deleted tenant
+     */
+    @PutMapping("/{id}/restore")
+    public ResponseEntity<ApiResponse<KhachThueDto>> restoreKhachThue(@PathVariable int id) {
+        try {
+            KhachThueDto restoredKhachThue = khachThueService.restoreKhachThue(id);
+            ApiResponse<KhachThueDto> response = new ApiResponse<>(
+                    HttpStatus.OK.value(),
+                    "Khôi phục khách thuê thành công",
+                    restoredKhachThue
+            );
+            return ResponseEntity.ok(response);
+        } catch (KhachThueNotFoundException e) {
+            ApiResponse<KhachThueDto> response = new ApiResponse<>(
+                    HttpStatus.NOT_FOUND.value(),
+                    e.getMessage(),
+                    null
+            );
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } catch (IllegalStateException e) {
+            ApiResponse<KhachThueDto> response = new ApiResponse<>(
+                    HttpStatus.BAD_REQUEST.value(),
+                    e.getMessage(),
+                    null
+            );
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        } catch (Exception e) {
+            ApiResponse<KhachThueDto> response = new ApiResponse<>(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "Lỗi hệ thống: " + e.getMessage(),
+                    null
+            );
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }

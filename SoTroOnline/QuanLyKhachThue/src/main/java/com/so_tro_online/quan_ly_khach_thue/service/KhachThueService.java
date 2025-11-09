@@ -43,9 +43,9 @@ public class KhachThueService {
             // Generate unique MaKhachDaiDien with better performance
             String newMaKhachDaiDien = generateUniqueMaKhachDaiDien();
 
-            // Check for duplicate maCanCuoc
+            // Check for duplicate maCanCuoc among active tenants
             if (khachThueRequest.getMaCanCuoc() != null &&
-                khachThueRepository.existsByMaCanCuoc(khachThueRequest.getMaCanCuoc().trim())) {
+                khachThueRepository.existsByMaCanCuocAndTrangThaiNot(khachThueRequest.getMaCanCuoc().trim(), TrangThai.daXoa)) {
                 throw new DuplicateCanCuocException(khachThueRequest.getMaCanCuoc().trim());
             }
 
@@ -83,7 +83,7 @@ public class KhachThueService {
     }
 
     /**
-     * Get tenant by ID
+     * Get tenant by ID - including both active and deleted ones
      */
     public KhachThueDto getKhachThueById(int maKhach) {
         try {
@@ -100,7 +100,7 @@ public class KhachThueService {
     }
 
     /**
-     * Get all tenants with pagination
+     * Get all tenants with pagination - including both active and deleted ones
      */
     public Page<KhachThueDto> getAllKhachThue(int page) {
         try {
@@ -118,7 +118,25 @@ public class KhachThueService {
     }
 
     /**
-     * Update tenant
+     * Get active tenants only with pagination
+     */
+    public Page<KhachThueDto> getActiveKhachThue(int page) {
+        try {
+            if (page < 0) {
+                page = 0;
+            }
+
+            Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("ngayTao").descending());
+            Page<KhachThue> khachThuePage = khachThueRepository.findByTrangThaiNot(TrangThai.daXoa, pageable);
+
+            return khachThuePage.map(KhachThueMapper::toDto);
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi khi lấy danh sách khách thuê hoạt động: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Update tenant - allow updating both active and deleted ones
      */
     public KhachThueDto updateKhachThue(int maKhach, KhachThueRequest khachThueRequest) {
         try {
@@ -128,10 +146,10 @@ public class KhachThueService {
             }
             validateKhachThueDataForUpdate(khachThueRequest);
 
-            // Check for duplicate maCanCuoc (excluding current tenant)
+            // Check for duplicate maCanCuoc among active tenants (excluding current tenant)
             if (khachThueRequest.getMaCanCuoc() != null &&
                 !khachThueRequest.getMaCanCuoc().equals(existingKhachThue.get().getMaCanCuoc()) &&
-                khachThueRepository.existsByMaCanCuoc(khachThueRequest.getMaCanCuoc())) {
+                khachThueRepository.existsByMaCanCuocAndTrangThaiNot(khachThueRequest.getMaCanCuoc(), TrangThai.daXoa)) {
                 throw new DuplicateCanCuocException(khachThueRequest.getMaCanCuoc());
             }
 
@@ -171,15 +189,18 @@ public class KhachThueService {
     }
 
     /**
-     * Delete tenant
+     * Delete tenant "soft delete" - update status to 'daXoa'
      */
     public void deleteKhachThue(int maKhach) {
         try {
-            if (!khachThueRepository.existsById(maKhach)) {
+            Optional<KhachThue> existingKhachThue = khachThueRepository.findById(maKhach);
+            if (existingKhachThue.isEmpty()) {
                 throw new KhachThueNotFoundException(maKhach);
             }
 
-            khachThueRepository.deleteById(maKhach);
+            KhachThue khachThue = existingKhachThue.get();
+            khachThue.setTrangThai(TrangThai.daXoa);
+            khachThueRepository.save(khachThue);
         } catch (KhachThueNotFoundException e) {
             throw e;
         } catch (Exception e) {
@@ -188,7 +209,50 @@ public class KhachThueService {
     }
 
     /**
-     * Search tenants by name
+     * Restore deleted tenant - update status back to 'hoatDong'
+     */
+    public KhachThueDto restoreKhachThue(int maKhach) {
+        try {
+            Optional<KhachThue> existingKhachThue = khachThueRepository.findById(maKhach);
+            if (existingKhachThue.isEmpty()) {
+                throw new KhachThueNotFoundException(maKhach);
+            }
+
+            KhachThue khachThue = existingKhachThue.get();
+            if (khachThue.getTrangThai() != TrangThai.daXoa) {
+                throw new IllegalStateException("Khách thuê này chưa bị xóa");
+            }
+
+            khachThue.setTrangThai(TrangThai.hoatDong);
+            KhachThue restoredKhachThue = khachThueRepository.save(khachThue);
+            return KhachThueMapper.toDto(restoredKhachThue);
+        } catch (KhachThueNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi khi khôi phục khách thuê: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Get all deleted tenants with pagination - for admin purposes
+     */
+    public Page<KhachThueDto> getDeletedKhachThue(int page) {
+        try {
+            if (page < 0) {
+                page = 0;
+            }
+
+            Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("ngayTao").descending());
+            Page<KhachThue> khachThuePage = khachThueRepository.findByTrangThai(TrangThai.daXoa, pageable);
+
+            return khachThuePage.map(KhachThueMapper::toDto);
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi khi lấy danh sách khách thuê đã xóa: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Search tenants by name - including both active and deleted ones
      */
     public Page<KhachThueDto> searchKhachThueByName(String hoTen, int page) {
         try {
@@ -206,7 +270,7 @@ public class KhachThueService {
     }
 
     /**
-     * Enhanced search tenants by multiple fields (maKhach, maCanCuoc, maKhachDaiDien, hoTen)
+     * Enhanced search tenants by multiple fields (maKhach, maCanCuoc, maKhachDaiDien, hoTen) - including both active and deleted ones
      */
     public Page<KhachThueDto> searchKhachThue(String searchTerm, int page) {
         try {
@@ -215,7 +279,7 @@ public class KhachThueService {
             }
 
             Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by("ngayTao").descending());
-            Page<KhachThue> khachThuePage = khachThueRepository.findByMultipleFields(searchTerm.trim(), pageable);
+            Page<KhachThue> khachThuePage = khachThueRepository.findByMultipleFieldsAll(searchTerm.trim(), pageable);
 
             return khachThuePage.map(KhachThueMapper::toDto);
         } catch (Exception e) {

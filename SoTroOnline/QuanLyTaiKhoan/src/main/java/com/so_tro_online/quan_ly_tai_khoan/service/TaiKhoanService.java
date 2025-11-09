@@ -148,27 +148,33 @@ public class TaiKhoanService {
             throw new NoAccountFoundException();
         }
 
-        if(taiKhoan.getMaCanCuoc().equals(maCanCuoc)) {
+        // Handle maCanCuoc safely (can be null for Google accounts)
+        if (!java.util.Objects.equals(taiKhoan.getMaCanCuoc(), maCanCuoc)) {
             taiKhoan.setMaCanCuoc(maCanCuoc);
         }
 
-        if(!taiKhoan.getEmail().equals(email)) {
+        // Handle email safely
+        if (!java.util.Objects.equals(taiKhoan.getEmail(), email)) {
             taiKhoan.setEmail(email);
         }
 
-        if(!taiKhoan.getHoTen().equals(hoTen)) {
+        // Handle hoTen safely
+        if (!java.util.Objects.equals(taiKhoan.getHoTen(), hoTen)) {
             taiKhoan.setHoTen(hoTen);
         }
 
-        if(!taiKhoan.getDienThoai().equals(dienThoai)) {
+        // Handle dienThoai safely
+        if (!java.util.Objects.equals(taiKhoan.getDienThoai(), dienThoai)) {
             taiKhoan.setDienThoai(dienThoai);
         }
 
-        if(!taiKhoan.getThuongTru().equals(thuongTru)) {
+        // Handle thuongTru safely
+        if (!java.util.Objects.equals(taiKhoan.getThuongTru(), thuongTru)) {
             taiKhoan.setThuongTru(thuongTru);
         }
 
-        if(!taiKhoan.getNgaySinh().equals(ngaySinh)) {
+        // Handle ngaySinh safely
+        if (!java.util.Objects.equals(taiKhoan.getNgaySinh(), ngaySinh)) {
             taiKhoan.setNgaySinh(ngaySinh);
         }
 

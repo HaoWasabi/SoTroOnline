@@ -4,26 +4,26 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "KhoiPhucMatKhau")
+@Table(name = "khoi_phuc_mat_khau")
 public class PasswordResetToken {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(nullable = false, unique = true)
+    @Column(name = "token", nullable = false, unique = true)
     private String token;
     
-    @Column(nullable = false)
+    @Column(name = "email", nullable = false)
     private String email;
     
-    @Column(name = "hetHanLuc", nullable = false)
+    @Column(name = "het_han_luc", nullable = false)
     private LocalDateTime expiryDate;
     
-    @Column(name = "daSuDung", nullable = false)
+    @Column(name = "da_su_dung", nullable = false)
     private Boolean used = false;
     
-    @Column(name = "duocTaoLuc", nullable = false)
+    @Column(name = "duoc_tao_luc", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
     
     // Constructors

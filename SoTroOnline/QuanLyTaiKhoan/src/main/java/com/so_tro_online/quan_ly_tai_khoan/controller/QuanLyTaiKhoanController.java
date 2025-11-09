@@ -258,6 +258,61 @@ public class QuanLyTaiKhoanController {
         }
     }
 
+    /**
+     * User registration
+     */
+    @PostMapping("/register")
+    public ResponseEntity<ApiResponse<Object>> register(@RequestBody SignUpRequest signUpRequest) {
+        logger.info("Registration attempt for email: {}", signUpRequest.getEmail());
+        ApiResponse<Object> response = new ApiResponse<>();
+        
+        try {
+            TaiKhoan newTaiKhoan = taiKhoanService.signUp(
+                    signUpRequest.getEmail(),
+                    signUpRequest.getCccdCode(),
+                    signUpRequest.getHoTen(),
+                    signUpRequest.getDienThoai(),
+                    signUpRequest.getThuongTru(),
+                    signUpRequest.getNgaySinh(),
+                    signUpRequest.getPassword(),
+                    LocalDateTime.now(),
+                    signUpRequest.getTrangThai()
+            );
+
+            TaiKhoanDto userDto = UserMapper.toDto(newTaiKhoan);
+            
+            response.setStatus(201);
+            response.setMessage("Registration successful");
+            response.setData(userDto);
+            
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (DuplicateEmailException ex) {
+            logger.error("Registration failed - email already exists: {}", signUpRequest.getEmail());
+            
+            response.setStatus(409);
+            response.setMessage("Account with this email is already exist!");
+            response.setData(null);
+            
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+        } catch (HttpMessageNotReadableException ex) {
+            logger.error("Registration failed - invalid JSON format", ex);
+            
+            response.setStatus(400);
+            response.setMessage("Error JSON format");
+            response.setData(null);
+            
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        } catch (Exception ex) {
+            logger.error("Registration failed for email: {}", signUpRequest.getEmail(), ex);
+            
+            response.setStatus(500);
+            response.setMessage("Internal server error");
+            response.setData(null);
+            
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
     @GetMapping("/user-info")
     public ResponseEntity<?> getUserInfo(@RequestHeader("Authorization") String authHeader) {
         try {

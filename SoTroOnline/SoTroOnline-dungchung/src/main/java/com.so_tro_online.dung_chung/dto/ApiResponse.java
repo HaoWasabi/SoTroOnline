@@ -13,6 +13,13 @@ public class ApiResponse<T> {
         this.message = message;
         this.data = data;
     }
+    
+    // Convenience constructor for successful responses
+    public ApiResponse(String message, T data) {
+        this.status = 200;
+        this.message = message;
+        this.data = data;
+    }
 
     public int getStatus() {
         return status;

@@ -7,40 +7,40 @@ import java.util.Date;
 
 
 @Entity
-@Table(name = "TaiKhoan")
+@Table(name = "tai_khoan")
 public class TaiKhoan {
 
-    @Column(name = "maTaiKhoan", updatable = false)
+    @Column(name = "ma_tai_khoan", updatable = false)
     @Id()
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int maTaiKhoan;
 
-    @Column(name = "maCanCuoc")
+    @Column(name = "ma_can_cuoc")
     private String maCanCuoc;
 
     @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "hoTen")
+    @Column(name = "ho_ten")
     private String hoTen;
 
-    @Column(name = "dienThoai")
+    @Column(name = "dien_thoai")
     private String dienThoai;
 
-    @Column(name = "thuongTru")
+    @Column(name = "thuong_tru")
     private String thuongTru;
 
-    @Column(name = "ngaySinh")
+    @Column(name = "ngay_sinh")
     private Date ngaySinh;
 
-    @Column(name = "matKhau")
+    @Column(name = "mat_khau")
     private String matKhau;
 
-    @Column(name = "ngayTao")
+    @Column(name = "ngay_tao")
     private LocalDateTime ngayTao;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "trangThai")
+    @Column(name = "trang_thai")
     private TrangThai trangThai;
 
     public TaiKhoan() {}

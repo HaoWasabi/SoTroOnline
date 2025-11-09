@@ -6,36 +6,36 @@ import java.time.Instant;
 import java.util.Date;
 
 @Entity
-@Table(name = "KhachThue")
+@Table(name = "khach_thue")
 public class KhachThue {
 
     @Id
-    @Column(name = "maKhach", updatable = false)
+    @Column(name = "ma_khach", updatable = false)
     private int maKhach;
 
-    @Column(name = "maKhachDaiDien")
+    @Column(name = "ma_khach_dai_dien")
     private String maKhachDaiDien;
 
-    @Column(name = "maCanCuoc")
+    @Column(name = "ma_can_cuoc")
     private String maCanCuoc;
 
-    @Column(name = "hoTen")
+    @Column(name = "ho_ten")
     private String hoTen;
 
-    @Column(name = "dienThoai")
+    @Column(name = "dien_thoai")
     private String dienThoai;
 
-    @Column(name = "thuongTru")
+    @Column(name = "thuong_tru")
     private String thuongTru;
 
-    @Column(name = "ngaySinh")
+    @Column(name = "ngay_sinh")
     private Date ngaySinh;
 
-    @Column(name = "ngayTao")
+    @Column(name = "ngay_tao")
     private Instant ngayTao;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "trangThai")
+    @Column(name = "trang_thai")
     private TrangThai trangThai;
 
 

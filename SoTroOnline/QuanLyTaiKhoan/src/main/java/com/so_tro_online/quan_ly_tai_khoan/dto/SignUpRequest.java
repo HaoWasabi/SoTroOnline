@@ -1,6 +1,7 @@
 package com.so_tro_online.quan_ly_tai_khoan.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.so_tro_online.quan_ly_tai_khoan.entity.TrangThai;
 
 import java.time.LocalDate;
@@ -8,8 +9,13 @@ import java.util.Date;
 
 public class SignUpRequest {
     private String email;
+    
+    @JsonProperty("maCanCuoc")
     private String cccdCode;
+    
+    @JsonProperty("matKhau")
     private String password;
+    
     private String hoTen;
     private String dienThoai;
     private String thuongTru;
