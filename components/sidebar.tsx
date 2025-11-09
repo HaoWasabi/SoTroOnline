@@ -24,6 +24,7 @@ const navigation = [
     { vietnam_name: 'Phòng', english_name: 'Rooms', href: '/rooms', icon: Building },
     { vietnam_name: 'Hợp đồng', english_name: 'Contracts', href: '/contracts', icon: FileText },
     { vietnam_name: 'Hóa đơn', english_name: 'Invoices', href: '/invoices', icon: Receipt },
+    { vietnam_name: 'Dịch vụ phòng', english_name: 'Room Services', href: '/room-services', icon: Wrench },
 ];
 
 export function Sidebar() {

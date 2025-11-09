@@ -33,6 +33,7 @@ export default function TenantManagementLayout() {
     const {language} = useLanguageStore()
     const [searchTerm, setSearchTerm] = useState("")
     const [statusFilter, setStatusFilter] = useState<string>("")
+    const [refreshTrigger, setRefreshTrigger] = useState(0)
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(e.target.value)
@@ -40,6 +41,11 @@ export default function TenantManagementLayout() {
 
     const handleStatusFilter = (status: string) => {
         setStatusFilter(status)
+    }
+
+    const handleTenantCreated = () => {
+        // Trigger refresh by incrementing the refresh counter
+        setRefreshTrigger(prev => prev + 1)
     }
 
     return (
@@ -53,7 +59,7 @@ export default function TenantManagementLayout() {
                         {language === 'vi' ? 'Quản lý thông tin khách thuê' : 'Manage all your tenants and their information'}
                     </p>
                 </div>
-                <TenantForm />
+                <TenantForm onSuccess={handleTenantCreated} />
             </div>
             <Card>
                 <CardContent className="p-4">
@@ -79,7 +85,7 @@ export default function TenantManagementLayout() {
                     </div>
                 </CardContent>
             </Card>
-            <ListOfTenants searchTerm={searchTerm} statusFilter={statusFilter} />
+            <ListOfTenants searchTerm={searchTerm} statusFilter={statusFilter} refreshTrigger={refreshTrigger} />
         </main>
     )
 }

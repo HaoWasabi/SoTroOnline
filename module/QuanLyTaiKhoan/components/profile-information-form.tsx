@@ -48,39 +48,52 @@ export default function ProfileInformationForm({profile}: {profile: TaiKhoan}) {
 
         if(!validateEmail(email)) {
             showError(language === 'vi' ? 'Email không hợp lệ' : 'Invalid email address');
+            setIsSubmitting(false);
             return;
         }
 
-        if(!validateCccd(cccdCode)) {
+        // Only validate CCCD if it's provided (not required for Google accounts)
+        if(cccdCode && !validateCccd(cccdCode)) {
             showError(language === 'vi' ? 'Cccd không hợp lệ' : 'Invalid cccd');
+            setIsSubmitting(false);
             return;
         }
 
         if(!validatePhone(dienThoai)) {
             showError(language === 'vi' ? 'Số điện thoại không hợp lệ' : 'Invalid phone number');
+            setIsSubmitting(false);
             return;
         }
 
         if(!validateAddress(thuongTru)) {
             showError(language === 'vi' ? 'Địa chỉ không hợp lệ' : 'Invalid address');
+            setIsSubmitting(false);
             return;
         }
 
         if(!validateDateOfBirth(new Date(ngaySinh))) {
             showError(language === 'vi' ? 'Bạn phải từ 18 tuổi trở lên' : 'You must be at least 18 years old');
+            setIsSubmitting(false);
             return;
         }
 
-        const response = await updateUserInformationApi(taiKhoan?.maTaiKhoan as number, email, hoTen, cccdCode, dienThoai, thuongTru, ngaySinh);
+        const response = await updateUserInformationApi(
+            taiKhoan?.maTaiKhoan as number, 
+            email, 
+            hoTen, 
+            cccdCode || '', // Ensure empty string instead of undefined
+            dienThoai, 
+            thuongTru, 
+            ngaySinh
+        );
         
         if(response.status === 'success') {
             setIsSubmitting(false)
             setIsChanged(false)
-            updateUserInformationApi(taiKhoan?.maTaiKhoan as number, email, hoTen, cccdCode, dienThoai, thuongTru, ngaySinh)
             updateTaiKhoan({
                 email: email,
                 hoTen: hoTen,
-                maCanCuoc: cccdCode,
+                maCanCuoc: cccdCode || '',
                 dienThoai: dienThoai,
                 thuongTru: thuongTru,
                 ngaySinh: ngaySinh
@@ -125,7 +138,7 @@ export default function ProfileInformationForm({profile}: {profile: TaiKhoan}) {
                                 type="text"
                                 defaultValue={profile && profile.hoTen ? profile.hoTen : ''}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                    if (e.target.value !== profile.hoTen) { setIsChanged(true) } else { setIsChanged(false) }
+                                    if (e.target.value !== (profile.hoTen || '')) { setIsChanged(true) } else { setIsChanged(false) }
                                 }}
                                 required
                             />
@@ -141,7 +154,7 @@ export default function ProfileInformationForm({profile}: {profile: TaiKhoan}) {
                                     className="pl-10"
                                     defaultValue={profile && profile.email ? profile.email : ''}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                        if (e.target.value !== profile.email) { setIsChanged(true) } else { setIsChanged(false) }
+                                        if (e.target.value !== (profile.email || '')) { setIsChanged(true) } else { setIsChanged(false) }
                                     }}
                                     required
                                 />
@@ -155,9 +168,9 @@ export default function ProfileInformationForm({profile}: {profile: TaiKhoan}) {
                                 type="text"
                                 defaultValue={profile && profile.maCanCuoc ? profile.maCanCuoc : ''}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                    if (e.target.value !== profile.maCanCuoc) { setIsChanged(true) } else { setIsChanged(false) }
+                                    if (e.target.value !== (profile.maCanCuoc || '')) { setIsChanged(true) } else { setIsChanged(false) }
                                 }}
-                                required
+                                placeholder={language === 'vi' ? "Nhập mã căn cước công dân (tùy chọn cho tài khoản Google)" : "Enter CCCD code (optional for Google accounts)"}
                             />
                         </div>
 
@@ -170,7 +183,7 @@ export default function ProfileInformationForm({profile}: {profile: TaiKhoan}) {
                                     className="pl-10"
                                     defaultValue={profile && profile.dienThoai ? profile.dienThoai : ''}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                        if (e.target.value !== profile.dienThoai) { setIsChanged(true) } else { setIsChanged(false) }
+                                        if (e.target.value !== (profile.dienThoai || '')) { setIsChanged(true) } else { setIsChanged(false) }
                                     }}
                                     required
                                 />
@@ -186,7 +199,7 @@ export default function ProfileInformationForm({profile}: {profile: TaiKhoan}) {
                                 type="date" 
                                 defaultValue={profile && profile.ngaySinh ? profile.ngaySinh.substring(0, 10) : ''} 
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                    if (e.target.value !== profile.ngaySinh) { setIsChanged(true) } else { setIsChanged(false) }
+                                    if (e.target.value !== (profile.ngaySinh || '')) { setIsChanged(true) } else { setIsChanged(false) }
                                 }}
                                 required
                             />
@@ -201,7 +214,7 @@ export default function ProfileInformationForm({profile}: {profile: TaiKhoan}) {
                                     className="pl-10"
                                     defaultValue={profile && profile.thuongTru ? profile.thuongTru : ''}
                                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
-                                        if (e.target.value !== profile.thuongTru) { setIsChanged(true) } else { setIsChanged(false) }
+                                        if (e.target.value !== (profile.thuongTru || '')) { setIsChanged(true) } else { setIsChanged(false) }
                                     }}
                                     required
                                 />

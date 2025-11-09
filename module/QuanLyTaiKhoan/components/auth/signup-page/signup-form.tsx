@@ -11,9 +11,21 @@ import { useLanguageStore } from '@/zustand/language-tranlator';
 import { useToast } from '@/hook/useToast';
 import { Toast, ToastContainer } from '@/components/toast';
 import { validateAddress, validateCccd, validateDateOfBirth, validatePhone } from '@/utils/auth-validation';
-import { signUpApi } from '@/module/QuanLyTaiKhoan/api/api-quan-ly-tai-khoan';
+import { signUpApi, login } from '@/module/QuanLyTaiKhoan/api/api-quan-ly-tai-khoan';
 import { useRouter } from 'next/navigation';
 import { useTaiKhoanStore } from '@/zustand/taikhoan-store';
+
+// Import the TaiKhoan type
+interface TaiKhoan {
+    maTaiKhoan: number;
+    maCanCuoc: string;
+    email: string;
+    hoTen: string;
+    dienThoai: string;
+    thuongTru: string;
+    ngaySinh: string;
+    trangThai: "hoatDong" | "biKhoa";
+}
 
 
 export default function SignUpForm() {
@@ -50,50 +62,83 @@ export default function SignUpForm() {
 
         if(!name || !email || !cccd || !phone || !address || !dateOfBirth || !password || !confirmPassword) {
             showError(language === 'vi' ? 'Vui lòng điền đầy đủ thông tin' : 'Please fill in all fields');
+            setIsSubmitting(false);
             return;
         }
 
-       
-
         if(!validateCccd(cccd)) {
             showError(language === 'vi' ? 'Cccd không hợp lệ' : 'Invalid cccd');
+            setIsSubmitting(false);
             return;
         }
 
         if(!validatePhone(phone)) {
             showError(language === 'vi' ? 'Số điện thoại không hợp lệ' : 'Invalid phone number');
+            setIsSubmitting(false);
             return;
         }
 
         if(!validateAddress(address)) {
             showError(language === 'vi' ? 'Địa chỉ không hợp lệ' : 'Invalid address');
+            setIsSubmitting(false);
             return;
         }
 
         if(!validateDateOfBirth(new Date(dateOfBirth))) {
             showError(language === 'vi' ? 'Ngày sinh không hợp lệ' : 'Invalid date of birth');
+            setIsSubmitting(false);
             return;
         }
 
         if(password !== confirmPassword) {
             showError(language === 'vi' ? 'Mật khẩu không khớp' : 'Passwords do not match');
+            setIsSubmitting(false);
             return;
         }
 
-        const response = await signUpApi(email, cccd, password, name, phone, address, new Date(dateOfBirth), 'hoatDong');
+        try {
+            const response = await signUpApi(email, cccd, password, name, phone, address, new Date(dateOfBirth), 'hoatDong');
 
-        if(response.status === 'success') {
-            showSuccess(language === 'vi' ? 'Đăng ký thành công' : 'Registration successful');
-            setTaiKhoan(response.user as TaiKhoan);
-            router.push("/")
-        } else {
-            const errorMessage = response.message && (language === 'vi' ? (
-                response.message === 'Account with this email is already exist!' ? 'Tài khoản với email này đã tồn tại!' : 
-                response.message === 'Error JSON format' ? 'Định dạng JSON không hợp lệ' : 
-                response.message === 'Internal server error' ? 'Lỗi máy chủ nội bộ' : response.message
-            ) : 'Registration failed');
+            if(response.status === 'success') {
+                showSuccess(language === 'vi' ? 'Đăng ký thành công' : 'Registration successful');
+                
+                // Automatically log in the user after successful registration
+                try {
+                    const loginResponse = await import('@/module/QuanLyTaiKhoan/api/api-quan-ly-tai-khoan').then(module => module.login(email, password));
+                    
+                    if (loginResponse.status === 'success' && loginResponse.data?.taiKhoanDTO) {
+                        setTaiKhoan(loginResponse.data.taiKhoanDTO);
+                        setTimeout(() => {
+                            setIsSubmitting(false);
+                            router.push("/");
+                        }, 500);
+                    } else {
+                        // If auto-login fails, just set the user data and redirect to login
+                        setTaiKhoan(response.user as TaiKhoan);
+                        setTimeout(() => {
+                            setIsSubmitting(false);
+                            router.push("/login-page");
+                        }, 1000);
+                    }
+                } catch (loginError) {
+                    // If auto-login fails, redirect to login page
+                    setTimeout(() => {
+                        setIsSubmitting(false);
+                        router.push("/login-page");
+                    }, 1000);
+                }
+            } else {
+                const errorMessage = response.message && (language === 'vi' ? (
+                    response.message === 'Account with this email is already exist!' ? 'Tài khoản với email này đã tồn tại!' : 
+                    response.message === 'Error JSON format' ? 'Định dạng JSON không hợp lệ' : 
+                    response.message === 'Internal server error' ? 'Lỗi máy chủ nội bộ' : response.message
+                ) : response.message) || (language === 'vi' ? 'Đăng ký thất bại' : 'Registration failed');
+                setIsSubmitting(false);
+                showError(errorMessage);
+            }
+        } catch (error) {
             setIsSubmitting(false);
-            showError(errorMessage);
+            showError(language === 'vi' ? 'Có lỗi xảy ra khi đăng ký' : 'An error occurred during registration');
         }
         
     };
@@ -240,8 +285,11 @@ export default function SignUpForm() {
                     </CardContent>
                     
                     <CardFooter className="mt-4 flex flex-col space-y-4">
-                        <Button type="submit" className="w-full bg-blue-500 hover:bg-blue-600">
-                            {language === 'vi' ? 'Tạo tài khoản' : 'Create Account'}
+                        <Button type="submit" disabled={isSubmitting} className="w-full bg-blue-500 hover:bg-blue-600">
+                            {isSubmitting 
+                                ? (language === 'vi' ? 'Đang tạo tài khoản...' : 'Creating account...') 
+                                : (language === 'vi' ? 'Tạo tài khoản' : 'Create Account')
+                            }
                         </Button>
                         <div className="text-center text-sm text-gray-600">
                             {language === 'vi' ? 'Đã có tài khoản' : 'Already have an account?'}{' '}

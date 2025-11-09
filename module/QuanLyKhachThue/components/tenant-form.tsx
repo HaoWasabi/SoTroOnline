@@ -30,6 +30,70 @@ export function TenantForm({ onSuccess }: TenantFormProps) {
     const { toast, showSuccess, showError, removeToast } = useToast();
     const [isCreating, setIsCreating] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
+    const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+
+    // Validation functions
+    const validateField = (name: string, value: string): string | null => {
+        switch (name) {
+            case 'hoTen':
+                if (!value.trim()) {
+                    return language === 'vi' ? 'Họ và tên là bắt buộc' : 'Full name is required';
+                }
+                if (value.trim().length < 2) {
+                    return language === 'vi' ? 'Họ và tên phải có ít nhất 2 ký tự' : 'Full name must be at least 2 characters';
+                }
+                break;
+            case 'maCanCuoc':
+                if (!value.trim()) {
+                    return language === 'vi' ? 'Số CCCD là bắt buộc' : 'ID card number is required';
+                }
+                if (!/^\d{12}$/.test(value.trim())) {
+                    return language === 'vi' ? 'Số CCCD phải có 12 chữ số' : 'ID card must be 12 digits';
+                }
+                break;
+            case 'dienThoai':
+                if (!value.trim()) {
+                    return language === 'vi' ? 'Số điện thoại là bắt buộc' : 'Phone number is required';
+                }
+                if (!/^[0-9]{10,11}$/.test(value.trim())) {
+                    return language === 'vi' ? 'Số điện thoại phải có 10-11 chữ số' : 'Phone number must be 10-11 digits';
+                }
+                break;
+            case 'thuongTru':
+                if (!value.trim()) {
+                    return language === 'vi' ? 'Địa chỉ thường trú là bắt buộc' : 'Permanent address is required';
+                }
+                if (value.trim().length < 10) {
+                    return language === 'vi' ? 'Địa chỉ phải có ít nhất 10 ký tự' : 'Address must be at least 10 characters';
+                }
+                break;
+            case 'ngaySinh':
+                if (!value) {
+                    return language === 'vi' ? 'Ngày sinh là bắt buộc' : 'Date of birth is required';
+                }
+                const birthDate = new Date(value);
+                const today = new Date();
+                const age = today.getFullYear() - birthDate.getFullYear();
+                if (age < 18) {
+                    return language === 'vi' ? 'Tuổi phải từ 18 trở lên' : 'Must be at least 18 years old';
+                }
+                if (age > 100) {
+                    return language === 'vi' ? 'Ngày sinh không hợp lệ' : 'Invalid date of birth';
+                }
+                break;
+        }
+        return null;
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        const error = validateField(name, value);
+        
+        setValidationErrors(prev => ({
+            ...prev,
+            [name]: error || ''
+        }));
+    };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -47,36 +111,71 @@ export function TenantForm({ onSuccess }: TenantFormProps) {
             dienThoai: formData.get('dienThoai') as string,
         };
 
-        // Validate required fields
-        if (!tenantData.hoTen || !tenantData.maCanCuoc || !tenantData.dienThoai || !tenantData.thuongTru || !tenantData.ngaySinh) {
+        // Validate all fields
+        const errors: Record<string, string> = {};
+        Object.keys(tenantData).forEach(key => {
+            if (key !== 'maKhach' && key !== 'maKhachDaiDien' && key !== 'ngayTao' && key !== 'trangThai') {
+                const error = validateField(key, tenantData[key as keyof typeof tenantData] as string);
+                if (error) {
+                    errors[key] = error;
+                }
+            }
+        });
+
+        if (Object.keys(errors).length > 0) {
+            setValidationErrors(errors);
             showError(
                 language === 'vi' 
-                    ? 'Vui lòng điền đầy đủ thông tin bắt buộc.' 
-                    : 'Please fill in all required fields.'
+                    ? 'Vui lòng kiểm tra lại thông tin đã nhập.' 
+                    : 'Please check the information entered.'
             );
             return;
         }
 
+        // Clear validation errors if all fields are valid
+        setValidationErrors({});
+
         try {
             setIsCreating(true);
-            await createTenant(tenantData);
+            const result = await createTenant(tenantData);
             
-            // Show success message
-            showSuccess(
-                language === 'vi' 
-                    ? 'Tạo khách thuê thành công!' 
-                    : 'Tenant created successfully!'
-            );
-            
-            // Close dialog and reset form
-            setIsOpen(false);
-            (e.target as HTMLFormElement).reset();
-            
-            // Call onSuccess callback to refresh the tenant list
-            onSuccess?.();
-            
+            // Handle different response formats
+            if (result.success || (result.status && result.status >= 200 && result.status < 300)) {
+                // Show success message
+                showSuccess(
+                    language === 'vi' 
+                        ? 'Tạo khách thuê thành công!' 
+                        : 'Tenant created successfully!'
+                );
+                
+                // Close dialog and reset form
+                setIsOpen(false);
+                (e.target as HTMLFormElement).reset();
+                setValidationErrors({});
+                
+                // Call onSuccess callback to refresh the tenant list
+                onSuccess?.();
+            } else {
+                // Handle API validation errors
+                if (result.message) {
+                    if (result.message.includes('Duplicate') || result.message.includes('trùng')) {
+                        setValidationErrors({ maCanCuoc: language === 'vi' ? 'Số CCCD đã tồn tại' : 'ID card already exists' });
+                    }
+                    showError(result.message);
+                } else {
+                    showError(language === 'vi' ? 'Tạo thất bại' : 'Creation failed');
+                }
+            }
         } catch (error) {
             console.error('Error creating tenant:', error);
+            
+            // Parse error response for specific validation errors
+            if (error instanceof Error) {
+                const errorMessage = error.message;
+                if (errorMessage.includes('Duplicate') || errorMessage.includes('trùng')) {
+                    setValidationErrors({ maCanCuoc: language === 'vi' ? 'Số CCCD đã tồn tại' : 'ID card already exists' });
+                }
+            }
             
             // Show error message
             showError(
@@ -112,69 +211,94 @@ export function TenantForm({ onSuccess }: TenantFormProps) {
                             <div className="space-y-4 sm:space-y-0 sm:grid grid-cols-2 gap-2">
                                 <div className="space-y-2">
                                     <Label htmlFor="hoTen">
-                                        {language === 'vi' ? 'Họ và tên' : 'Full Name'}
+                                        {language === 'vi' ? 'Họ và tên' : 'Full Name'} <span className="text-red-500">*</span>
                                     </Label>
                                     <Input
                                         id="hoTen"
                                         name="hoTen"
                                         placeholder={language === 'vi' ? 'Nguyễn Văn A' : 'John Doe'}
+                                        onChange={handleInputChange}
+                                        className={validationErrors.hoTen ? 'border-red-500 focus:ring-red-500' : ''}
                                         required
                                     />
+                                    {validationErrors.hoTen && (
+                                        <p className="text-sm text-red-500 mt-1">{validationErrors.hoTen}</p>
+                                    )}
                                 </div>
 
                                 <div className="space-y-2">
                                     <Label htmlFor="maCanCuoc">
-                                        {language === 'vi' ? 'Căn cước công dân' : 'ID Card'}
+                                        {language === 'vi' ? 'Căn cước công dân' : 'ID Card'} <span className="text-red-500">*</span>
                                     </Label>
                                     <Input
                                         id="maCanCuoc"
                                         name="maCanCuoc"
                                         type="text"
                                         placeholder={language === 'vi' ? '001234567890' : '001234567890'}
+                                        onChange={handleInputChange}
+                                        className={validationErrors.maCanCuoc ? 'border-red-500 focus:ring-red-500' : ''}
                                         required
                                     />
+                                    {validationErrors.maCanCuoc && (
+                                        <p className="text-sm text-red-500 mt-1">{validationErrors.maCanCuoc}</p>
+                                    )}
                                 </div>
                             </div>
 
                             <div className="space-y-4 sm:space-y-0 sm:grid grid-cols-2 gap-2">
                                 <div className="space-y-2">
                                     <Label htmlFor="dienThoai">
-                                        {language === 'vi' ? 'Số điện thoại' : 'Phone Number'}
+                                        {language === 'vi' ? 'Số điện thoại' : 'Phone Number'} <span className="text-red-500">*</span>
                                     </Label>
                                     <Input
                                         id="dienThoai"
                                         name="dienThoai"
                                         type="tel"
                                         placeholder={language === 'vi' ? '0123456789' : '+1 (555) 123-4567'}
+                                        onChange={handleInputChange}
+                                        className={validationErrors.dienThoai ? 'border-red-500 focus:ring-red-500' : ''}
                                         required
                                     />
+                                    {validationErrors.dienThoai && (
+                                        <p className="text-sm text-red-500 mt-1">{validationErrors.dienThoai}</p>
+                                    )}
                                 </div>
 
                                 <div className="space-y-2">
                                     <Label htmlFor="thuongTru">
-                                        {language === 'vi' ? 'Địa chỉ thường trú' : 'Permanent Address'}
+                                        {language === 'vi' ? 'Địa chỉ thường trú' : 'Permanent Address'} <span className="text-red-500">*</span>
                                     </Label>
                                     <Input
                                         id="thuongTru"
                                         name="thuongTru"
                                         type="text"
                                         placeholder={language === 'vi' ? '123 An Dương Vương, Hà Nội' : '123 Main Street, City'}
+                                        onChange={handleInputChange}
+                                        className={validationErrors.thuongTru ? 'border-red-500 focus:ring-red-500' : ''}
                                         required
                                     />
+                                    {validationErrors.thuongTru && (
+                                        <p className="text-sm text-red-500 mt-1">{validationErrors.thuongTru}</p>
+                                    )}
                                 </div>
                             </div>
 
                             <div className="space-y-4 sm:space-y-0 sm:grid grid-cols-1 gap-2">
                                 <div className="space-y-2">
                                     <Label htmlFor="ngaySinh">
-                                        {language === 'vi' ? 'Ngày sinh' : 'Date of Birth'}
+                                        {language === 'vi' ? 'Ngày sinh' : 'Date of Birth'} <span className="text-red-500">*</span>
                                     </Label>
                                     <Input
                                         id="ngaySinh"
                                         name="ngaySinh"
                                         type="date"
+                                        onChange={handleInputChange}
+                                        className={validationErrors.ngaySinh ? 'border-red-500 focus:ring-red-500' : ''}
                                         required
                                     />
+                                    {validationErrors.ngaySinh && (
+                                        <p className="text-sm text-red-500 mt-1">{validationErrors.ngaySinh}</p>
+                                    )}
                                 </div>
                             </div>
                         </CardContent>

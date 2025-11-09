@@ -7,10 +7,6 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 const getAuthToken = (): string | null => {
     if (typeof window !== 'undefined') {
         const token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
-        /*console.log('🔍 Checking for auth token in storage. Token found:', !!token);
-        if (token) {
-            console.log('🔍 Token preview:', token.substring(0, 20) + '...');
-        }*/
         return token;
     }
     return null;
@@ -25,9 +21,6 @@ const getAuthHeaders = (): HeadersInit => {
     
     if (token) {
         headers['Authorization'] = `Bearer ${token}`;
-        //console.log('🔑 Auth token found and added to headers:', token.substring(0, 20) + '...');
-    } else {
-        //console.warn('⚠️ No auth token found in storage');
     }
     
     return headers;
@@ -48,15 +41,19 @@ export interface TenantResponse {
 }
 
 export interface SingleTenantResponse {
-    success: boolean;
-    message: string;
-    data: Tenant;
+    success?: boolean;
+    message?: string;
+    data?: Tenant;
+    // Backend ApiResponse format
+    status?: number;
 }
 
 export interface ApiResponse<T> {
-    success: boolean;
-    message: string;
-    data: T;
+    success?: boolean;
+    message?: string;
+    data?: T;
+    // Backend ApiResponse format  
+    status?: number;
 }
 
 // Debug function to check authentication status
@@ -65,11 +62,6 @@ export const debugAuthStatus = () => {
         const accessToken = localStorage.getItem('accessToken');
         const refreshToken = localStorage.getItem('refreshToken');
         const user = localStorage.getItem('user');
-        
-        /*console.log('🔍 Debug Auth Status:');
-        console.log('  - Access Token:', accessToken ? accessToken.substring(0, 20) + '...' : 'NOT FOUND');
-        console.log('  - Refresh Token:', refreshToken ? refreshToken.substring(0, 20) + '...' : 'NOT FOUND');
-        console.log('  - User Data:', user ? JSON.parse(user) : 'NOT FOUND');*/
         
         return {
             hasAccessToken: !!accessToken,
@@ -93,26 +85,20 @@ export const fetchTenants = async (page: number = 0, search?: string): Promise<T
         }
 
         const headers = getAuthHeaders();
-        //console.log('📡 Making request to /api/tenants with headers:', headers);
 
         const response = await fetch(`${API_BASE_URL}/api/tenants?${params.toString()}`, {
             method: 'GET',
             headers: headers,
         });
 
-        //console.log('📡 Response status:', response.status, response.statusText);
-
         if (!response.ok) {
             const errorText = await response.text();
-            //console.error('❌ API Error Response:', errorText);
             throw new Error(`HTTP error! status: ${response.status}, response: ${errorText}`);
         }
 
         const data = await response.json();
-        //console.log('✅ Tenant data received:', data);
         return data;
     } catch (error) {
-        //console.error('💥 Error fetching tenants:', error);
         throw error;
     }
 };
@@ -132,7 +118,6 @@ export const fetchTenantById = async (id: number): Promise<SingleTenantResponse>
         const data = await response.json();
         return data;
     } catch (error) {
-        //console.error('Error fetching tenant:', error);
         throw error;
     }
 };
@@ -140,20 +125,56 @@ export const fetchTenantById = async (id: number): Promise<SingleTenantResponse>
 // Create new tenant
 export const createTenant = async (tenantData: Omit<Tenant, 'id'>): Promise<SingleTenantResponse> => {
     try {
+        console.log('🆕 Creating tenant with data:', tenantData);
+        
+        const headers = getAuthHeaders();
+
         const response = await fetch(`${API_BASE_URL}/api/tenants/create`, {
             method: 'POST',
-            headers: getAuthHeaders(),
+            headers: headers,
             body: JSON.stringify(tenantData),
         });
 
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            const errorText = await response.text();
+            
+            // Try to parse JSON error response
+            try {
+                const errorData = JSON.parse(errorText);
+                return {
+                    success: false,
+                    message: errorData.message || `HTTP error! status: ${response.status}`,
+                    data: undefined,
+                    status: response.status
+                };
+            } catch {
+                throw new Error(`HTTP error! status: ${response.status}, response: ${errorText}`);
+            }
         }
 
         const data = await response.json();
-        return data;
+        
+        // Handle backend ApiResponse format
+        if (data.status && data.status >= 200 && data.status < 300) {
+            return {
+                success: true,
+                message: data.message || 'Creation successful',
+                data: data.data,
+                status: data.status
+            };
+        } else if (data.success !== undefined) {
+            return data;
+        } else {
+            // Fallback for direct data response
+            return {
+                success: true,
+                message: 'Creation successful',
+                data: data,
+                status: 201
+            };
+        }
     } catch (error) {
-        //console.error('Error creating tenant:', error);
+        console.error('💥 Error creating tenant:', error);
         throw error;
     }
 };
@@ -161,20 +182,40 @@ export const createTenant = async (tenantData: Omit<Tenant, 'id'>): Promise<Sing
 // Update tenant
 export const updateTenant = async (id: number, tenantData: Partial<Tenant>): Promise<SingleTenantResponse> => {
     try {
+        
+        const headers = getAuthHeaders();
+
         const response = await fetch(`${API_BASE_URL}/api/tenants/${id}`, {
             method: 'PUT',
-            headers: getAuthHeaders(),
+            headers: headers,
             body: JSON.stringify(tenantData),
         });
 
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            const errorText = await response.text();
+            throw new Error(`HTTP error! status: ${response.status}, response: ${errorText}`);
         }
 
         const data = await response.json();
-        return data;
+        
+        // Handle backend ApiResponse format
+        if (data.status && data.status >= 200 && data.status < 300) {
+            return {
+                success: true,
+                message: data.message || 'Update successful',
+                data: data.data
+            };
+        } else if (data.success !== undefined) {
+            return data;
+        } else {
+            // Fallback for direct data response
+            return {
+                success: true,
+                message: 'Update successful',
+                data: data
+            };
+        }
     } catch (error) {
-        //console.error('Error updating tenant:', error);
         throw error;
     }
 };
@@ -182,19 +223,78 @@ export const updateTenant = async (id: number, tenantData: Partial<Tenant>): Pro
 // Delete tenant
 export const deleteTenant = async (id: number): Promise<ApiResponse<null>> => {
     try {
+        
+        const headers = getAuthHeaders();
+
         const response = await fetch(`${API_BASE_URL}/api/tenants/${id}`, {
             method: 'DELETE',
-            headers: getAuthHeaders(),
+            headers: headers,
         });
 
+
+
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            const errorText = await response.text();
+            throw new Error(`HTTP error! status: ${response.status}, response: ${errorText}`);
         }
 
         const data = await response.json();
-        return data;
+        
+        // Handle backend response format
+        if (data.success !== undefined) {
+            return data;
+        } else {
+            // Fallback
+            return {
+                success: true,
+                message: 'Delete successful',
+                data: null
+            };
+        }
     } catch (error) {
-        //console.error('Error deleting tenant:', error);
+        throw error;
+    }
+};
+
+// Restore deleted tenant
+export const restoreTenant = async (id: number): Promise<SingleTenantResponse> => {
+    try {
+        console.log('🔄 Restoring tenant with ID:', id);
+        
+        const headers = getAuthHeaders();
+        console.log('🔑 Restore request headers:', headers);
+
+        const response = await fetch(`${API_BASE_URL}/api/tenants/${id}/restore`, {
+            method: 'PUT',
+            headers: headers,
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`HTTP error! status: ${response.status}, response: ${errorText}`);
+        }
+
+        const data = await response.json();
+        
+        // Handle backend ApiResponse format
+        if (data.status && data.status >= 200 && data.status < 300) {
+            return {
+                success: true,
+                message: data.message || 'Restore successful',
+                data: data.data
+            };
+        } else if (data.success !== undefined) {
+            return data;
+        } else {
+            // Fallback for direct data response
+            return {
+                success: true,
+                message: 'Restore successful',
+                data: data
+            };
+        }
+    } catch (error) {
+        console.error('❌ Error restoring tenant:', error);
         throw error;
     }
 };

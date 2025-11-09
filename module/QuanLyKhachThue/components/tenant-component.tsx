@@ -6,11 +6,13 @@ import { Card, CardContent, CardHeader} from "@/components/ui/card"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { useLanguageStore } from "@/zustand/language-tranlator"
-import { MoreHorizontal, Edit, Mail, Trash2, Phone, User, Calendar, MapPin, CreditCard } from "lucide-react"
+import { MoreHorizontal, Edit, Mail, Trash2, Phone, User, Calendar, MapPin, CreditCard, RotateCcw } from "lucide-react"
 import { TenantFormEditing } from "./tenant-form-editing"
-import { deleteTenant } from "../api/api-tenant"
+import { deleteTenant, restoreTenant } from "../api/api-tenant"
 import { useState } from "react"
 import { Tenant } from "../types/Tenant"
+import { useToast } from "@/hook/useToast"
+import { Toast } from "@/components/toast"
 
 interface TenantComponentProps {
     tenant: Tenant;
@@ -22,6 +24,10 @@ export default function TenantComponent({ tenant, onUpdate, onDelete }: TenantCo
 
     const { language } = useLanguageStore();
     const [isDeleting, setIsDeleting] = useState(false);
+    const [isRestoring, setIsRestoring] = useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
+    const { toast, showSuccess, showError, removeToast } = useToast();
 
     // Helper function to get status badge
     const getStatusBadge = () => {
@@ -153,7 +159,7 @@ export default function TenantComponent({ tenant, onUpdate, onDelete }: TenantCo
                         </Button>
                     </TenantFormEditing>
                     
-                    {tenant.dienThoai && (
+                    {tenant.dienThoai && tenant.trangThai === 'hoatDong' && (
                         <Button 
                             disabled
                             variant="outline" 
@@ -165,50 +171,79 @@ export default function TenantComponent({ tenant, onUpdate, onDelete }: TenantCo
                         </Button>
                     )}
 
-                    <Dialog>
-                        <DialogTrigger asChild>
-                            <Button 
-                                variant="destructive" 
-                                size="sm"
-                                className="hover:bg-red-600"
-                            >
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                {language === 'vi' ? 'Xóa' : 'Delete'}
-                            </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[425px]">
-                            <DialogHeader>
-                                <DialogTitle className="flex items-center gap-2 text-red-600">
-                                    <Trash2 className="h-5 w-5" />
-                                    {language === 'vi' ? 'Xác nhận xóa' : 'Confirm Deletion'}
-                                </DialogTitle>
-                                <DialogDescription className="text-gray-600">
-                                    {language === 'vi' 
-                                        ? `Bạn có chắc chắn muốn xóa khách thuê "${tenant.hoTen}"? Hành động này không thể hoàn tác.`
-                                        : `Are you sure you want to delete tenant "${tenant.hoTen}"? This action cannot be undone.`
-                                    }
-                                </DialogDescription>
-                            </DialogHeader>
+                    {tenant.trangThai === 'hoatDong' ? (
+                        <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                            <DialogTrigger asChild>
+                                <Button 
+                                    variant="destructive" 
+                                    size="sm"
+                                    className="hover:bg-red-600"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        console.log('Delete button clicked for tenant:', tenant.maKhach);
+                                        setDeleteDialogOpen(true);
+                                    }}
+                                >
+                                    <Trash2 className="h-4 w-4 mr-2" />
+                                    {language === 'vi' ? 'Xóa' : 'Delete'}
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-[425px]">
+                                <DialogHeader>
+                                    <DialogTitle className="flex items-center gap-2 text-red-600">
+                                        <Trash2 className="h-5 w-5" />
+                                        {language === 'vi' ? 'Xác nhận xóa' : 'Confirm Deletion'}
+                                    </DialogTitle>
+                                    <DialogDescription className="text-gray-600">
+                                        {language === 'vi' 
+                                            ? `Bạn có chắc chắn muốn xóa khách thuê "${tenant.hoTen}"? Khách thuê sẽ được đánh dấu là đã xóa nhưng dữ liệu vẫn được lưu trữ.`
+                                            : `Are you sure you want to delete tenant "${tenant.hoTen}"? The tenant will be marked as deleted but data will be preserved.`
+                                        }
+                                    </DialogDescription>
+                                </DialogHeader>
                             <DialogFooter className="gap-2">
-                                <DialogClose asChild>
-                                    <Button variant="outline">
-                                        {language === 'vi' ? 'Hủy' : 'Cancel'}
-                                    </Button>
-                                </DialogClose>
+                                <Button 
+                                    variant="outline"
+                                    onClick={() => setDeleteDialogOpen(false)}
+                                    disabled={isDeleting}
+                                >
+                                    {language === 'vi' ? 'Hủy' : 'Cancel'}
+                                </Button>
                                 <Button 
                                     variant="destructive" 
                                     disabled={isDeleting}
                                     className="min-w-20"
                                     onClick={async () => {
-                                        if (!tenant.maKhach) return;
+                                        if (!tenant.maKhach) {
+                                            showError(language === 'vi' ? 'Không thể xóa: Thiếu ID khách thuê' : 'Cannot delete: Missing tenant ID');
+                                            return;
+                                        }
                                         
                                         try {
                                             setIsDeleting(true);
-                                            await deleteTenant(tenant.maKhach);
-                                            onDelete?.();
+                                            console.log('Attempting to delete tenant with ID:', tenant.maKhach);
+                                            
+                                            const result = await deleteTenant(tenant.maKhach);
+                                            console.log('Delete result:', result);
+                                            
+                                            if (result.success || (result.status && result.status >= 200 && result.status < 300)) {
+                                                showSuccess(
+                                                    language === 'vi' 
+                                                        ? 'Xóa khách thuê thành công!' 
+                                                        : 'Tenant deleted successfully!'
+                                                );
+                                                setDeleteDialogOpen(false);
+                                                onDelete?.();
+                                            } else {
+                                                showError(result.message || (language === 'vi' ? 'Xóa thất bại' : 'Delete failed'));
+                                            }
                                         } catch (error) {
                                             console.error('Error deleting tenant:', error);
-                                            // You can add toast notification here
+                                            showError(
+                                                language === 'vi' 
+                                                    ? 'Có lỗi xảy ra khi xóa khách thuê. Vui lòng thử lại.' 
+                                                    : 'An error occurred while deleting the tenant. Please try again.'
+                                            );
                                         } finally {
                                             setIsDeleting(false);
                                         }
@@ -222,8 +257,96 @@ export default function TenantComponent({ tenant, onUpdate, onDelete }: TenantCo
                             </DialogFooter>
                         </DialogContent>
                     </Dialog>
+                    ) : (
+                        <Dialog open={restoreDialogOpen} onOpenChange={setRestoreDialogOpen}>
+                            <DialogTrigger asChild>
+                                <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    className="hover:bg-green-600 hover:text-white border-green-500 text-green-600"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        console.log('Restore button clicked for tenant:', tenant.maKhach);
+                                        setRestoreDialogOpen(true);
+                                    }}
+                                >
+                                    <RotateCcw className="h-4 w-4 mr-2" />
+                                    {language === 'vi' ? 'Khôi phục' : 'Restore'}
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-[425px]">
+                                <DialogHeader>
+                                    <DialogTitle className="flex items-center gap-2 text-green-600">
+                                        <RotateCcw className="h-5 w-5" />
+                                        {language === 'vi' ? 'Xác nhận khôi phục' : 'Confirm Restoration'}
+                                    </DialogTitle>
+                                    <DialogDescription className="text-gray-600">
+                                        {language === 'vi' 
+                                            ? `Bạn có chắc chắn muốn khôi phục khách thuê "${tenant.hoTen}"? Khách thuê sẽ trở lại trạng thái hoạt động.`
+                                            : `Are you sure you want to restore tenant "${tenant.hoTen}"? The tenant will be returned to active status.`
+                                        }
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <DialogFooter className="gap-2">
+                                    <Button 
+                                        variant="outline"
+                                        onClick={() => setRestoreDialogOpen(false)}
+                                        disabled={isRestoring}
+                                    >
+                                        {language === 'vi' ? 'Hủy' : 'Cancel'}
+                                    </Button>
+                                    <Button 
+                                        variant="default" 
+                                        disabled={isRestoring}
+                                        className="min-w-20 bg-green-600 hover:bg-green-700"
+                                        onClick={async () => {
+                                            if (!tenant.maKhach) {
+                                                showError(language === 'vi' ? 'Không thể khôi phục: Thiếu ID khách thuê' : 'Cannot restore: Missing tenant ID');
+                                                return;
+                                            }
+                                            
+                                            try {
+                                                setIsRestoring(true);
+                                                console.log('Attempting to restore tenant with ID:', tenant.maKhach);
+                                                
+                                                const result = await restoreTenant(tenant.maKhach);
+                                                console.log('Restore result:', result);
+                                                
+                                                if (result.success || (result.status && result.status >= 200 && result.status < 300)) {
+                                                    showSuccess(
+                                                        language === 'vi' 
+                                                            ? 'Khôi phục khách thuê thành công!' 
+                                                            : 'Tenant restored successfully!'
+                                                    );
+                                                    setRestoreDialogOpen(false);
+                                                    onUpdate?.(); // Refresh the list to show updated status
+                                                } else {
+                                                    showError(result.message || (language === 'vi' ? 'Khôi phục thất bại' : 'Restore failed'));
+                                                }
+                                            } catch (error) {
+                                                console.error('Error restoring tenant:', error);
+                                                showError(
+                                                    language === 'vi' 
+                                                        ? 'Có lỗi xảy ra khi khôi phục khách thuê. Vui lòng thử lại.' 
+                                                        : 'An error occurred while restoring the tenant. Please try again.'
+                                                );
+                                            } finally {
+                                                setIsRestoring(false);
+                                            }
+                                        }}
+                                    >
+                                        {isRestoring 
+                                            ? (language === 'vi' ? 'Đang khôi phục...' : 'Restoring...') 
+                                            : (language === 'vi' ? 'Khôi phục' : 'Restore')
+                                        }
+                                    </Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
+                    )}
                 </div>
             </CardContent>
+            {toast && <Toast {...toast} onClose={removeToast} />}
         </Card>
     )
 }

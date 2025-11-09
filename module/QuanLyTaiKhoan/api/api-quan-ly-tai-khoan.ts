@@ -160,8 +160,6 @@ export interface LoginResponse {
 // Login with email and password
 export const login = async (email: string, password: string): Promise<LoginResponse> => {
     try {
-        //console.log('🔐 Attempting login for email:', email);
-        
         const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
             method: 'POST',
             headers: {
@@ -171,7 +169,6 @@ export const login = async (email: string, password: string): Promise<LoginRespo
         });
 
         const data = await response.json();
-        //console.log('🔐 Login response from backend:', data);
         
         // Store tokens in localStorage - check for backend response structure
         if (data.status === 200 && data.data && data.data.accessToken) {
@@ -179,9 +176,7 @@ export const login = async (email: string, password: string): Promise<LoginRespo
             localStorage.setItem('accessToken', data.data.accessToken);
             localStorage.setItem('refreshToken', data.data.refreshToken);
             localStorage.setItem('user', JSON.stringify(data.data.taiKhoanDTO));
-            //console.log('✅ Tokens stored successfully');
-        } else {
-            //console.warn('⚠️ No tokens to store. Response data:', data);
+        
         }
         
         return {
@@ -190,7 +185,6 @@ export const login = async (email: string, password: string): Promise<LoginRespo
             data: data.data
         }
     } catch (error) {
-        //console.error('💥 Error during login:', error);
         throw error;
     }
 };
@@ -198,7 +192,6 @@ export const login = async (email: string, password: string): Promise<LoginRespo
 // Logout
 export const logout = async (): Promise<void> => {
     try {
-        //console.log('🚪 Logging out user...');
         
         // Clear tokens from storage
         localStorage.removeItem('accessToken');
@@ -210,8 +203,6 @@ export const logout = async (): Promise<void> => {
             // Clear the persisted Zustand store
             localStorage.removeItem('taikhoan-storage');
         }
-        
-        //console.log('✅ Logout completed, all data cleared');
         
         // Optionally call backend logout endpoint
         // await fetch(`${API_BASE_URL}/api/auth/logout`, { method: 'POST' });
@@ -226,12 +217,6 @@ export const isAuthenticated = (): boolean => {
         const token = localStorage.getItem('accessToken');
         const user = localStorage.getItem('user');
         const isValid = token !== null && user !== null;
-        
-        /*console.log('🔍 Authentication check:', {
-            hasToken: !!token,
-            hasUser: !!user,
-            isValid
-        });*/
         
         return isValid;
     }
@@ -276,8 +261,6 @@ export const refreshToken = async (): Promise<string | null> => {
         
         throw new Error('Invalid refresh response');
     } catch (error) {
-        //console.error('Error refreshing token:', error);
-        // Clear invalid tokens
         logout();
         return null;
     }
@@ -354,6 +337,58 @@ export async function resetPasswordWithTokenApi(token: string, newPassword: stri
             status: data.status === 200 ? 'success' : 'error',
             message: data.message
         };
+
+    } catch (error) {
+        return {
+            status: 'error',
+            message: error instanceof Error ? error.message : 'Network error occurred'
+        };
+    }
+}
+
+// Sign up API function
+export async function signUpApi(
+    email: string,
+    cccdCode: string,
+    password: string,
+    hoTen: string,
+    dienThoai: string,
+    thuongTru: string,
+    ngaySinh: Date,
+    trangThai: string
+): Promise<{status: string; message: string; user?: any}> {
+    try {
+        const response = await fetch('http://localhost:8080/api/auth/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email: email,
+                maCanCuoc: cccdCode,
+                matKhau: password,
+                hoTen: hoTen,
+                dienThoai: dienThoai,
+                thuongTru: thuongTru,
+                ngaySinh: ngaySinh.toISOString().split('T')[0], // Format as YYYY-MM-DD
+                trangThai: trangThai
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.status === 201 || data.status === 200) {
+            return {
+                status: 'success',
+                message: data.message || 'Registration successful',
+                user: data.data || data.user || null
+            };
+        } else {
+            return {
+                status: 'error',
+                message: data.message || 'Registration failed'
+            };
+        }
 
     } catch (error) {
         return {

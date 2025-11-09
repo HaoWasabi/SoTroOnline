@@ -12,6 +12,7 @@ import LanguageSwitcher from './language-switcher';
 import { useLanguageStore } from '@/zustand/language-tranlator';
 import { useTaiKhoanStore } from '@/zustand/taikhoan-store';
 import ProfileIconMenu from '@/module/QuanLyTaiKhoan/components/profile-icon-menu';
+import { isAuthenticated } from '@/module/QuanLyTaiKhoan/api/api-quan-ly-tai-khoan';
 
 const navigation = [
     { vietnam_name: 'Dashboard', english_name: 'Dashboard', href: '/', icon: Home },
@@ -19,6 +20,7 @@ const navigation = [
     { vietnam_name: 'Phòng', english_name: 'Rooms', href: '/rooms', icon: Building },
     { vietnam_name: 'Hợp đồng', english_name: 'Contracts', href: '/contracts', icon: FileText },
     { vietnam_name: 'Hóa đơn', english_name: 'Invoices', href: '/invoices', icon: Receipt },
+    { vietnam_name: 'Dịch vụ phòng', english_name: 'Room Services', href: '/room-services', icon: Wrench },
     { vietnam_name: 'Quản lý thông tin cá nhân', english_name: 'Profile', href: '/user-profile', icon: User },
     { vietnam_name: 'Cài đặt', english_name: 'Settings', href: '/settings', icon: Settings },
     { vietnam_name: 'Thay đổi mật khẩu', english_name: 'Change Password', href: '/user-profile/change-password', icon: Building2 },
@@ -31,6 +33,11 @@ export function Header() {
     const {language} = useLanguageStore();
     const [open, setOpen] = React.useState(false);
     const title = navigation.filter((item) => item.href === pathName)
+
+    // Check if user is authenticated (either through tokens OR has user data from signup)
+    const hasValidAuth = isAuthenticated();
+    const hasUserData = !!taiKhoan && !!taiKhoan.email;
+    const shouldShowUserMenu = hasValidAuth || hasUserData;
 
     // Validate authentication state on mount and path changes
     useEffect(() => {
@@ -99,7 +106,7 @@ export function Header() {
                         />
                     </div>
 
-                    {taiKhoan?.email ? (
+                    {shouldShowUserMenu ? (
                         <ProfileIconMenu />
                     ) : (
                         <Button className='bg-blue-500 text-white'>

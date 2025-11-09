@@ -4,7 +4,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 // Get JWT token from localStorage or session
 export const getAuthToken = (): string | null => {
   if (typeof window !== 'undefined') {
-    return localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+    return localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
   }
   return null;
 };
@@ -39,8 +39,10 @@ export const authenticatedFetch = async (url: string, options: RequestInit = {})
   if (response.status === 401) {
     // Clear any stored tokens
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('authToken');
-      sessionStorage.removeItem('authToken');
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
+      sessionStorage.removeItem('accessToken');
     }
     
     // Redirect to login page

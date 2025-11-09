@@ -11,14 +11,16 @@ import { useAuthGuard } from "@/hook/useAuthGuard";
 interface ListOfTenantsProps {
     searchTerm: string;
     statusFilter: string;
+    refreshTrigger: number;
 }
 
-export default function ListOfTenants({ searchTerm, statusFilter }: ListOfTenantsProps) {
+export default function ListOfTenants({ searchTerm, statusFilter, refreshTrigger }: ListOfTenantsProps) {
     const { language } = useLanguageStore();
     const { isAuthenticated } = useAuthGuard();
     const [allTenants, setAllTenants] = useState<Tenant[]>([]);
     const [filteredTenants, setFilteredTenants] = useState<Tenant[]>([]);
     const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [pagination, setPagination] = useState({
         currentPage: 0,
@@ -29,9 +31,13 @@ export default function ListOfTenants({ searchTerm, statusFilter }: ListOfTenant
         hasPrevious: false
     });
 
-    const loadTenants = async (page: number = 0, search?: string) => {
+    const loadTenants = async (page: number = 0, search?: string, isRefresh: boolean = false) => {
         try {
-            setLoading(true);
+            if (isRefresh) {
+                setRefreshing(true);
+            } else {
+                setLoading(true);
+            }
             setError(null);
             const response: TenantResponse = await fetchTenants(page, search);
             
@@ -53,6 +59,7 @@ export default function ListOfTenants({ searchTerm, statusFilter }: ListOfTenant
             console.error('Error loading tenants:', err);
         } finally {
             setLoading(false);
+            setRefreshing(false);
         }
     };
 
@@ -78,7 +85,7 @@ export default function ListOfTenants({ searchTerm, statusFilter }: ListOfTenant
     useEffect(() => {
         // Only load tenants if authenticated
         if (isAuthenticated) {
-            loadTenants();
+            loadTenants(0, '', false);
         }
     }, [isAuthenticated]);
 
@@ -86,15 +93,23 @@ export default function ListOfTenants({ searchTerm, statusFilter }: ListOfTenant
     useEffect(() => {
         if (isAuthenticated) {
             const timeoutId = setTimeout(() => {
-                loadTenants(0, searchTerm);
+                loadTenants(0, searchTerm, false);
             }, 500); // Debounce search for 500ms
 
             return () => clearTimeout(timeoutId);
         }
     }, [searchTerm, isAuthenticated]);
 
+    // Effect to handle refresh trigger (when new tenant is created)
+    useEffect(() => {
+        if (isAuthenticated && refreshTrigger > 0) {
+            // Reset to first page and maintain current search when refreshing
+            loadTenants(0, searchTerm, true); // Pass true to indicate this is a refresh
+        }
+    }, [refreshTrigger, isAuthenticated, searchTerm]);
+
     const handlePageChange = (newPage: number) => {
-        loadTenants(newPage, searchTerm);
+        loadTenants(newPage, searchTerm, false);
     };
 
     if (loading) {
@@ -114,7 +129,7 @@ export default function ListOfTenants({ searchTerm, statusFilter }: ListOfTenant
                 <div className="text-center">
                     <p className="text-red-600 mb-2">{error}</p>
                     <button 
-                        onClick={() => loadTenants()} 
+                        onClick={() => loadTenants(0, searchTerm, false)} 
                         className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                     >
                         {language === 'vi' ? 'Thử lại' : 'Try Again'}
@@ -139,6 +154,16 @@ export default function ListOfTenants({ searchTerm, statusFilter }: ListOfTenant
 
     return (
         <div className="space-y-6">
+            {/* Refreshing indicator */}
+            {refreshing && (
+                <div className="flex items-center justify-center py-2 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+                    <span className="text-blue-700 text-sm">
+                        {language === 'vi' ? 'Đang cập nhật danh sách...' : 'Refreshing list...'}
+                    </span>
+                </div>
+            )}
+            
             {/* Results summary */}
             {(searchTerm || statusFilter) && (
                 <div className="flex items-center justify-between text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
@@ -172,13 +197,13 @@ export default function ListOfTenants({ searchTerm, statusFilter }: ListOfTenant
                 </div>
             )}
             
-            <div className="grid grid-col-1 lg:grid-cols-3 gap-4">
+            <div className={`grid grid-col-1 lg:grid-cols-3 gap-4 transition-opacity duration-300 ${refreshing ? 'opacity-70' : 'opacity-100'}`}>
                 {filteredTenants.map((tenant: Tenant) => (
                     <TenantComponent 
                         key={tenant.maKhach} 
                         tenant={tenant}
-                        onUpdate={() => loadTenants(pagination.currentPage, searchTerm)}
-                        onDelete={() => loadTenants(pagination.currentPage, searchTerm)}
+                        onUpdate={() => loadTenants(pagination.currentPage, searchTerm, false)}
+                        onDelete={() => loadTenants(pagination.currentPage, searchTerm, false)}
                     />
                 ))}
             </div>
