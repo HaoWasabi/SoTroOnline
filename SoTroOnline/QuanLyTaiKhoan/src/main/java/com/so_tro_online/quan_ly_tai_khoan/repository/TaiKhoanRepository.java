@@ -1,6 +1,7 @@
 package com.so_tro_online.quan_ly_tai_khoan.repository;
 
 import com.so_tro_online.quan_ly_tai_khoan.entity.TaiKhoan;
+import com.so_tro_online.quan_ly_tai_khoan.entity.TrangThai;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -18,4 +19,6 @@ public interface TaiKhoanRepository extends JpaRepository<TaiKhoan, Integer> {
     @Query("select u from TaiKhoan u where u.maTaiKhoan = :maTaiKhoan")
     Optional<TaiKhoan> findByMaTaiKhoan(int maTaiKhoan);
 
+    @Query("select u from TaiKhoan u where u.maTaiKhoan = :maTaiKhoan and u.trangThai = :trangThai")
+    Optional<TaiKhoan> findByMaTaiKhoanAndTrangThai(int maTaiKhoan, TrangThai trangThai);
 }

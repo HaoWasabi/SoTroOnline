@@ -12,17 +12,20 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
         "com.so_tro_online.quan_ly_tai_khoan",
         "com.so_tro_online.quan_ly_khach_thue",
         "com.so_tro_online.quan_ly_dich_vu_phong",
+        "com.so_tro_online.quan_ly_phong",
         "com.so_tro_online.dung_chung"
 })
 @EnableJpaRepositories(basePackages = {
         "com.so_tro_online.quan_ly_tai_khoan.repository",
         "com.so_tro_online.quan_ly_khach_thue.repository",
-        "com.so_tro_online.quan_ly_dich_vu_phong.repository"
+        "com.so_tro_online.quan_ly_dich_vu_phong.repository",
+        "com.so_tro_online.quan_ly_phong.repository"
 })
 @EntityScan(basePackages = {
         "com.so_tro_online.quan_ly_tai_khoan.entity",
         "com.so_tro_online.quan_ly_khach_thue.entity",
         "com.so_tro_online.quan_ly_dich_vu_phong.entity",
+        "com.so_tro_online.quan_ly_phong.entity",
         "com.so_tro_online.dung_chung.entity"
 })
 public class SoTroOnlineApplication {

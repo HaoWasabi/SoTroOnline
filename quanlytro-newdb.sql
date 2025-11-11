@@ -478,7 +478,7 @@ CREATE TABLE `phong` (
   `gia_thue_co_ban` decimal(38,2) DEFAULT NULL,
   `loai_phong` varchar(255) DEFAULT NULL,
   `ten_phong` varchar(255) DEFAULT NULL,
-  `trang_thai` enum('baoChi','daXoa','hoatDong') DEFAULT NULL,
+  `trang_thai` enum('baoTri','daXoa','hoatDong','phongTrong') DEFAULT NULL,
   `vat_dung` varchar(255) DEFAULT NULL,
   `ma_quan_ly` int DEFAULT NULL,
   PRIMARY KEY (`ma_phong`),

@@ -1,11 +1,17 @@
 -- tai_khoan --
-INSERT INTO tai_khoan (ma_can_cuoc, email, ho_ten, dien_thoai, thuong_tru, ngay_sinh, mat_khau, trang_thai)
+INSERT INTO tai_khoan (dien_thoai, email, ho_ten, ma_can_cuoc, mat_khau, ngay_sinh, ngay_tao, thuong_tru, trang_thai)
 VALUES
-('012345678901', 'admin@example.com', 'Quản Lý 1', '0912345678', 'Hà Nội', '1990-01-01', '123456', 'hoatDong'),
-('012345678902', 'manager1@example.com', 'Quản Lý 2', '0912345679', 'Đà Nẵng', '1992-05-12', '123456', 'hoatDong'),
-('012345678903', 'manager2@example.com', 'Quản Lý 3', '0912345680', 'TP. Hồ Chí Minh', '1988-09-21', '123456', 'hoatDong'),
-('012345678904', 'manager3@example.com', 'Quản Lý 4', '0912345681', 'Cần Thơ', '1995-03-10', '123456', 'hoatDong'),
-('012345678905', 'manager4@example.com', 'Quản Lý 5', '0912345682', 'Bình Dương', '1991-07-07', '123456', 'hoatDong');
+('0912345678', 'quanly1@example.com', 'Nguyễn Văn An', '001200000001', '123456', '1999-01-01', NOW(), 'Hà Nội', 'hoatDong'),
+('0912345679', 'quanly2@example.com', 'Trần Thị Bình', '001200000002', '123456', '1998-02-10', NOW(), 'Hà Nội', 'hoatDong'),
+('0912345680', 'quanly3@example.com', 'Phạm Văn Cường', '001200000003', '123456', '1997-03-15', NOW(), 'Hải Phòng', 'hoatDong'),
+('0912345681', 'quanly4@example.com', 'Lê Thị Dung', '001200000004', '123456', '1996-04-20', NOW(), 'Đà Nẵng', 'hoatDong'),
+('0912345682', 'quanly5@example.com', 'Đỗ Văn Em', '001200000005', '123456', '1995-05-25', NOW(), 'HCM', 'hoatDong'),
+('0912345683', 'quanly6@example.com', 'Hoàng Thị Hạnh', '001200000006', '123456', '1994-06-12', NOW(), 'Cần Thơ', 'hoatDong'),
+('0912345684', 'quanly7@example.com', 'Vũ Văn Khang', '001200000007', '123456', '1993-07-07', NOW(), 'Hà Nam', 'hoatDong'),
+('0912345685', 'quanly8@example.com', 'Ngô Thị Lan', '001200000008', '123456', '1992-08-18', NOW(), 'Nghệ An', 'hoatDong'),
+('0912345686', 'quanly9@example.com', 'Bùi Văn Minh', '001200000009', '123456', '1991-09-22', NOW(), 'Thanh Hóa', 'hoatDong'),
+('0912345687', 'quanly10@example.com', 'Phan Thị Ngọc', '001200000010', '123456', '1990-10-30', NOW(), 'Huế', 'hoatDong');
+
 
 -- khach_thue -- 
 INSERT INTO khach_thue (ma_khach, ma_khach_dai_dien, ma_can_cuoc, ho_ten, dien_thoai, thuong_tru, ngay_sinh, ngay_tao, trang_thai) VALUES (1, 'KH0001', '377701563042', 'Huỳnh Hải Đạt', '0373910855', 'Bình Dương', '1978-08-31', '2025-10-30 09:06:43', 'daxoa');
@@ -71,3 +77,57 @@ INSERT INTO dich_vu (ma_quan_ly, ten_dich_vu, don_gia_co_ban, don_vi_co_ban, mo_
 (10, 'Sửa chữa điện nước', 50000, 'lần', 'Dịch vụ xử lý các vấn đề điện nước hỏng', 'baoTri'),
 (7, 'Dịch vụ giữ đồ', 30000, 'tháng', 'Giữ đồ cá nhân có khóa riêng', 'hoatDong'),
 (11, 'Dọn vệ sinh khu vực công cộng', 20000, 'tháng', 'Phí vệ sinh hành lang, sân, khu chung', 'hoatDong');
+
+-- phong_tro --
+INSERT INTO phong (chieu_dai, chieu_rong, dia_chi, gia_thue_co_ban, loai_phong, ten_phong, trang_thai, vat_dung, ma_quan_ly) VALUES
+(4.0, 3.5, 'Số 1 - Hà Nội', 1200000, 'Phòng đơn', 'Phòng 1', 'hoatDong', 'Giường, Tủ, Quạt', 1),
+(4.2, 3.6, 'Số 2 - Hà Nội', 1300000, 'Phòng đơn', 'Phòng 2', 'hoatDong', 'Giường, Tủ, Quạt', 2),
+(4.5, 4.0, 'Số 3 - Hà Nội', 1500000, 'Phòng đôi', 'Phòng 3', 'phongTrong', 'Giường, Tủ, Điều hòa', 3),
+(5.0, 4.2, 'Số 4 - Hà Nội', 1700000, 'Phòng đôi', 'Phòng 4', 'hoatDong', 'Giường, Tủ, Điều hòa', 4),
+(3.8, 3.2, 'Số 5 - HCM', 1100000, 'Phòng đơn', 'Phòng 5', 'baoTri', 'Giường, Quạt', 5),
+(4.0, 3.5, 'Số 6 - HCM', 1250000, 'Phòng đơn', 'Phòng 6', 'hoatDong', 'Giường, Quạt', 6),
+(4.8, 4.1, 'Số 7 - HCM', 1600000, 'Phòng đôi', 'Phòng 7', 'phongTrong', 'Giường, Điều hòa', 7),
+(4.1, 3.9, 'Số 8 - HCM', 1350000, 'Phòng đơn', 'Phòng 8', 'baoTri', 'Giường, Quạt', 8),
+(4.9, 4.0, 'Số 9 - Đà Nẵng', 1550000, 'Phòng đôi', 'Phòng 9', 'hoatDong', 'Giường, Điều hòa', 9),
+(5.2, 4.4, 'Số 10 - Đà Nẵng', 1800000, 'Phòng đôi', 'Phòng 10', 'baoTri', 'Giường, Điều hòa', 10),
+(4.0, 3.5, 'Số 11 - Hà Nội', 1200000, 'Phòng đơn', 'Phòng 11', 'phongTrong', 'Giường, Tủ, Quạt', 1),
+(4.2, 3.7, 'Số 12 - Hà Nội', 1300000, 'Phòng đơn', 'Phòng 12', 'hoatDong', 'Giường, Tủ, Quạt', 2),
+(4.4, 3.9, 'Số 13 - Hà Nội', 1400000, 'Phòng đơn', 'Phòng 13', 'baoTri', 'Giường, Quạt', 3),
+(4.1, 3.6, 'Số 14 - Hà Nội', 1250000, 'Phòng đơn', 'Phòng 14', 'hoatDong', 'Giường, Tủ', 4),
+(4.3, 3.8, 'Số 15 - Hà Nội', 1350000, 'Phòng đơn', 'Phòng 15', 'hoatDong', 'Giường, Quạt', 5),
+(4.7, 4.0, 'Số 16 - Hà Nội', 1550000, 'Phòng đôi', 'Phòng 16', 'hoatDong', 'Giường, Điều hòa', 6),
+(4.9, 4.2, 'Số 17 - Hà Nội', 1650000, 'Phòng đôi', 'Phòng 17', 'hoatDong', 'Giường, Điều hòa', 7),
+(5.1, 4.3, 'Số 18 - HCM', 1750000, 'Phòng đôi', 'Phòng 18', 'baoTri', 'Giường, Điều hòa', 8),
+(4.3, 3.6, 'Số 19 - HCM', 1300000, 'Phòng đơn', 'Phòng 19', 'hoatDong', 'Giường, Quạt', 9),
+(4.1, 3.4, 'Số 20 - HCM', 1150000, 'Phòng đơn', 'Phòng 20', 'hoatDong', 'Giường, Quạt', 10),
+(4.0, 3.5, 'Số 21 - HCM', 1200000, 'Phòng đơn', 'Phòng 21', 'baoTri', 'Giường, Quạt', 1),
+(4.6, 3.9, 'Số 22 - HCM', 1450000, 'Phòng đơn', 'Phòng 22', 'hoatDong', 'Giường, Quạt', 2),
+(4.9, 4.0, 'Số 23 - HCM', 1600000, 'Phòng đôi', 'Phòng 23', 'phongTrong', 'Giường, Điều hòa', 3),
+(4.2, 3.8, 'Số 24 - HCM', 1350000, 'Phòng đơn', 'Phòng 24', 'baoTri', 'Giường, Tủ', 4),
+(4.7, 4.1, 'Số 25 - Cần Thơ', 1500000, 'Phòng đôi', 'Phòng 25', 'hoatDong', 'Giường, Điều hòa', 5),
+(4.0, 3.5, 'Số 26 - Cần Thơ', 1250000, 'Phòng đơn', 'Phòng 26', 'hoatDong', 'Giường, Quạt', 6),
+(4.8, 4.0, 'Số 27 - Cần Thơ', 1550000, 'Phòng đôi', 'Phòng 27', 'phongTrong', 'Giường, Điều hòa', 7),
+(4.9, 4.4, 'Số 28 - Cần Thơ', 1700000, 'Phòng đôi', 'Phòng 28', 'hoatDong', 'Giường, Điều hòa', 8),
+(4.1, 3.5, 'Số 29 - Cần Thơ', 1200000, 'Phòng đơn', 'Phòng 29', 'baoTri', 'Giường, Tủ, Quạt', 9),
+(4.2, 3.6, 'Số 30 - Cần Thơ', 1300000, 'Phòng đơn', 'Phòng 30', 'hoatDong', 'Giường, Tủ, Quạt', 10),
+(4.3, 3.7, 'Số 31 - Đà Nẵng', 1350000, 'Phòng đơn', 'Phòng 31', 'phongTrong', 'Giường, Quạt', 1),
+(4.5, 3.9, 'Số 32 - Đà Nẵng', 1450000, 'Phòng đơn', 'Phòng 32', 'baoTri', 'Giường, Quạt', 2),
+(4.8, 4.0, 'Số 33 - Đà Nẵng', 1600000, 'Phòng đôi', 'Phòng 33', 'hoatDong', 'Giường, Điều hòa', 3),
+(5.0, 4.2, 'Số 34 - Đà Nẵng', 1700000, 'Phòng đôi', 'Phòng 34', 'hoatDong', 'Giường, Điều hòa', 4),
+(4.0, 3.5, 'Số 35 - Đà Nẵng', 1200000, 'Phòng đơn', 'Phòng 35', 'baoTri', 'Giường, Quạt', 5),
+(4.6, 3.9, 'Số 36 - Đà Nẵng', 1450000, 'Phòng đơn', 'Phòng 36', 'hoatDong', 'Giường, Quạt', 6),
+(4.9, 4.0, 'Số 37 - Đà Nẵng', 1600000, 'Phòng đôi', 'Phòng 37', 'baoTri', 'Giường, Điều hòa', 7),
+(4.1, 3.8, 'Số 38 - Đà Nẵng', 1350000, 'Phòng đơn', 'Phòng 38', 'hoatDong', 'Giường, Quạt', 8),
+(4.7, 4.0, 'Số 39 - Đà Nẵng', 1550000, 'Phòng đôi', 'Phòng 39', 'phongTrong', 'Giường, Điều hòa', 9),
+(5.1, 4.3, 'Số 40 - Đà Nẵng', 1750000, 'Phòng đôi', 'Phòng 40', 'hoatDong', 'Giường, Điều hòa', 10),
+(4.0, 3.5, 'Số 41 - Huế', 1200000, 'Phòng đơn', 'Phòng 41', 'hoatDong', 'Giường, Tủ, Quạt', 1),
+(4.3, 3.7, 'Số 42 - Huế', 1350000, 'Phòng đơn', 'Phòng 42', 'hoatDong', 'Giường, Tủ, Quạt', 2),
+(4.6, 3.9, 'Số 43 - Huế', 1500000, 'Phòng đơn', 'Phòng 43', 'hoatDong', 'Giường, Quạt', 3),
+(4.9, 4.1, 'Số 44 - Huế', 1650000, 'Phòng đôi', 'Phòng 44', 'phongTrong', 'Giường, Điều hòa', 4),
+(4.1, 3.5, 'Số 45 - Huế', 1250000, 'Phòng đơn', 'Phòng 45', 'hoatDong', 'Giường, Tủ', 5),
+(4.8, 4.0, 'Số 46 - Huế', 1600000, 'Phòng đôi', 'Phòng 46', 'phongTrong', 'Giường, Điều hòa', 6),
+(4.2, 3.6, 'Số 47 - Huế', 1300000, 'Phòng đơn', 'Phòng 47', 'hoatDong', 'Giường, Tủ', 7),
+(4.5, 3.8, 'Số 48 - Huế', 1450000, 'Phòng đơn', 'Phòng 48', 'phongTrong', 'Giường, Quạt', 8),
+(4.7, 4.1, 'Số 49 - Huế', 1600000, 'Phòng đôi', 'Phòng 49', 'hoatDong', 'Giường, Điều hòa', 9),
+(5.0, 4.3, 'Số 50 - Huế', 1750000, 'Phòng đôi', 'Phòng 50', 'phongTrong', 'Giường, Điều hòa', 10);
+
