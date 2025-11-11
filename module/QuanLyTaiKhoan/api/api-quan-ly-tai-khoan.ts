@@ -172,10 +172,10 @@ export const login = async (email: string, password: string): Promise<LoginRespo
         
         // Store tokens in localStorage - check for backend response structure
         if (data.status === 200 && data.data && data.data.accessToken) {
-            //console.log('🔐 Storing tokens in localStorage');
+            console.log('🔐 Storing tokens in localStorage and user in sessionStorage');
             localStorage.setItem('accessToken', data.data.accessToken);
             localStorage.setItem('refreshToken', data.data.refreshToken);
-            localStorage.setItem('user', JSON.stringify(data.data.taiKhoanDTO));
+            sessionStorage.setItem('user', JSON.stringify(data.data.taiKhoanDTO));
         
         }
         
@@ -193,21 +193,24 @@ export const login = async (email: string, password: string): Promise<LoginRespo
 export const logout = async (): Promise<void> => {
     try {
         
-        // Clear tokens from storage
+        // Clear tokens from localStorage and user from sessionStorage
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
+        sessionStorage.removeItem('user');
+        
+        // Clean up any old user data from localStorage (migration)
         localStorage.removeItem('user');
         
-        // Clear Zustand store
+        // Clear Zustand store (no longer using persistence)
         if (typeof window !== 'undefined') {
-            // Clear the persisted Zustand store
+            // Clear any old persisted Zustand store data
             localStorage.removeItem('taikhoan-storage');
         }
         
         // Optionally call backend logout endpoint
         // await fetch(`${API_BASE_URL}/api/auth/logout`, { method: 'POST' });
     } catch (error) {
-        //console.error('Error during logout:', error);
+        console.error('Error during logout:', error);
     }
 };
 
@@ -215,7 +218,7 @@ export const logout = async (): Promise<void> => {
 export const isAuthenticated = (): boolean => {
     if (typeof window !== 'undefined') {
         const token = localStorage.getItem('accessToken');
-        const user = localStorage.getItem('user');
+        const user = sessionStorage.getItem('user');
         const isValid = token !== null && user !== null;
         
         return isValid;
@@ -223,10 +226,10 @@ export const isAuthenticated = (): boolean => {
     return false;
 };
 
-// Get current user from storage with validation
+// Get current user from sessionStorage with validation
 export const getCurrentUser = () => {
     if (typeof window !== 'undefined' && isAuthenticated()) {
-        const userStr = localStorage.getItem('user');
+        const userStr = sessionStorage.getItem('user');
         return userStr ? JSON.parse(userStr) : null;
     }
     return null;

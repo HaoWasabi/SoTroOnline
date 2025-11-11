@@ -1,33 +1,71 @@
 "use client"
 
-import { Button } from "@/components/ui/button";
 import { useLanguageStore } from "@/zustand/language-tranlator";
-import { Plus, Search } from "lucide-react";
-import TypeOfRoomCard from "./type-of-room-card";
+import { Search } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import GridOfRoomCard from "./grid-of-room-card";
 import FilterComponent from "@/components/filter-component";
 import { RoomFormAsDialog } from "./room-form-as-dialog";
+import { useState, useEffect } from "react";
 
 const menu = [
     {
         vietnamItem: "Phòng trống",
-        englishItem: "Available"
+        englishItem: "Available",
+        value: "phongTrong"
     },
     {
         vietnamItem: "Phòng có người ở",
-        englishItem: "Occupied"
+        englishItem: "Occupied",
+        value: "hoatDong"
     },
     {
         vietnamItem: "Phòng đang bảo trì",
-        englishItem: "In Maintenance"
+        englishItem: "In Maintenance",
+        value: "baoTri"
     }
 ]
 
 export default function RoomManagementLayout() {
+    const { language } = useLanguageStore();
+    const [searchTerm, setSearchTerm] = useState("");
+    const [selectedFilter, setSelectedFilter] = useState("");
+    const [showOnlyActive, setShowOnlyActive] = useState(true);
+    const [searchParams, setSearchParams] = useState<{
+        tenPhong?: string;
+        loaiPhong?: string;
+        diaChi?: string;
+    }>({});
 
-    const {language} = useLanguageStore();
+    // Update search params when search term or filter changes
+    useEffect(() => {
+        const params: any = {};
+        
+        if (searchTerm.trim()) {
+            // Search in room name or address
+            params.tenPhong = searchTerm.trim();
+        }
+        
+        if (selectedFilter) {
+            // Map filter to status (this would depend on your status mapping)
+            const statusMapping: { [key: string]: string } = {
+                "Available": "phongTrong",
+                "Phòng trống": "phongTrong",
+                "Occupied": "hoatDong",
+                "Phòng có người ở": "hoatDong",
+                "In Maintenance": "baoTri",
+                "Phòng đang bảo trì": "baoTri",
+            };
+            // Note: You might need to add status filter to your backend API
+        }
+        
+        setSearchParams(params);
+    }, [searchTerm, selectedFilter]);
+
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchTerm(e.target.value);
+    };
 
     return (
         <main className="pt-8 px-4 lg:pl-70 flex flex-col gap-5">
@@ -42,27 +80,33 @@ export default function RoomManagementLayout() {
                 </div>
                 <RoomFormAsDialog />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <TypeOfRoomCard roomName="All Available" quantity={1} />
-                <TypeOfRoomCard roomName="Occupied Rooms" quantity={0} />
-                <TypeOfRoomCard roomName="In Maintenance" quantity={0} />
-                <TypeOfRoomCard roomName="Total Rooms" quantity={0} />
-            </div>
+            
             <Card>
                 <CardContent className="p-4">
                     <div className="flex flex-col sm:flex-row gap-4">
                         <div className="relative flex-1">
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                             <Input
-                                placeholder="Search tenants..."
+                                placeholder={language === 'vi' ? 'Tìm kiếm phòng...' : 'Search rooms...'}
                                 className="pl-10"
+                                value={searchTerm}
+                                onChange={handleSearch}
                             />
                         </div>
-                        <FilterComponent menu={menu}/>
+                        <FilterComponent 
+                            menu={menu}
+                            onFilterChange={setSelectedFilter}
+                            selectedFilter={selectedFilter}
+                        />
                     </div>
                 </CardContent>
             </Card>
-            <GridOfRoomCard />
+            
+            <GridOfRoomCard 
+                searchParams={searchParams}
+                showOnlyActive={showOnlyActive}
+                onShowOnlyActiveChange={setShowOnlyActive}
+            />
         </main>
     )
 }

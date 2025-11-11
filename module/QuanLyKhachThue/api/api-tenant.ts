@@ -61,7 +61,7 @@ export const debugAuthStatus = () => {
     if (typeof window !== 'undefined') {
         const accessToken = localStorage.getItem('accessToken');
         const refreshToken = localStorage.getItem('refreshToken');
-        const user = localStorage.getItem('user');
+        const user = sessionStorage.getItem('user');
         
         return {
             hasAccessToken: !!accessToken,

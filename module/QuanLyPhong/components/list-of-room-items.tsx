@@ -1,6 +1,7 @@
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { useLanguageStore } from "@/zustand/language-tranlator"
+import { Room } from "../types/room-types"
 
 const roomItems = [
     {
@@ -20,8 +21,8 @@ const roomItems = [
     },
     {
         label_vietnam_name: "Tủ áo quần",
-        label_english_name: "Fan",
-        value: "fan",
+        label_english_name: "Wardrobe",
+        value: "wardrobe",
     },
     {
         label_vietnam_name: "Giường",
@@ -29,22 +30,49 @@ const roomItems = [
         value: "bed",
     }
 ]
-export default function ListOfRoomItems() {
+
+interface ListOfRoomItemsProps {
+    room?: Room;
+}
+
+export default function ListOfRoomItems({ room }: ListOfRoomItemsProps) {
 
     const {language} = useLanguageStore()
 
-    return (
-        <div className="grid grid-cols-3 gap-4">
-            {roomItems.map((item) => (
-                <div key={item.value}>
-                    <div className="flex items-center space-x-2">
-                        <Checkbox id={item.value} />
-                        <Label htmlFor={item.value}>{language === "vi" ? item.label_vietnam_name : item.label_english_name}</Label>
-                    </div>
-                </div>
-            ))}
-        </div>
+    // Get selected items from the room's furniture list
+    const getSelectedItems = () => {
+        if (!room || !room.furnitures) return [];
+        
+        // Convert the furnitures array to the corresponding values
+        return room.furnitures.map(furniture => {
+            const matchedItem = roomItems.find(item => 
+                item.label_vietnam_name.toLowerCase().includes(furniture.toLowerCase()) ||
+                item.label_english_name.toLowerCase().includes(furniture.toLowerCase())
+            );
+            return matchedItem?.value || furniture.toLowerCase().replace(/\s+/g, '_');
+        });
+    };
 
+    const selectedItems = getSelectedItems();
+
+    return (
+        <div className="space-y-4">
+            <div className="grid grid-cols-3 gap-4">
+                {roomItems.map((item) => (
+                    <div key={item.value}>
+                        <div className="flex items-center space-x-2">
+                            <Checkbox 
+                                id={item.value}
+                                name="room_items"
+                                value={item.value}
+                                defaultChecked={selectedItems.includes(item.value)}
+                            />
+                            <Label htmlFor={item.value}>{language === "vi" ? item.label_vietnam_name : item.label_english_name}</Label>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
     )
 }
     

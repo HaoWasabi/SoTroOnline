@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Building, Building2, FileText, Home, Menu, Receipt, Search, Settings, User, Users, Wrench } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -28,21 +28,54 @@ const navigation = [
 
 export function Header() {
 
+    const [isMounted, setIsMounted] = useState(false);
     const pathName = usePathname();
-    const {taiKhoan, validateAndSyncAuth} = useTaiKhoanStore();
+    const {taiKhoan, isHydrated, validateAndSyncAuth, hydrate} = useTaiKhoanStore();
     const {language} = useLanguageStore();
     const [open, setOpen] = React.useState(false);
     const title = navigation.filter((item) => item.href === pathName)
 
-    // Check if user is authenticated (either through tokens OR has user data from signup)
-    const hasValidAuth = isAuthenticated();
-    const hasUserData = !!taiKhoan && !!taiKhoan.email;
+    // Check if user is authenticated (only after mounting to prevent hydration mismatch)
+    const hasValidAuth = isMounted ? isAuthenticated() : false;
+    const hasUserData = isMounted && !!taiKhoan && !!taiKhoan.email;
     const shouldShowUserMenu = hasValidAuth || hasUserData;
+
+    // Handle client-side mounting
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     // Validate authentication state on mount and path changes
     useEffect(() => {
+        if (!isMounted) return;
+        
+        // First ensure store is hydrated
+        if (!isHydrated) {
+            console.log('🚰 Header: Hydrating store...');
+            hydrate();
+            return;
+        }
+        
+        // Validate auth state after hydration
         validateAndSyncAuth();
-    }, [pathName, validateAndSyncAuth]);
+    }, [pathName, validateAndSyncAuth, isHydrated, hydrate, isMounted]);
+
+    // Don't render user-dependent content until mounted and hydrated
+    if (!isMounted || !isHydrated) {
+        return (
+            <header className='h-16 border-b bg-white flex items-center px-4'>
+                <div className='flex items-center justify-between w-full'>
+                    <div className='flex items-center gap-4'>
+                        <div className="animate-pulse bg-gray-300 h-6 w-32 rounded"></div>
+                    </div>
+                    <div className='flex items-center gap-4'>
+                        <LanguageSwitcher />
+                        <div className="animate-pulse bg-gray-300 h-8 w-8 rounded-full"></div>
+                    </div>
+                </div>
+            </header>
+        );
+    }
 
     return (
         <>

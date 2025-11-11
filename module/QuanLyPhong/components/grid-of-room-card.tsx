@@ -1,75 +1,352 @@
+"use client"
+
+import { useState, useEffect, useCallback } from "react";
 import RoomCardComponent from "./room-card";
+import PaginationComponent from "@/components/pagination";
+import { roomApi } from "../api/api-quan-ly-phong";
+import { Room, RoomResponse, PagedResponse, ApiResponse, mapRoomResponseToRoom } from "../types/room-types";
+import { useLanguageStore } from "@/zustand/language-tranlator";
+import { Button } from "@/components/ui/button";
+import { RefreshCw, AlertCircle, Search, Filter, ToggleLeft, ToggleRight } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { useToast } from "@/hook/useToast";
 
-const rooms: Room[] = [
-    {
-        room_id: "#abc",
-        name: "Room A101",
-        typeOfRoom: "Single",
-        address: "123 Nguyen Trai, Hanoi",
-        width: 3,
-        height: 4,
-        furnitures: ["Bed", "Desk", "Wardrobe"],
-        baseRent: 2500000,
-        roomStatus: "Available"
-    },
-    {
-        room_id: "#cdf",
-        name: "Room B202",
-        typeOfRoom: "Double",
-        address: "45 Le Loi, Ho Chi Minh City",
-        width: 4,
-        height: 5,
-        furnitures: ["2 Beds", "Table", "Chair", "Air Conditioner"],
-        baseRent: 4000000,
-        roomStatus: "Occupied"
-    },
-    {
-        room_id: "#fgh",
-        name: "Room C303",
-        typeOfRoom: "Studio",
-        address: "78 Tran Phu, Da Nang",
-        width: 5,
-        height: 6,
-        furnitures: ["Bed", "Kitchenette", "Sofa", "Fridge"],
-        baseRent: 5500000,
-        roomStatus: "Available"
-    },
-    {
-        room_id: "#trf",
-        name: "Room D404",
-        typeOfRoom: "Single",
-        address: "12 Vo Thi Sau, Hue",
-        width: 3,
-        height: 3,
-        furnitures: ["Bed", "Fan", "Desk"],
-        baseRent: 1800000,
-        roomStatus: "In Maintenance"
-    },
-    {
-        room_id: "#afg",
-        name: "Room E505",
-        typeOfRoom: "Suite",
-        address: "99 Nguyen Hue, HCMC",
-        width: 6,
-        height: 7,
-        furnitures: ["King Bed", "TV", "Sofa", "Wardrobe", "Air Conditioner"],
-        baseRent: 8500000,
-        roomStatus: "Available"
+interface GridOfRoomCardProps {
+  searchParams?: {
+    tenPhong?: string;
+    loaiPhong?: string;
+    diaChi?: string;
+    chieuDai?: number;
+    chieuRong?: number;
+    vatDung?: string;
+    giaThueCoBan?: number;
+  };
+  showOnlyActive?: boolean;
+  onRoomUpdate?: (room: Room) => void;
+  onRoomDelete?: (room: Room) => void;
+  onShowOnlyActiveChange?: (showOnlyActive: boolean) => void;
+}
+
+export default function GridOfRoomCard({ 
+  searchParams, 
+  showOnlyActive = true,
+  onRoomUpdate,
+  onRoomDelete,
+  onShowOnlyActiveChange
+}: GridOfRoomCardProps) {
+    const [rooms, setRooms] = useState<Room[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+    const [totalElements, setTotalElements] = useState(0);
+    const [hasNext, setHasNext] = useState(false);
+    const [hasPrevious, setHasPrevious] = useState(false);
+    const [retryCount, setRetryCount] = useState(0);
+    
+    const { language } = useLanguageStore();
+    const { showSuccess, showError } = useToast();
+    const pageSize = 6;
+
+    const fetchRooms = useCallback(async (page: number, showLoading: boolean = true) => {
+        try {
+            if (showLoading) setLoading(true);
+            setError(null);
+        
+            let response: ApiResponse<PagedResponse<RoomResponse>>;
+            
+            // Check if we have search parameters
+            const hasSearchParams = searchParams && Object.values(searchParams)
+                .some(value => value !== undefined && value !== null && value !== '');
+        
+            if (hasSearchParams) {
+                response = await roomApi.searchRoomsPaged(searchParams, page, pageSize);
+            } else {
+                if (showOnlyActive) {
+                    response = await roomApi.getAllRoomsActivePaged(page, pageSize);
+                } else {
+                    response = await roomApi.getAllRoomsPaged(page, pageSize);
+                }
+            }
+            
+            const pagedData = response.data;
+            const mappedRooms = pagedData.content.map(mapRoomResponseToRoom);
+            
+            setRooms(mappedRooms);
+            setCurrentPage(pagedData.page);
+            setTotalPages(pagedData.totalPages);
+            setTotalElements(pagedData.totalElements);
+            setHasNext(pagedData.hasNext);
+            setHasPrevious(pagedData.hasPrevious);
+            setRetryCount(0);
+
+            // Show success toast for search results
+            if (hasSearchParams && mappedRooms.length > 0) {
+                showSuccess(
+                    language === 'vi' 
+                        ? `Tìm thấy ${pagedData.totalElements} phòng` 
+                        : `Found ${pagedData.totalElements} rooms`
+                );
+            }
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'An error occurred while fetching rooms';
+            setError(errorMessage);
+            console.error('Error fetching rooms:', err);
+            
+            // Show error toast
+            showError(errorMessage);
+        } finally {
+            if (showLoading) setLoading(false);
+        }
+    }, [searchParams, showOnlyActive, pageSize, language, showError, showSuccess]);
+
+    useEffect(() => {
+        fetchRooms(0);
+    }, [fetchRooms]);
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+        fetchRooms(page, false);
+    };
+
+    const handleRetry = () => {
+        setRetryCount(prev => prev + 1);
+        fetchRooms(currentPage);
+    };
+
+    const handleRefresh = () => {
+        fetchRooms(currentPage, false);
+        showSuccess(
+            language === 'vi' ? 'Danh sách phòng đã được cập nhật' : 'Room list has been updated'
+        );
+    };
+
+    const getSearchSummary = () => {
+        if (!searchParams) return null;
+        
+        const activeFilters = Object.entries(searchParams)
+            .filter(([_, value]) => value !== undefined && value !== null && value !== '')
+            .map(([key, value]) => {
+                const fieldNames: { [key: string]: string } = {
+                    tenPhong: language === 'vi' ? 'Tên phòng' : 'Room name',
+                    loaiPhong: language === 'vi' ? 'Loại phòng' : 'Room type',
+                    diaChi: language === 'vi' ? 'Địa chỉ' : 'Address',
+                    chieuDai: language === 'vi' ? 'Chiều dài' : 'Length',
+                    chieuRong: language === 'vi' ? 'Chiều rộng' : 'Width',
+                    vatDung: language === 'vi' ? 'Vật dụng' : 'Items',
+                    giaThueCoBan: language === 'vi' ? 'Giá thuê' : 'Base rent'
+                };
+                return `${fieldNames[key] || key}: ${value}`;
+            });
+        
+        return activeFilters.length > 0 ? activeFilters : null;
+    };
+
+    const searchSummary = getSearchSummary();
+
+    // Loading state
+    if (loading) {
+        return (
+            <div className="space-y-6">
+                <div className="flex justify-center items-center py-16">
+                    <div className="text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                        <p className="mt-4 text-gray-600">
+                            {language === 'vi' ? 'Đang tải danh sách phòng...' : 'Loading rooms...'}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        );
     }
-];
 
+    // Error state
+    if (error) {
+        return (
+            <Card className="border-red-200 bg-red-50">
+                <CardContent className="p-8">
+                    <div className="text-center">
+                        <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+                        <h3 className="text-lg font-semibold text-red-800 mb-2">
+                            {language === 'vi' ? 'Có lỗi xảy ra' : 'Something went wrong'}
+                        </h3>
+                        <p className="text-red-600 mb-6">
+                            {error}
+                        </p>
+                        <div className="flex gap-3 justify-center">
+                            <Button 
+                                onClick={handleRetry}
+                                variant="outline"
+                                className="border-red-300 text-red-700 hover:bg-red-100"
+                            >
+                                <RefreshCw className="w-4 h-4 mr-2" />
+                                {language === 'vi' ? 'Thử lại' : 'Try again'}
+                            </Button>
+                        </div>
+                        {retryCount > 0 && (
+                            <p className="text-sm text-red-500 mt-3">
+                                {language === 'vi' ? `Đã thử ${retryCount} lần` : `Tried ${retryCount} times`}
+                            </p>
+                        )}
+                    </div>
+                </CardContent>
+            </Card>
+        );
+    }
 
-export default function GridOfRoomCard() {
+    // Empty state
+    if (rooms.length === 0) {
+        return (
+            <Card className="border-gray-200">
+                <CardContent className="p-12">
+                    <div className="text-center">
+                        <Search className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                        <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                            {language === 'vi' ? 'Không tìm thấy phòng nào' : 'No rooms found'}
+                        </h3>
+                        <p className="text-gray-600 mb-6">
+                            {searchSummary ? (
+                                language === 'vi' 
+                                    ? 'Không có phòng nào phù hợp với tiêu chí tìm kiếm của bạn'
+                                    : 'No rooms match your search criteria'
+                            ) : (
+                                language === 'vi'
+                                    ? 'Hiện tại chưa có phòng nào được tạo'
+                                    : 'No rooms have been created yet'
+                            )}
+                        </p>
+                        {searchSummary && (
+                            <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                                <p className="text-sm text-gray-600 mb-2">
+                                    <Filter className="w-4 h-4 inline mr-1" />
+                                    {language === 'vi' ? 'Tiêu chí tìm kiếm:' : 'Search criteria:'}
+                                </p>
+                                <div className="space-y-1">
+                                    {searchSummary.map((filter, index) => (
+                                        <p key={index} className="text-xs text-gray-500">
+                                            {filter}
+                                        </p>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                        <Button 
+                            onClick={handleRefresh}
+                            variant="outline"
+                        >
+                            <RefreshCw className="w-4 h-4 mr-2" />
+                            {language === 'vi' ? 'Làm mới' : 'Refresh'}
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
+        );
+    }
 
+    // Success state with rooms
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {rooms.map(room => (
-                <RoomCardComponent 
-                    key={room.name}
-                    room={room}
-                />
-            ))}
-        </div>
-    )
+        <div className="space-y-6">
+            {/* Header with stats and actions */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <p className="text-lg font-semibold text-gray-900">
+                        {language === 'vi' ? 
+                            `${totalElements} phòng` :
+                            `${totalElements} room${totalElements !== 1 ? 's' : ''}`
+                        }
+                    </p>
+                    <p className="text-sm text-gray-600">
+                        {language === 'vi' ? 
+                            `Hiển thị ${rooms.length} trong tổng số ${totalElements} phòng` :
+                            `Showing ${rooms.length} of ${totalElements} rooms`
+                        }
+                    </p>
+                </div>
+                
+                <div className="flex gap-2">
+                    {/* Toggle for show active only */}
+                    <Button
+                        onClick={() => {
+                            onShowOnlyActiveChange?.(!showOnlyActive);
+                        }}
+                        variant="outline"
+                        size="sm"
+                        className={`flex items-center gap-2 ${showOnlyActive ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-gray-50'}`}
+                    >
+                        {showOnlyActive ? <ToggleRight className="w-4 h-4" /> : <ToggleLeft className="w-4 h-4" />}
+                        {language === 'vi' 
+                            ? (showOnlyActive ? 'Hiển thị phòng hoạt động' : 'Hiển thị tất cả')
+                            : (showOnlyActive ? 'Show active rooms' : 'Show all rooms')
+                        }
+                    </Button>
+                    
+                    <Button 
+                        onClick={handleRefresh}
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center gap-2"
+                    >
+                        <RefreshCw className="w-4 h-4" />
+                        {language === 'vi' ? 'Làm mới' : 'Refresh'}
+                    </Button>
+                </div>
+            </div>
 
+            {/* Search summary */}
+            {searchSummary && (
+                <Card className="border-blue-200 bg-blue-50">
+                    <CardContent className="p-4">
+                        <div className="flex items-start gap-3">
+                            <Filter className="w-5 h-5 text-blue-600 mt-0.5" />
+                            <div>
+                                <p className="font-medium text-blue-800 mb-1">
+                                    {language === 'vi' ? 'Kết quả tìm kiếm' : 'Search Results'}
+                                </p>
+                                <div className="space-y-1">
+                                    {searchSummary.map((filter, index) => (
+                                        <p key={index} className="text-sm text-blue-700">
+                                            {filter}
+                                        </p>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
+            {/* Room grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {rooms.map(room => (
+                    <RoomCardComponent 
+                        key={room.room_id}
+                        room={room}
+                        onUpdate={() => {
+                            // Refresh the room list when a room is updated
+                            fetchRooms(currentPage, false);
+                            onRoomUpdate?.(room);
+                        }}
+                        onDelete={() => {
+                            // Refresh the room list when a room is deleted
+                            fetchRooms(currentPage, false);
+                            onRoomDelete?.(room);
+                        }}
+                    />
+                ))}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+                <div className="flex justify-center pt-4">
+                    <PaginationComponent
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={handlePageChange}
+                        hasNext={hasNext}
+                        hasPrevious={hasPrevious}
+                    />
+                </div>
+            )}
+        </div>
+    );
 }
