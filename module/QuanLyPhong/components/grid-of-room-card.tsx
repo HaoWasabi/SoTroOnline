@@ -7,7 +7,7 @@ import { roomApi } from "../api/api-quan-ly-phong";
 import { Room, RoomResponse, PagedResponse, ApiResponse, mapRoomResponseToRoom } from "../types/room-types";
 import { useLanguageStore } from "@/zustand/language-tranlator";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, AlertCircle, Search, Filter, ToggleLeft, ToggleRight } from "lucide-react";
+import { RefreshCw, AlertCircle, Search, Filter } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hook/useToast";
 
@@ -20,19 +20,16 @@ interface GridOfRoomCardProps {
     chieuRong?: number;
     vatDung?: string;
     giaThueCoBan?: number;
+    trangThai?: string; // Add status filter
   };
-  showOnlyActive?: boolean;
   onRoomUpdate?: (room: Room) => void;
   onRoomDelete?: (room: Room) => void;
-  onShowOnlyActiveChange?: (showOnlyActive: boolean) => void;
 }
 
 export default function GridOfRoomCard({ 
   searchParams, 
-  showOnlyActive = true,
   onRoomUpdate,
-  onRoomDelete,
-  onShowOnlyActiveChange
+  onRoomDelete
 }: GridOfRoomCardProps) {
     const [rooms, setRooms] = useState<Room[]>([]);
     const [loading, setLoading] = useState(true);
@@ -55,37 +52,43 @@ export default function GridOfRoomCard({
         
             let response: ApiResponse<PagedResponse<RoomResponse>>;
             
-            // Check if we have search parameters
-            const hasSearchParams = searchParams && Object.values(searchParams)
+            // Check if we have search parameters (excluding trangThai for backend)
+            const backendSearchParams = searchParams ? { ...searchParams } : {};
+            delete backendSearchParams.trangThai; // Remove status filter for backend search
+            
+            const hasSearchParams = backendSearchParams && Object.values(backendSearchParams)
                 .some(value => value !== undefined && value !== null && value !== '');
         
             if (hasSearchParams) {
-                response = await roomApi.searchRoomsPaged(searchParams, page, pageSize);
+                response = await roomApi.searchRoomsPaged(backendSearchParams, page, pageSize);
             } else {
-                if (showOnlyActive) {
-                    response = await roomApi.getAllRoomsActivePaged(page, pageSize);
-                } else {
-                    response = await roomApi.getAllRoomsPaged(page, pageSize);
-                }
+                // Always fetch active rooms by default
+                response = await roomApi.getAllRoomsActivePaged(page, pageSize);
             }
             
             const pagedData = response.data;
-            const mappedRooms = pagedData.content.map(mapRoomResponseToRoom);
+            let mappedRooms = pagedData.content.map(mapRoomResponseToRoom);
+            
+            // Apply client-side status filtering if trangThai is specified
+            if (searchParams?.trangThai) {
+                mappedRooms = mappedRooms.filter(room => room.status === searchParams.trangThai);
+            }
             
             setRooms(mappedRooms);
             setCurrentPage(pagedData.page);
             setTotalPages(pagedData.totalPages);
-            setTotalElements(pagedData.totalElements);
+            setTotalElements(searchParams?.trangThai ? mappedRooms.length : pagedData.totalElements); // Adjust count for filtered results
             setHasNext(pagedData.hasNext);
             setHasPrevious(pagedData.hasPrevious);
             setRetryCount(0);
 
             // Show success toast for search results
-            if (hasSearchParams && mappedRooms.length > 0) {
+            const effectiveSearchParams = hasSearchParams || searchParams?.trangThai;
+            if (effectiveSearchParams && mappedRooms.length > 0) {
                 showSuccess(
                     language === 'vi' 
-                        ? `Tìm thấy ${pagedData.totalElements} phòng` 
-                        : `Found ${pagedData.totalElements} rooms`
+                        ? `Tìm thấy ${mappedRooms.length} phòng` 
+                        : `Found ${mappedRooms.length} rooms`
                 );
             }
         } catch (err) {
@@ -98,7 +101,7 @@ export default function GridOfRoomCard({
         } finally {
             if (showLoading) setLoading(false);
         }
-    }, [searchParams, showOnlyActive, pageSize, language, showError, showSuccess]);
+    }, [searchParams, pageSize, language, showError, showSuccess]);
 
     useEffect(() => {
         fetchRooms(0);
@@ -134,7 +137,8 @@ export default function GridOfRoomCard({
                     chieuDai: language === 'vi' ? 'Chiều dài' : 'Length',
                     chieuRong: language === 'vi' ? 'Chiều rộng' : 'Width',
                     vatDung: language === 'vi' ? 'Vật dụng' : 'Items',
-                    giaThueCoBan: language === 'vi' ? 'Giá thuê' : 'Base rent'
+                    giaThueCoBan: language === 'vi' ? 'Giá thuê' : 'Base rent',
+                    trangThai: language === 'vi' ? 'Trạng thái' : 'Status'
                 };
                 return `${fieldNames[key] || key}: ${value}`;
             });
@@ -264,22 +268,6 @@ export default function GridOfRoomCard({
                 </div>
                 
                 <div className="flex gap-2">
-                    {/* Toggle for show active only */}
-                    <Button
-                        onClick={() => {
-                            onShowOnlyActiveChange?.(!showOnlyActive);
-                        }}
-                        variant="outline"
-                        size="sm"
-                        className={`flex items-center gap-2 ${showOnlyActive ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-gray-50'}`}
-                    >
-                        {showOnlyActive ? <ToggleRight className="w-4 h-4" /> : <ToggleLeft className="w-4 h-4" />}
-                        {language === 'vi' 
-                            ? (showOnlyActive ? 'Hiển thị phòng hoạt động' : 'Hiển thị tất cả')
-                            : (showOnlyActive ? 'Show active rooms' : 'Show all rooms')
-                        }
-                    </Button>
-                    
                     <Button 
                         onClick={handleRefresh}
                         variant="outline"

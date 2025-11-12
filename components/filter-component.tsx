@@ -19,17 +19,19 @@ export default function FilterComponent({ menu, onFilterChange, selectedFilter }
 
     const { language } = useLanguageStore();
 
-    const handleFilterClick = (value: string) => {
+    const handleFilterClick = (item: { vietnamItem: string; englishItem: string; value?: string }) => {
         if (onFilterChange) {
+            // Pass the display text (not the value) to maintain consistency
+            const displayText = language === 'vi' ? item.vietnamItem : item.englishItem;
             // If the same filter is clicked, clear it; otherwise set the new filter
-            onFilterChange(selectedFilter === value ? "" : value);
+            onFilterChange(selectedFilter === displayText ? "" : displayText);
         }
     };
 
     const getSelectedLabel = () => {
         if (!selectedFilter) return null;
-        const selectedItem = menu.find(item => item.value === selectedFilter);
-        return selectedItem ? (language === 'vi' ? selectedItem.vietnamItem : selectedItem.englishItem) : null;
+        // selectedFilter is now the display text, so return it directly
+        return selectedFilter;
     };
 
     return (
@@ -50,19 +52,22 @@ export default function FilterComponent({ menu, onFilterChange, selectedFilter }
                 <DropdownMenuSeparator />
                 <DropdownMenuItem 
                     className={`font-semibold cursor-pointer ${!selectedFilter ? 'bg-blue-50' : ''}`}
-                    onClick={() => handleFilterClick("")}
+                    onClick={() => onFilterChange?.("")}
                 >
                     {language === 'vi' ? 'Tất cả' : 'All'}
                 </DropdownMenuItem>
-                {menu.map(item => (
-                    <DropdownMenuItem 
-                        key={item.value || item.englishItem} 
-                        className={`font-semibold cursor-pointer ${selectedFilter === item.value ? 'bg-blue-50' : ''}`}
-                        onClick={() => handleFilterClick(item.value || "")}
-                    >
-                        {language === 'vi' ? item.vietnamItem : item.englishItem}   
-                    </DropdownMenuItem>
-                ))}
+                {menu.map(item => {
+                    const displayText = language === 'vi' ? item.vietnamItem : item.englishItem;
+                    return (
+                        <DropdownMenuItem 
+                            key={item.value || item.englishItem} 
+                            className={`font-semibold cursor-pointer ${selectedFilter === displayText ? 'bg-blue-50' : ''}`}
+                            onClick={() => handleFilterClick(item)}
+                        >
+                            {displayText}   
+                        </DropdownMenuItem>
+                    );
+                })}
             </DropdownMenuContent>
         </DropdownMenu>
     )

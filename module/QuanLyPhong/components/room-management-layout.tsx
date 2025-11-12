@@ -31,7 +31,6 @@ export default function RoomManagementLayout() {
     const { language } = useLanguageStore();
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedFilter, setSelectedFilter] = useState("");
-    const [showOnlyActive, setShowOnlyActive] = useState(true);
     const [searchParams, setSearchParams] = useState<{
         tenPhong?: string;
         loaiPhong?: string;
@@ -48,16 +47,15 @@ export default function RoomManagementLayout() {
         }
         
         if (selectedFilter) {
-            // Map filter to status (this would depend on your status mapping)
-            const statusMapping: { [key: string]: string } = {
-                "Available": "phongTrong",
-                "Phòng trống": "phongTrong",
-                "Occupied": "hoatDong",
-                "Phòng có người ở": "hoatDong",
-                "In Maintenance": "baoTri",
-                "Phòng đang bảo trì": "baoTri",
-            };
-            // Note: You might need to add status filter to your backend API
+            // Map filter to status - use the exact values from the menu
+            const filterItem = menu.find(item => 
+                item.vietnamItem === selectedFilter || 
+                item.englishItem === selectedFilter
+            );
+            
+            if (filterItem) {
+                params.trangThai = filterItem.value; // Add status filter to search params
+            }
         }
         
         setSearchParams(params);
@@ -104,8 +102,6 @@ export default function RoomManagementLayout() {
             
             <GridOfRoomCard 
                 searchParams={searchParams}
-                showOnlyActive={showOnlyActive}
-                onShowOnlyActiveChange={setShowOnlyActive}
             />
         </main>
     )

@@ -172,7 +172,6 @@ export const login = async (email: string, password: string): Promise<LoginRespo
         
         // Store tokens in localStorage - check for backend response structure
         if (data.status === 200 && data.data && data.data.accessToken) {
-            console.log('🔐 Storing tokens in localStorage and user in sessionStorage');
             localStorage.setItem('accessToken', data.data.accessToken);
             localStorage.setItem('refreshToken', data.data.refreshToken);
             sessionStorage.setItem('user', JSON.stringify(data.data.taiKhoanDTO));

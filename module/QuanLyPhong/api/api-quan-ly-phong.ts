@@ -168,29 +168,29 @@ export const roomApi = {
     // Search rooms with pagination
     searchRoomsPaged: async (
         searchParams: {
-        tenPhong?: string;
-        loaiPhong?: string;
-        diaChi?: string;
-        chieuDai?: number;
-        chieuRong?: number;
-        vatDung?: string;
-        giaThueCoBan?: number;
+            tenPhong?: string;
+            loaiPhong?: string;
+            diaChi?: string;
+            chieuDai?: number;
+            chieuRong?: number;
+            vatDung?: string;
+            giaThueCoBan?: number;
         },
         page: number = 0,
         size: number = 6
     ): Promise<ApiResponse<PagedResponse<RoomResponse>>> => {
         const params = new URLSearchParams();
         Object.entries(searchParams).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && value !== '') {
-            params.append(key, value.toString());
-        }
+            if (value !== undefined && value !== null && value !== '') {
+                params.append(key, value.toString());
+            }
         });
         params.append('page', page.toString());
         params.append('size', size.toString());
         
         const response = await authenticatedFetch(`${API_BASE_URL}/search/paged?${params.toString()}`);
         if (!response.ok) {
-        throw new Error('Failed to search paged rooms');
+            throw new Error('Failed to search paged rooms');
         }
         return response.json();
     },

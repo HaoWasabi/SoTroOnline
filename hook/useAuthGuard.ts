@@ -12,7 +12,6 @@ export const useAuthGuard = (redirectTo: string = '/login-page') => {
     useEffect(() => {
         // First, ensure store is hydrated
         if (!isHydrated) {
-            console.log('🚰 Hydrating store...');
             hydrate();
             return; // Exit early, hydration will trigger another effect
         }
@@ -31,7 +30,6 @@ export const useAuthGuard = (redirectTo: string = '/login-page') => {
         });
         
         if (!isAuth) {
-            console.log('⚠️ User not authenticated, clearing store and redirecting...');
             clearTaiKhoan();
             router.push(redirectTo);
         }

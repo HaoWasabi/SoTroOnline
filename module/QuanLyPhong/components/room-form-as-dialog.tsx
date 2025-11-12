@@ -109,11 +109,9 @@ export function RoomFormAsDialog({ children, room, onUpdate }: RoomFormAsDialogP
                 maQuanLy: taikhoan.taiKhoan?.maTaiKhoan as number // TODO: Get from current user context
             };
 
-            console.log('Prepared room data:', roomData);
 
             if (isEditMode && room) {
                 // Update existing room
-                console.log('Updating room with ID:', room.room_id);
                 await roomApi.updateRoom(room.room_id, roomData);
                 showSuccess(
                     language === 'vi' 

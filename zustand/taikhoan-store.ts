@@ -29,11 +29,6 @@ export const useTaiKhoanStore = create<TaiKhoanState>()((set, get) => ({
       const userFromSession = store.loadUserFromSessionStorage();
       const token = localStorage.getItem('accessToken');
       
-      console.log('🚀 Hydrating store from sessionStorage:', {
-        hasUser: !!userFromSession,
-        hasToken: !!token
-      });
-      
       // Set hydrated state and user if available
       set({ 
         isHydrated: true, 
@@ -47,7 +42,6 @@ export const useTaiKhoanStore = create<TaiKhoanState>()((set, get) => ({
   
   setTaiKhoan: (taiKhoan) => {
     if (!taiKhoan) return;
-    console.log('🔄 Setting user in store:', taiKhoan.email);
     
     // Save to sessionStorage and update state
     get().saveUserToSessionStorage(taiKhoan);
@@ -66,7 +60,6 @@ export const useTaiKhoanStore = create<TaiKhoanState>()((set, get) => ({
   },
   
   clearTaiKhoan: () => {
-    console.log('🧹 Clearing user from store and sessionStorage');
     
     // Remove from sessionStorage and clear state
     get().removeUserFromStorages();
@@ -77,9 +70,8 @@ export const useTaiKhoanStore = create<TaiKhoanState>()((set, get) => ({
     if (typeof window !== 'undefined') {
       try {
         sessionStorage.setItem('user', JSON.stringify(user));
-        console.log('💾 User saved to sessionStorage');
       } catch (error) {
-        console.error('❌ Error saving user to sessionStorage:', error);
+        //console.error('❌ Error saving user to sessionStorage:', error);
       }
     }
   },
@@ -90,11 +82,10 @@ export const useTaiKhoanStore = create<TaiKhoanState>()((set, get) => ({
         const userStr = sessionStorage.getItem('user');
         if (userStr) {
           const user = JSON.parse(userStr);
-          console.log('📖 User loaded from sessionStorage:', user.email);
           return user;
         }
       } catch (error) {
-        console.error('❌ Error loading user from sessionStorage:', error);
+        //console.error('❌ Error loading user from sessionStorage:', error);
         sessionStorage.removeItem('user');
       }
     }
@@ -109,7 +100,6 @@ export const useTaiKhoanStore = create<TaiKhoanState>()((set, get) => ({
       // Remove user from localStorage if it exists (cleanup/migration)
       localStorage.removeItem('user');
       
-      console.log('🧹 User information removed from both storages');
     }
   },
   
@@ -122,16 +112,14 @@ export const useTaiKhoanStore = create<TaiKhoanState>()((set, get) => ({
       // If user exists in localStorage but not in sessionStorage, migrate it
       if (userInLocalStorage && !userInSessionStorage) {
         try {
-          console.log('🔄 Migrating user data from localStorage to sessionStorage');
           sessionStorage.setItem('user', userInLocalStorage);
           localStorage.removeItem('user');
-          console.log('✅ Migration completed successfully');
         } catch (error) {
-          console.error('❌ Error migrating user data:', error);
+          //console.error('❌ Error migrating user data:', error);
         }
       } else if (userInLocalStorage && userInSessionStorage) {
         // Both exist, remove from localStorage to avoid confusion
-        console.log('🧹 Cleaning up duplicate user data from localStorage');
+        //console.log('🧹 Cleaning up duplicate user data from localStorage');
         localStorage.removeItem('user');
       }
     }
@@ -143,34 +131,24 @@ export const useTaiKhoanStore = create<TaiKhoanState>()((set, get) => ({
       const userFromSession = get().loadUserFromSessionStorage();
       const currentUser = get().taiKhoan;
       
-      console.log('🔍 Validating auth state:', {
-        hasToken: !!token,
-        hasUserInSession: !!userFromSession,
-        hasUserInStore: !!currentUser,
-        isHydrated: get().isHydrated
-      });
-      
       if (!token) {
         // No valid token, clear everything
         if (currentUser || userFromSession) {
-          console.log('⚠️ No token but user data exists, clearing...');
           get().removeUserFromStorages();
           set({ taiKhoan: undefined });
         }
       } else if (!currentUser && userFromSession) {
         // Store empty but user exists in sessionStorage and token is valid
-        console.log('🔄 Restoring user to store from sessionStorage');
         set({ taiKhoan: userFromSession });
       } else if (currentUser && !userFromSession) {
         // User in store but not in sessionStorage, save it
-        console.log('💾 Syncing user to sessionStorage');
+        //console.log('💾 Syncing user to sessionStorage');
         get().saveUserToSessionStorage(currentUser);
       }
       
       // Clean up any old user data from localStorage
       const oldUserInLocalStorage = localStorage.getItem('user');
       if (oldUserInLocalStorage) {
-        console.log('🧹 Cleaning up old user data from localStorage');
         localStorage.removeItem('user');
       }
     }
