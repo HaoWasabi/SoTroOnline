@@ -1,0 +1,271 @@
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--&lt;!&ndash; Created with Jaspersoft Studio version 6.10.0.final using JasperReports Library version 6.10.0 &ndash;&gt;-->
+<!--<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"-->
+<!--              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"-->
+<!--              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"-->
+<!--              name="phongReport"-->
+<!--              pageWidth="595" pageHeight="842" columnWidth="535"-->
+<!--              leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">-->
+
+<!--    &lt;!&ndash; ========== FIELDS ========== &ndash;&gt;-->
+<!--    <field name="maPhong" class="java.lang.Integer"/>-->
+<!--    <field name="tenPhong" class="java.lang.String"/>-->
+<!--    <field name="loaiPhong" class="java.lang.String"/>-->
+<!--    <field name="diaChi" class="java.lang.String"/>-->
+<!--    <field name="chieuDai" class="java.math.BigDecimal"/>-->
+<!--    <field name="chieuRong" class="java.math.BigDecimal"/>-->
+<!--    <field name="hoTenQuanLy" class="java.lang.String"/>-->
+
+<!--    &lt;!&ndash; ========== TITLE ========== &ndash;&gt;-->
+<!--    <title>-->
+<!--        <band height="72">-->
+<!--            <frame>-->
+<!--                <reportElement mode="Opaque" x="-20" y="-20" width="595" height="92" backcolor="#1F618D"/>-->
+<!--                <staticText>-->
+<!--                    <reportElement x="140" y="20" width="400" height="38" forecolor="#FFFFFF"/>-->
+<!--                    <textElement textAlignment="Center">-->
+<!--                        <font size="28" isBold="true"/>-->
+<!--                    </textElement>-->
+<!--                    <text><![CDATA[Danh Sách Phòng]]></text>-->
+<!--                </staticText>-->
+<!--            </frame>-->
+<!--        </band>-->
+<!--    </title>-->
+
+<!--    &lt;!&ndash; ========== PAGE HEADER ========== &ndash;&gt;-->
+<!--    <pageHeader>-->
+<!--        <band height="10"/>-->
+<!--    </pageHeader>-->
+
+<!--    &lt;!&ndash; ========== COLUMN HEADER ========== &ndash;&gt;-->
+<!--    <columnHeader>-->
+<!--        <band height="24">-->
+<!--            <line>-->
+<!--                <reportElement x="0" y="23" width="535" height="1" forecolor="#888888"/>-->
+<!--            </line>-->
+
+<!--            <staticText>-->
+<!--                <reportElement mode="Opaque" x="0" y="0" width="40" height="20" forecolor="#1F618D" backcolor="#E8F0F7"/>-->
+<!--                <textElement textAlignment="Center">-->
+<!--                    <font size="12" isBold="true"/>-->
+<!--                </textElement>-->
+<!--                <text><![CDATA[Mã]]></text>-->
+<!--            </staticText>-->
+
+<!--            <staticText>-->
+<!--                <reportElement mode="Opaque" x="40" y="0" width="120" height="20" forecolor="#1F618D" backcolor="#E8F0F7"/>-->
+<!--                <textElement textAlignment="Center">-->
+<!--                    <font size="12" isBold="true"/>-->
+<!--                </textElement>-->
+<!--                <text><![CDATA[Tên phòng]]></text>-->
+<!--            </staticText>-->
+
+<!--            <staticText>-->
+<!--                <reportElement mode="Opaque" x="160" y="0" width="70" height="20" forecolor="#1F618D" backcolor="#E8F0F7"/>-->
+<!--                <textElement textAlignment="Center">-->
+<!--                    <font size="12" isBold="true"/>-->
+<!--                </textElement>-->
+<!--                <text><![CDATA[Loại]]></text>-->
+<!--            </staticText>-->
+
+<!--            <staticText>-->
+<!--                <reportElement mode="Opaque" x="230" y="0" width="150" height="20" forecolor="#1F618D" backcolor="#E8F0F7"/>-->
+<!--                <textElement textAlignment="Center">-->
+<!--                    <font size="12" isBold="true"/>-->
+<!--                </textElement>-->
+<!--                <text><![CDATA[Địa chỉ]]></text>-->
+<!--            </staticText>-->
+
+<!--            <staticText>-->
+<!--                <reportElement mode="Opaque" x="380" y="0" width="45" height="20" forecolor="#1F618D" backcolor="#E8F0F7"/>-->
+<!--                <textElement textAlignment="Center">-->
+<!--                    <font size="12" isBold="true"/>-->
+<!--                </textElement>-->
+<!--                <text><![CDATA[Dài]]></text>-->
+<!--            </staticText>-->
+
+<!--            <staticText>-->
+<!--                <reportElement mode="Opaque" x="425" y="0" width="45" height="20" forecolor="#1F618D" backcolor="#E8F0F7"/>-->
+<!--                <textElement textAlignment="Center">-->
+<!--                    <font size="12" isBold="true"/>-->
+<!--                </textElement>-->
+<!--                <text><![CDATA[Rộng]]></text>-->
+<!--            </staticText>-->
+
+<!--            <staticText>-->
+<!--                <reportElement mode="Opaque" x="470" y="0" width="65" height="20" forecolor="#1F618D" backcolor="#E8F0F7"/>-->
+<!--                <textElement textAlignment="Center">-->
+<!--                    <font size="12" isBold="true"/>-->
+<!--                </textElement>-->
+<!--                <text><![CDATA[Quản lý]]></text>-->
+<!--            </staticText>-->
+<!--        </band>-->
+<!--    </columnHeader>-->
+
+<!--    &lt;!&ndash; ========== DETAIL ========== &ndash;&gt;-->
+<!--    <detail>-->
+<!--        <band height="20">-->
+<!--            <line>-->
+<!--                <reportElement positionType="FixRelativeToBottom" x="0" y="19" width="535" height="1"/>-->
+<!--            </line>-->
+
+<!--            <textField isStretchWithOverflow="true">-->
+<!--                <reportElement x="0" y="0" width="40" height="20"/>-->
+<!--                <textElement textAlignment="Center">-->
+<!--                    <font size="11"/>-->
+<!--                </textElement>-->
+<!--                <textFieldExpression><![CDATA[$F{maPhong}]]></textFieldExpression>-->
+<!--            </textField>-->
+
+<!--            <textField isStretchWithOverflow="true">-->
+<!--                <reportElement x="40" y="0" width="120" height="20"/>-->
+<!--                <textElement textAlignment="Center">-->
+<!--                    <font size="11"/>-->
+<!--                </textElement>-->
+<!--                <textFieldExpression><![CDATA[$F{tenPhong}]]></textFieldExpression>-->
+<!--            </textField>-->
+
+<!--            <textField isStretchWithOverflow="true">-->
+<!--                <reportElement x="160" y="0" width="70" height="20"/>-->
+<!--                <textElement textAlignment="Center">-->
+<!--                    <font size="11"/>-->
+<!--                </textElement>-->
+<!--                <textFieldExpression><![CDATA[$F{loaiPhong}]]></textFieldExpression>-->
+<!--            </textField>-->
+
+<!--            <textField isStretchWithOverflow="true">-->
+<!--                <reportElement x="230" y="0" width="150" height="20"/>-->
+<!--                <textElement textAlignment="Center">-->
+<!--                    <font size="11"/>-->
+<!--                </textElement>-->
+<!--                <textFieldExpression><![CDATA[$F{diaChi}]]></textFieldExpression>-->
+<!--            </textField>-->
+
+<!--            <textField isStretchWithOverflow="true">-->
+<!--                <reportElement x="380" y="0" width="45" height="20"/>-->
+<!--                <textElement textAlignment="Center">-->
+<!--                    <font size="11"/>-->
+<!--                </textElement>-->
+<!--                <textFieldExpression><![CDATA[$F{chieuDai}]]></textFieldExpression>-->
+<!--            </textField>-->
+
+<!--            <textField isStretchWithOverflow="true">-->
+<!--                <reportElement x="425" y="0" width="45" height="20"/>-->
+<!--                <textElement textAlignment="Center">-->
+<!--                    <font size="11"/>-->
+<!--                </textElement>-->
+<!--                <textFieldExpression><![CDATA[$F{chieuRong}]]></textFieldExpression>-->
+<!--            </textField>-->
+
+<!--            <textField isStretchWithOverflow="true">-->
+<!--                <reportElement x="470" y="0" width="65" height="20"/>-->
+<!--                <textElement textAlignment="Center">-->
+<!--                    <font size="11"/>-->
+<!--                </textElement>-->
+<!--                <textFieldExpression><![CDATA[$F{hoTenQuanLy}]]></textFieldExpression>-->
+<!--            </textField>-->
+<!--        </band>-->
+<!--    </detail>-->
+
+<!--    &lt;!&ndash; ========== PAGE FOOTER ========== &ndash;&gt;-->
+<!--    <pageFooter>-->
+<!--        <band height="17">-->
+<!--            <textField>-->
+<!--                <reportElement mode="Opaque" x="0" y="3" width="455" height="14" backcolor="#E6E6E6"/>-->
+<!--                <textElement textAlignment="Left"/>-->
+<!--                <textFieldExpression><![CDATA["In lúc: " + new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(new java.util.Date())]]></textFieldExpression>-->
+<!--            </textField>-->
+<!--            <textField evaluationTime="Report">-->
+<!--                <reportElement mode="Opaque" x="455" y="3" width="80" height="14" backcolor="#E6E6E6"/>-->
+<!--                <textElement textAlignment="Right"/>-->
+<!--                <textFieldExpression><![CDATA["Trang " + $V{PAGE_NUMBER} + " / " + $V{PAGE_COUNT}]]></textFieldExpression>-->
+<!--            </textField>-->
+<!--        </band>-->
+<!--    </pageFooter>-->
+
+<!--    <summary>-->
+<!--        <band/>-->
+<!--    </summary>-->
+
+<!--</jasperReport>-->
+
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="phongReport" language="java" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="5914b531-8ffd-4c8e-a2fb-ae9e7022328e">
+    <field name="maPhong" class="java.lang.Integer"/>
+    <field name="tenPhong" class="java.lang.String"/>
+    <field name="loaiPhong" class="java.lang.String"/>
+    <field name="diaChi" class="java.lang.String"/>
+    <field name="chieuDai" class="java.math.BigDecimal"/>
+    <field name="chieuRong" class="java.math.BigDecimal"/>
+    <field name="vatDung" class="java.lang.String"/>
+    <field name="giaThueCoBan" class="java.math.BigDecimal"/>
+    <field name="hoTenQuanLy" class="java.lang.String"/>
+    <title height="72">
+        <element kind="frame" uuid="2739087c-0fa9-4e79-90a5-c3e67327263f" mode="Opaque" x="-20" y="-20" width="595" height="92" backcolor="#1F618D">
+            <element kind="staticText" uuid="b96c6347-6764-49bb-a027-3ff4ae0d1e94" x="180" y="20" width="250" height="38" forecolor="#FFFFFF" fontSize="28.0" bold="true">
+                <text><![CDATA[Danh Sách Phòng]]></text>
+            </element>
+        </element>
+    </title>
+    <pageHeader height="10"/>
+    <columnHeader height="24">
+        <element kind="line" uuid="2b5c20f8-900c-4ed3-95ed-19eb8084a7f1" x="0" y="23" width="535" height="1" forecolor="#888888"/>
+        <element kind="staticText" uuid="3168c4a2-aa64-47a7-839a-50e1b175c64c" mode="Opaque" x="0" y="0" width="40" height="20" forecolor="#1F618D" backcolor="#E8F0F7" fontSize="12.0" bold="true" hTextAlign="Center">
+            <text><![CDATA[Mã]]></text>
+        </element>
+        <element kind="staticText" uuid="e2cd9fa6-9c54-4006-8141-8c59bdefe035" mode="Opaque" x="40" y="0" width="120" height="20" forecolor="#1F618D" backcolor="#E8F0F7" fontSize="12.0" bold="true" hTextAlign="Center">
+            <text><![CDATA[Tên phòng]]></text>
+        </element>
+        <element kind="staticText" uuid="97ff687f-0ec5-41cd-b25f-242e374d16a5" mode="Opaque" x="160" y="0" width="70" height="20" forecolor="#1F618D" backcolor="#E8F0F7" fontSize="12.0" bold="true" hTextAlign="Center">
+            <text><![CDATA[Loại]]></text>
+        </element>
+        <element kind="staticText" uuid="09aec4aa-b85f-4bdb-80b9-233528f548f6" mode="Opaque" x="230" y="0" width="150" height="20" forecolor="#1F618D" backcolor="#E8F0F7" fontSize="12.0" bold="true" hTextAlign="Center">
+            <text><![CDATA[Địa chỉ]]></text>
+        </element>
+        <element kind="staticText" uuid="72716310-488e-48eb-b15f-7862cf2607f2" mode="Opaque" x="380" y="0" width="45" height="20" forecolor="#1F618D" backcolor="#E8F0F7" fontSize="12.0" bold="true" hTextAlign="Center">
+            <text><![CDATA[Dài]]></text>
+        </element>
+        <element kind="staticText" uuid="3c65d351-fe54-48fa-8682-93bda6fc80c3" mode="Opaque" x="425" y="0" width="45" height="20" forecolor="#1F618D" backcolor="#E8F0F7" fontSize="12.0" bold="true" hTextAlign="Center">
+            <text><![CDATA[Rộng]]></text>
+        </element>
+        <element kind="staticText" uuid="dda0d03e-6f24-4061-831f-d988a3e57015" mode="Opaque" x="470" y="0" width="65" height="20" forecolor="#1F618D" backcolor="#E8F0F7" fontSize="12.0" bold="true" hTextAlign="Center">
+            <text><![CDATA[Quản lý]]></text>
+        </element>
+    </columnHeader>
+    <detail>
+        <band height="20">
+            <element kind="line" uuid="5813a81d-0b95-4a67-a093-686bb3b1fdcc" positionType="FixRelativeToBottom" x="0" y="19" width="535" height="1"/>
+            <element kind="textField" uuid="215d621c-c9f8-41a2-87c7-5a481cf71a73" x="0" y="0" width="40" height="20" fontSize="11.0" textAdjust="StretchHeight" hTextAlign="Center">
+                <expression><![CDATA[$F{maPhong}]]></expression>
+            </element>
+            <element kind="textField" uuid="ddecd436-9246-471a-b219-dc3dabf61b9f" x="40" y="0" width="120" height="20" fontSize="11.0" textAdjust="StretchHeight" hTextAlign="Center">
+                <expression><![CDATA[$F{tenPhong}]]></expression>
+            </element>
+            <element kind="textField" uuid="d1a3166e-84e1-4930-a13f-e0b2f4cb5db0" x="160" y="0" width="70" height="20" fontSize="11.0" textAdjust="StretchHeight" hTextAlign="Center">
+                <expression><![CDATA[$F{loaiPhong}]]></expression>
+            </element>
+            <element kind="textField" uuid="fd87bfe0-c900-4846-bc41-3446e556a64c" x="230" y="0" width="150" height="20" fontSize="11.0" textAdjust="StretchHeight" hTextAlign="Center">
+                <expression><![CDATA[$F{diaChi}]]></expression>
+            </element>
+            <element kind="textField" uuid="9387454c-3e88-4f80-9494-b2baa4dca4ab" x="380" y="0" width="45" height="20" fontSize="11.0" textAdjust="StretchHeight" hTextAlign="Center">
+                <expression><![CDATA[$F{chieuDai}]]></expression>
+            </element>
+            <element kind="textField" uuid="976d18b2-bd47-451e-93f9-f39b214b85c1" x="425" y="0" width="45" height="20" fontSize="11.0" textAdjust="StretchHeight" hTextAlign="Center">
+                <expression><![CDATA[$F{chieuRong}]]></expression>
+            </element>
+            <element kind="textField" uuid="fd92a9be-e176-440b-aa6a-57775603cca4" x="470" y="0" width="65" height="20" fontSize="11.0" textAdjust="StretchHeight" hTextAlign="Center">
+                <expression><![CDATA[$F{hoTenQuanLy}]]></expression>
+            </element>
+        </band>
+    </detail>
+    <columnFooter/>
+    <pageFooter height="20">
+        <element kind="textField" uuid="cf1e4b43-4038-4464-b7b4-47777f688902" mode="Opaque" x="0" y="3" width="455" height="14" backcolor="#F0F0F0" hTextAlign="Left">
+            <expression><![CDATA["In lúc: " + new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(new java.util.Date())]]></expression>
+        </element>
+        <element kind="textField" uuid="21901dca-b173-4126-be94-5f1d0b544d3d" mode="Opaque" x="455" y="3" width="80" height="14" backcolor="#F0F0F0" hTextAlign="Right">
+            <expression><![CDATA["Trang " + $V{PAGE_NUMBER} + " / " + $V{PAGE_COUNT}]]></expression>
+        </element>
+    </pageFooter>
+    <summary/>
+</jasperReport>

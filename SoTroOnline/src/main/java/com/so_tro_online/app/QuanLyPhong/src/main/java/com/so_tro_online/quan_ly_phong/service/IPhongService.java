@@ -3,9 +3,11 @@ package com.so_tro_online.quan_ly_phong.service;
 import com.so_tro_online.quan_ly_phong.dto.RoomRequest;
 import com.so_tro_online.quan_ly_phong.dto.RoomResponse;
 import jakarta.servlet.http.HttpServletResponse;
+import net.sf.jasperreports.engine.JRException;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -24,4 +26,5 @@ public interface IPhongService {
      BigDecimal chieuRong,String vatDung, BigDecimal giaThueCoBan
     );
     void sendEmailReminderForRooms(LocalDate ngay);
+    byte[] exportReport(String format) throws FileNotFoundException, JRException;
 }

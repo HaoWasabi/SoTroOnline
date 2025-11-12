@@ -1,5 +1,6 @@
 package com.so_tro_online.quan_ly_phong.service;
 
+import com.so_tro_online.quan_ly_phong.dto.PhongReportDTO;
 import com.so_tro_online.quan_ly_phong.dto.RoomRequest;
 import com.so_tro_online.quan_ly_phong.dto.RoomResponse;
 
@@ -11,17 +12,28 @@ import com.so_tro_online.quan_ly_phong.repository.PhongRepository;
 import com.so_tro_online.quan_ly_tai_khoan.entity.TaiKhoan;
 import com.so_tro_online.quan_ly_tai_khoan.repository.TaiKhoanRepository;
 import jakarta.servlet.http.HttpServletResponse;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.export.HtmlExporter;
+import net.sf.jasperreports.engine.export.ooxml.JRDocxExporter;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -203,6 +215,41 @@ public class PhongService implements IPhongService{
             String body = "Danh sách phòng chưa có chỉ số điện cho tháng " + ngay.getMonthValue() + "/" + ngay.getYear() + ":\n"
                     + String.join("\n", phongChuaCoChiSoDien);
             emailService.sendMail("admin@gmail.com", subject, body);
+    }
+
+    @Override
+    public byte[] exportReport(String format) throws FileNotFoundException, JRException {
+        List<Phong> phongList = phongRepository.findAll();
+        List<PhongReportDTO> reportData = phongList.stream()
+                .map(PhongReportDTO::new)
+                .toList();
+
+        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(reportData);
+        JasperReport jasperReport = JasperCompileManager.compileReport(
+                ResourceUtils.getFile("classpath:reports/phong_template.jrxml").getAbsolutePath()
+        );
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, new HashMap<>(), dataSource);
+
+        switch (format.toLowerCase()) {
+            case "pdf":
+                return JasperExportManager.exportReportToPdf(jasperPrint);
+            case "html":
+                ByteArrayOutputStream htmlOut = new ByteArrayOutputStream();
+                HtmlExporter htmlExporter = new HtmlExporter();
+                htmlExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+                htmlExporter.setExporterOutput(new SimpleHtmlExporterOutput(htmlOut));
+                htmlExporter.exportReport();
+                return htmlOut.toByteArray();
+            case "docx":
+                ByteArrayOutputStream docOut = new ByteArrayOutputStream();
+                JRDocxExporter docxExporter = new JRDocxExporter();
+                docxExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+                docxExporter.setExporterOutput(new SimpleOutputStreamExporterOutput(docOut));
+                docxExporter.exportReport();
+                return docOut.toByteArray();
+            default:
+                throw new IllegalArgumentException("Định dạng không hợp lệ: " + format);
+        }
     }
 
     public RoomResponse mapToRoomResponse(Phong phong) {

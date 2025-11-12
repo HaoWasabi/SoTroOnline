@@ -7,6 +7,8 @@ import com.so_tro_online.quan_ly_phong.dto.RoomResponse;
 import com.so_tro_online.quan_ly_phong.service.IPhongService;
 
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -64,6 +66,22 @@ public class QuanLyPhongController {
     @GetMapping("/export")
     public void exportExcel(HttpServletResponse response) {
             phongService.exportToExcel(response);
+    }
+    @GetMapping("/exportReport")
+    public ResponseEntity<byte[]> exportPhong(@RequestParam String format) throws Exception {
+        byte[] data = phongService.exportReport(format);
+
+        String contentType = switch (format.toLowerCase()) {
+            case "pdf" -> "application/pdf";
+            case "html" -> "text/html";
+            case "docx" -> "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+            default -> "application/octet-stream";
+        };
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=phong." + format)
+                .contentType(MediaType.parseMediaType(contentType))
+                .body(data);
     }
     @GetMapping("/search")
     public ResponseEntity<ApiResponse> search(
