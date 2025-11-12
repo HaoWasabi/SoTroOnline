@@ -1,6 +1,7 @@
 package com.so_tro_online.quan_ly_phong.service;
 
 import com.so_tro_online.quan_ly_phong.dto.PhongReportDTO;
+import com.so_tro_online.quan_ly_phong.dto.ReminderElectricityMessage;
 import com.so_tro_online.quan_ly_phong.dto.RoomRequest;
 import com.so_tro_online.quan_ly_phong.dto.RoomResponse;
 
@@ -11,6 +12,7 @@ import com.so_tro_online.quan_ly_phong.exception.RoomAldreadyExist;
 import com.so_tro_online.quan_ly_phong.repository.PhongRepository;
 import com.so_tro_online.quan_ly_tai_khoan.entity.TaiKhoan;
 import com.so_tro_online.quan_ly_tai_khoan.repository.TaiKhoanRepository;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
@@ -24,6 +26,9 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,9 +46,9 @@ import java.util.List;
 public class PhongService implements IPhongService{
     private final TaiKhoanRepository taiKhoanRepository;
     private final PhongRepository phongRepository;
-    private final EmailService emailService;
+    private final EmailReminderRoomService emailService;
 
-    public PhongService(TaiKhoanRepository taiKhoanRepository, PhongRepository phongRepository, EmailService emailService) {
+    public PhongService(TaiKhoanRepository taiKhoanRepository, PhongRepository phongRepository, EmailReminderRoomService emailService) {
         this.taiKhoanRepository = taiKhoanRepository;
         this.phongRepository = phongRepository;
         this.emailService = emailService;
@@ -211,10 +216,15 @@ public class PhongService implements IPhongService{
     @Override
         public void sendEmailReminderForRooms(LocalDate ngay) {
             List<String> phongChuaCoChiSoDien = phongRepository.findPhongChuaCoChiSoDien(ngay);
-            String subject = "Nhắc nhở: Phòng chưa có chỉ số điện";
-            String body = "Danh sách phòng chưa có chỉ số điện cho tháng " + ngay.getMonthValue() + "/" + ngay.getYear() + ":\n"
-                    + String.join("\n", phongChuaCoChiSoDien);
-            emailService.sendMail("admin@gmail.com", subject, body);
+        ReminderElectricityMessage reminderElectricityMessage = new ReminderElectricityMessage();
+        reminderElectricityMessage.setMonth(ngay.getMonthValue());
+        reminderElectricityMessage.setYear(ngay.getYear());
+        reminderElectricityMessage.setPhongList(phongChuaCoChiSoDien);
+        try {
+            emailService.sendReminder(reminderElectricityMessage);
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -257,5 +267,12 @@ public class PhongService implements IPhongService{
                 phong.getTenPhong() ,phong.getLoaiPhong(), phong.getDiaChi(),phong.getChieuDai(),phong.getChieuRong()
                 ,phong.getVatDung(),phong.getGiaThueCoBan(),phong.getTrangThai()
         );
+    }
+    // 🕘 Chạy lúc 9:00 sáng ngày 28 và 29 hàng tháng
+//    @Scheduled(cron = "0 0 9 28,29 * *", zone = "Asia/Ho_Chi_Minh")
+    @EventListener(ApplicationReadyEvent.class)
+    public void scheduleElectricityReminder() {
+        LocalDate today = LocalDate.now();
+        sendEmailReminderForRooms(today);
     }
 }

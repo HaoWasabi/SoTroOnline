@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Nhắc nhở ghi chỉ số điện</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background-color: #f7f9fb;
+            margin: 0;
+            padding: 0;
+        }
+        .email-container {
+            background: #ffffff;
+            max-width: 600px;
+            margin: 30px auto;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background-color: #1a73e8;
+            color: white;
+            padding: 16px 24px;
+            text-align: center;
+        }
+        .content {
+            padding: 24px;
+            color: #333;
+        }
+        .content p {
+            line-height: 1.6;
+        }
+        ul {
+            background-color: #f0f4f8;
+            padding: 12px 20px;
+            border-radius: 8px;
+        }
+        li {
+            margin-bottom: 6px;
+        }
+        .footer {
+            background-color: #f3f4f6;
+            text-align: center;
+            padding: 16px;
+            font-size: 13px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+<div class="email-container">
+    <div class="header">
+        <h2>Nhắc nhở ghi chỉ số điện</h2>
+    </div>
+    <div class="content">
+        <p>Xin chào,</p>
+        <p>
+            Dưới đây là danh sách các phòng <strong>chưa có chỉ số điện</strong> cho tháng
+            <strong th:text="${month} + '/' + ${year}"></strong>:
+        </p>
+
+        <ul>
+            <li th:each="phong : ${phongList}" th:text="${phong}"></li>
+        </ul>
+
+        <p>Vui lòng cập nhật chỉ số điện sớm để đảm bảo tiến độ chốt hóa đơn.</p>
+
+        <p>Trân trọng,<br><strong>Ban quản lý tòa nhà</strong></p>
+    </div>
+    <div class="footer">
+        Email này được gửi tự động, vui lòng không phản hồi lại.
+    </div>
+</div>
+</body>
+</html>
