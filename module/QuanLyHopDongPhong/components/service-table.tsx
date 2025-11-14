@@ -1,47 +1,72 @@
 "use client"
 
-import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { useEffect, useState, useRef } from "react"
+import { Checkbox } from "@/components/ui/checkbox"
 import { useLanguageStore } from "@/zustand/language-tranlator"
 
-export default function ServiceTable() {
+type ServiceValues = {
+    dvRac: boolean
+    dvWifi: boolean
+    dvCap: boolean
+    dvKhac: boolean
+}
 
-    const {language} = useLanguageStore()
+interface ServiceTableProps {
+    onChange?: (services: Record<string, boolean>) => void
+    initialValues?: Partial<ServiceValues>
+}
+
+const SERVICE_DEFINITIONS: { key: keyof ServiceValues; id: string; labelVi: string; labelEn: string; unit?: string }[] = [
+    { key: "dvRac", id: "S1", labelVi: "Rác", labelEn: "Trash"},
+    { key: "dvWifi", id: "S2", labelVi: "Wifi", labelEn: "Wifi"},
+    { key: "dvCap", id: "S3", labelVi: "Cáp", labelEn: "Cable"},
+    { key: "dvKhac", id: "S4", labelVi: "Khác", labelEn: "Other"},
+]
+
+export default function ServiceTable({ onChange, initialValues }: ServiceTableProps) {
+    const { language } = useLanguageStore()
+
+    const [services, setServices] = useState<ServiceValues>({ dvRac: false, dvWifi: false, dvCap: false, dvKhac: false })
+
+        // Prevent calling onChange while we're synchronizing initialValues to local state,
+        // which would create an update loop when the parent also uses the same state object.
+        const isSyncingRef = useRef(false)
+
+        useEffect(() => {
+            if (initialValues) {
+                isSyncingRef.current = true
+                setServices((prev) => ({ ...prev, ...initialValues }))
+                // queue clearing the syncing flag after the next tick so the
+                // subsequent services update does not trigger the onChange callback.
+                setTimeout(() => {
+                    isSyncingRef.current = false
+                }, 0)
+            }
+        }, [initialValues])
+
+        useEffect(() => {
+            if (!isSyncingRef.current) {
+                onChange?.(services)
+            }
+        }, [services, onChange])
+
+    const toggle = (key: keyof ServiceValues) => {
+        setServices((prev) => ({ ...prev, [key]: !prev[key] }))
+    }
 
     return (
-        <Table>
-            <TableCaption></TableCaption>
-            <TableHeader>
-                <TableRow>
-                <TableHead className="w-[100px]">
-                    {language === 'vi' ? 'Mã dịch vụ' : 'Service ID'}
-                </TableHead>
-                <TableHead>
-                    {language === 'vi' ? 'Tên dịch vụ' : 'Service Name'}
-                </TableHead>
-                <TableHead>
-                    {language === 'vi' ? 'Đơn vị tính' : 'Unit'}
-                </TableHead>
-                <TableHead className="text-right">
-                    {language === 'vi' ? 'Giá dịch vụ' : 'Service Price'}
-                </TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                {/* {invoices.map((invoice) => (
-                <TableRow key={invoice.invoice}>
-                    <TableCell className="font-medium">{invoice.invoice}</TableCell>
-                    <TableCell>{invoice.paymentStatus}</TableCell>
-                    <TableCell>{invoice.paymentMethod}</TableCell>
-                    <TableCell className="text-right">{invoice.totalAmount}</TableCell>
-                </TableRow>
-                ))} */}
-            </TableBody>
-            <TableFooter>
-                {/* <TableRow>
-                <TableCell colSpan={3}>Total</TableCell>
-                <TableCell className="text-right">$2,500.00</TableCell>
-                </TableRow> */}
-            </TableFooter>
-        </Table>
+        <div className="flex items-center gap-6">
+            {SERVICE_DEFINITIONS.map((s) => (
+                <label key={s.id} className="flex items-center gap-2">
+                    <input
+                        type="checkbox"
+                        checked={!!services[s.key]}
+                        onChange={() => toggle(s.key)}
+                        className="w-4 h-4 accent-green-600"
+                    />
+                    <span className="text-sm">{language === "vi" ? s.labelVi : s.labelEn}</span>
+                </label>
+            ))}
+        </div>
     )
 }
