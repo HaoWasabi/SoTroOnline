@@ -1,13 +1,13 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import RoomCardComponent from "./room-card";
 import PaginationComponent from "@/components/pagination";
 import { roomApi } from "../api/api-quan-ly-phong";
 import { Room, RoomResponse, PagedResponse, ApiResponse, mapRoomResponseToRoom } from "../types/room-types";
 import { useLanguageStore } from "@/zustand/language-tranlator";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, AlertCircle, Search, Filter } from "lucide-react";
+import { RefreshCw, AlertCircle, Search, Filter, Download, Upload } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hook/useToast";
 
@@ -43,6 +43,7 @@ export default function GridOfRoomCard({
     
     const { language } = useLanguageStore();
     const { showSuccess, showError } = useToast();
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const pageSize = 6;
 
     const fetchRooms = useCallback(async (page: number, showLoading: boolean = true) => {
@@ -122,6 +123,93 @@ export default function GridOfRoomCard({
         showSuccess(
             language === 'vi' ? 'Danh sách phòng đã được cập nhật' : 'Room list has been updated'
         );
+    };
+
+    const handleExportExcel = async () => {
+        try {
+            setLoading(true);
+            const blob = await roomApi.exportExcel();
+            
+            // Create download link
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `rooms_${new Date().toISOString().split('T')[0]}.xlsx`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+            
+            showSuccess(
+                language === 'vi' 
+                    ? 'Xuất file Excel thành công' 
+                    : 'Excel export successful'
+            );
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Export failed';
+            showError(
+                language === 'vi' 
+                    ? 'Có lỗi xảy ra khi xuất file Excel' 
+                    : 'Failed to export Excel file'
+            );
+            console.error('Export error:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleImportExcel = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        console.log('File selected:', file);
+        if (!file) {
+            console.log('No file selected');
+            return;
+        }
+
+        // Validate file type
+        if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
+            console.log('Invalid file type:', file.name);
+            showError(
+                language === 'vi' 
+                    ? 'Vui lòng chọn file Excel (.xlsx hoặc .xls)' 
+                    : 'Please select an Excel file (.xlsx or .xls)'
+            );
+            return;
+        }
+
+        try {
+            console.log('Starting import process...');
+            setLoading(true);
+            const response = await roomApi.importExcel(file);
+            console.log('Import response:', response);
+            
+            showSuccess(
+                language === 'vi' 
+                    ? `Nhập file Excel thành công: ${response.message}` 
+                    : `Excel import successful: ${response.message}`
+            );
+            
+            // Refresh the room list after successful import
+            await fetchRooms(0);
+        } catch (error) {
+            console.error('Import error:', error);
+            const errorMessage = error instanceof Error ? error.message : 'Import failed';
+            showError(
+                language === 'vi' 
+                    ? 'Có lỗi xảy ra khi nhập file Excel' 
+                    : 'Failed to import Excel file'
+            );
+        } finally {
+            setLoading(false);
+            // Clear the file input
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
+        }
     };
 
     const getSearchSummary = () => {
@@ -273,11 +361,41 @@ export default function GridOfRoomCard({
                         variant="outline"
                         size="sm"
                         className="flex items-center gap-2"
+                        disabled={loading}
                     >
                         <RefreshCw className="w-4 h-4" />
                         {language === 'vi' ? 'Làm mới' : 'Refresh'}
                     </Button>
+                    <Button 
+                        onClick={handleImportExcel}
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center gap-2"
+                        disabled={loading}
+                    >
+                        <Upload className="w-4 h-4" />
+                        {language === 'vi' ? 'Nhập Excel' : 'Import Excel'}
+                    </Button>
+                    <Button 
+                        onClick={handleExportExcel}
+                        variant="outline"
+                        size="sm"
+                        className="flex items-center gap-2"
+                        disabled={loading}
+                    >
+                        <Download className="w-4 h-4" />
+                        {language === 'vi' ? 'Xuất Excel' : 'Export Excel'}
+                    </Button>
                 </div>
+
+                {/* Hidden file input for Excel import */}
+                <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".xlsx,.xls"
+                    onChange={handleFileChange}
+                    className="hidden"
+                />
             </div>
 
             {/* Search summary */}
@@ -325,7 +443,7 @@ export default function GridOfRoomCard({
 
             {/* Pagination */}
             {totalPages > 1 && (
-                <div className="flex justify-center pt-4">
+                <div className="flex justify-center py-4">
                     <PaginationComponent
                         currentPage={currentPage}
                         totalPages={totalPages}

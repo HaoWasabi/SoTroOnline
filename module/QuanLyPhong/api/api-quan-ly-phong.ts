@@ -197,25 +197,33 @@ export const roomApi = {
 
     // Import Excel
     importExcel: async (file: File): Promise<ApiResponse<null>> => {
+        console.log('API: Starting import for file:', file.name, 'Size:', file.size);
         const formData = new FormData();
         formData.append('file', file);
         
-        // For FormData, only include Authorization header, let browser set Content-Type
-        const authHeaders: Record<string, string> = {};
+        // For FormData uploads, we need to avoid setting Content-Type header
+        // Let the browser set it automatically with proper boundary
         const token = getAuthToken();
+        const headers: Record<string, string> = {};
         if (token) {
-            authHeaders['Authorization'] = `Bearer ${token}`;
+            headers['Authorization'] = `Bearer ${token}`;
         }
         
-        const response = await authenticatedFetch(`${API_BASE_URL}/import`, {
-        method: 'POST',
-        headers: authHeaders,
-        body: formData,
+        const response = await fetch(`${API_BASE_URL}/import`, {
+            method: 'POST',
+            headers: headers, // Only auth header, no Content-Type for FormData
+            body: formData,
         });
+        
         if (!response.ok) {
-        throw new Error('Failed to import Excel file');
+            const errorText = await response.text();
+            console.error('API: Error response:', errorText);
+            throw new Error(`Failed to import Excel file: ${response.status} ${response.statusText}`);
         }
-        return response.json();
+        
+        const result = await response.json();
+        console.log('API: Success response:', result);
+        return result;
     },
 
     // Export Excel
