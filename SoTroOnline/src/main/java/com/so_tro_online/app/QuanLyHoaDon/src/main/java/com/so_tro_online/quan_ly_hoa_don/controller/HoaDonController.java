@@ -24,9 +24,18 @@ public class HoaDonController {
 
         return ResponseEntity.ok(new ApiResponse("success", hoaDonService.getAllHoaDon()));
     }
+    @GetMapping("/active")
+    public ResponseEntity<ApiResponse> getAllActiveHoaDon() {
+
+        return ResponseEntity.ok(new ApiResponse("success", hoaDonService.getAllActiveHoaDon()));
+    }
     @GetMapping("/{id}")
     public  ResponseEntity<ApiResponse>getHoaDonById(@PathVariable Integer id) {
         return ResponseEntity.ok(new ApiResponse("success",hoaDonService.getHoaDonById(id)));
+    }
+    @GetMapping("/active/{id}")
+    public  ResponseEntity<ApiResponse>getActiveHoaDonById(@PathVariable Integer id) {
+        return ResponseEntity.ok(new ApiResponse("success",hoaDonService.getActiveHoaDonById(id)));
     }
 
     @GetMapping("/contract/{id}")
@@ -44,5 +53,10 @@ public class HoaDonController {
     @PostMapping
     public ResponseEntity<ApiResponse> createHoaDon(@RequestBody HoaDonRequest request) {
         return ResponseEntity.ok(new ApiResponse("success",hoaDonService.createHoaDon(request)));
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse>deleteHoaDon(@PathVariable Integer id) {
+        hoaDonService.deleteHoaDon(id);
+        return ResponseEntity.ok(new ApiResponse("success", null));
     }
 }

@@ -6,16 +6,19 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @Repository
-public interface TaiKhoanRepository extends JpaRepository<TaiKhoan,Integer> {
-    @Query("select u from TaiKhoan u where u.email = ?1 and u.matKhau = ?2")
+public interface TaiKhoanRepository extends JpaRepository<TaiKhoan, Integer> {
+    @Query("SELECT u FROM TaiKhoan u WHERE u.email = :email AND u.matKhau = :matKhau")
     Optional<TaiKhoan> findByEmailAndMatKhau(String email, String matKhau);
 
-    @Query("select email from TaiKhoan u where u.email = ?1")
-    String findByEmail(String email);
+    @Query("select u from TaiKhoan u where u.email = :email")
+    TaiKhoan findByEmail(String email);
 
-    Optional<TaiKhoan> findByMaTaiKhoanAndTrangThai(Integer maQuanLy, TrangThai trangThai);
+    @Query("select u from TaiKhoan u where u.maTaiKhoan = :maTaiKhoan")
+    Optional<TaiKhoan> findByMaTaiKhoan(int maTaiKhoan);
+
+    @Query("select u from TaiKhoan u where u.maTaiKhoan = :maTaiKhoan and u.trangThai = :trangThai")
+    Optional<TaiKhoan> findByMaTaiKhoanAndTrangThai(int maTaiKhoan, TrangThai trangThai);
 }

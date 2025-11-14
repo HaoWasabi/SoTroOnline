@@ -1,14 +1,26 @@
 package com.so_tro_online.quan_ly_tai_khoan.mapper;
 
-import com.so_tro_online.quan_ly_tai_khoan.dto.UserResponse;
+import com.so_tro_online.quan_ly_tai_khoan.dto.TaiKhoanDto;
 import com.so_tro_online.quan_ly_tai_khoan.entity.TaiKhoan;
 import com.so_tro_online.quan_ly_tai_khoan.entity.TrangThai;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class UserMapper {
-    public static UserResponse toResponse(TaiKhoan taiKhoan) {
-        return new UserResponse(taiKhoan.getEmail(), taiKhoan.getTrangThai());
+
+    public static TaiKhoanDto toDto(TaiKhoan taiKhoan) {
+        return new TaiKhoanDto(
+                taiKhoan.getMaTaiKhoan(),
+                taiKhoan.getMaCanCuoc(),
+                taiKhoan.getEmail(),
+                taiKhoan.getHoTen(),
+                taiKhoan.getDienThoai(),
+                taiKhoan.getThuongTru(),
+                taiKhoan.getNgaySinh() != null ? taiKhoan.getNgaySinh().toString() : null,
+                taiKhoan.getNgayTao() != null ? taiKhoan.getNgayTao().toString() : null,
+                taiKhoan.getTrangThai()
+        );
     }
 
     public static TaiKhoan toEntity (
@@ -19,6 +31,7 @@ public class UserMapper {
             String thuongTru,
             Date ngaySinh,
             String matKhau,
+            LocalDateTime ngayTao,
             TrangThai trangThai
     ) {
         TaiKhoan taiKhoan = new TaiKhoan();
@@ -30,6 +43,7 @@ public class UserMapper {
         taiKhoan.setHoTen(hoTen);
         taiKhoan.setNgaySinh(ngaySinh);
         taiKhoan.setThuongTru(thuongTru);
+        taiKhoan.setNgayTao(ngayTao);
         taiKhoan.setTrangThai(trangThai);
 
         return taiKhoan;

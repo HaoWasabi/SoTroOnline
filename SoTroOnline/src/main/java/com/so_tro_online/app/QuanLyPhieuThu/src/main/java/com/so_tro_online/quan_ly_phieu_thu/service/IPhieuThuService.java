@@ -10,6 +10,7 @@ import java.util.List;
 
 public interface IPhieuThuService {
     public List<PhieuThuResponse> getAllPhieuThu();
+    public List<PhieuThuResponse> getAllActivePhieuThu();
     public PhieuThuResponse createPhieuThu(PhieuThuRequest req);
     public PhieuThuResponse updatePhieuThu(Integer id, PhieuThuRequest req);
     public void deletePhieuThu(Integer id);

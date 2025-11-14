@@ -90,12 +90,19 @@ public class HopDongPhongService implements IHopDongPhongService {
 
     @Override
     public HopDongPhongResponse createHopDongPhong(HopDongPhongRequest hopDongRequest) {
+        System.out.println("maTaiKhoan = " + hopDongRequest.getMaTaiKhoan());
+        System.out.println("phong=" + hopDongRequest.getMaPhong());
+        System.out.println("khachThue=" + hopDongRequest.getMaKhachThue());
+        System.out.println("tienPhong=" + hopDongRequest.getTienPhong());
+        System.out.println("tienCoc=" + hopDongRequest.getTienCoc());
         TaiKhoan taiKhoan=taiKhoanRepository.findByMaTaiKhoanAndTrangThai(hopDongRequest.getMaTaiKhoan(), com.so_tro_online.quan_ly_tai_khoan.entity.TrangThai.hoatDong)
                 .orElseThrow(()->new ReseourceNotFoundException("không tìm thấy người dùng với id: "+hopDongRequest.getMaTaiKhoan()));
         Phong phong=phongRepository.findByMaPhongAndTrangThai(hopDongRequest.getMaPhong(), TrangThai.hoatDong)
                 .orElseThrow(()->new ReseourceNotFoundException("không tìm thấy phòng với id: "+hopDongRequest.getMaPhong()));
-        KhachThue khachThue=khachThueRepository.findById(hopDongRequest.getMaKhachThue())
-                .orElseThrow(()->new ReseourceNotFoundException("không tìm thấy khách hàng với id: "+hopDongRequest.getMaKhachThue()));
+        KhachThue khachThue = khachThueRepository.findById(hopDongRequest.getMaKhachThue())
+                .orElseThrow(() -> new ReseourceNotFoundException(
+                        "không tìm thấy khách hàng với id: " + hopDongRequest.getMaKhachThue()
+                ));
         if(hopDongPhongRepository.existsByPhongAndTrangThai(phong, com.so_tro_online.quan_ly_hop_dong_phong.entity.TrangThai.hoatDong)){
             throw new HopDongAlreadyExists("phòng này đã được thuê");
         }

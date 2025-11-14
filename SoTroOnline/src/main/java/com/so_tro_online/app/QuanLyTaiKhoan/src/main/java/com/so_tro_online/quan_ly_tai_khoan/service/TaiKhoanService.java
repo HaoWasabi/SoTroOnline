@@ -10,6 +10,8 @@ import com.so_tro_online.quan_ly_tai_khoan.repository.TaiKhoanRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Service
@@ -23,7 +25,7 @@ public class TaiKhoanService {
     }
 
     public TaiKhoan signIn(String email, String password) {
-        String emailTaiKhoan = taiKhoanRepository.findByEmail(email);
+        TaiKhoan emailTaiKhoan = taiKhoanRepository.findByEmail(email);
 
         if(emailTaiKhoan == null) {
             throw new NoEmailFoundException("Khong tim thay tai khoan voi email!");
@@ -48,16 +50,16 @@ public class TaiKhoanService {
             String matKhau,
             TrangThai trangThai
     ) {
-        String accountRetrievedByEmail = taiKhoanRepository.findByEmail(email);
+        TaiKhoan accountRetrievedByEmail = taiKhoanRepository.findByEmail(email);
 
         if(accountRetrievedByEmail != null) {
             throw new DuplicateEmailException("Email is already exist!");
         }
 
         String encodedPassword = passwordEncoder.encode(matKhau);
+        LocalDateTime ngayTao = LocalDateTime.now();
         TaiKhoan newTaiKhoan = UserMapper.toEntity(
-                email, cccdCode, hoTen, dienThoai, thuongTru, ngaySinh, matKhau, trangThai
-        );
+                email, cccdCode, hoTen, dienThoai, thuongTru, ngaySinh, matKhau, ngayTao, trangThai);
 
         taiKhoanRepository.save(newTaiKhoan);
     }

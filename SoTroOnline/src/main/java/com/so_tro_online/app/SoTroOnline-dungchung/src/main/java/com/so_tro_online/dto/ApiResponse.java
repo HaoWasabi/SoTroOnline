@@ -1,12 +1,32 @@
 package com.so_tro_online.dto;
 
-public class ApiResponse {
+public class ApiResponse<T> {
+    private int status;
     private String message;
-    private Object data;
+    private T data;
 
-    public ApiResponse(String message, Object data) {
+    public ApiResponse() {
+    }
+
+    public ApiResponse(int status, String message, T data) {
+        this.status = status;
         this.message = message;
         this.data = data;
+    }
+
+    // Convenience constructor for successful responses
+    public ApiResponse(String message, T data) {
+        this.status = 200;
+        this.message = message;
+        this.data = data;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     public String getMessage() {
@@ -17,11 +37,11 @@ public class ApiResponse {
         this.message = message;
     }
 
-    public Object getData() {
+    public T getData() {
         return data;
     }
 
-    public void setData(Object data) {
+    public void setData(T data) {
         this.data = data;
     }
 }

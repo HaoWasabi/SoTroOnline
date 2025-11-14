@@ -10,12 +10,12 @@ import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
-public class HopDongPhong {
+public class    HopDongPhong {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer maHopDongPhong;
     @ManyToOne
-    @JoinColumn(name="maQuanLy")
+    @JoinColumn(name="maQuanLy", nullable = false)
     private TaiKhoan taiKhoan;
     @ManyToOne
     @JoinColumn(name = "maKhachDaiDien")

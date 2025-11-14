@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Date;
 
-public class HopDongPhongRequest {
+public class    HopDongPhongRequest {
     private Integer maTaiKhoan;
     private Integer maKhachThue;
     private Integer maPhong;
@@ -28,6 +28,10 @@ public class HopDongPhongRequest {
 
     public void setMaTaiKhoan(Integer maTaiKhoan) {
         this.maTaiKhoan = maTaiKhoan;
+    }
+
+    public Integer getMaQuanLy() {
+        return this.maTaiKhoan;
     }
 
     public Integer getMaKhachThue() {

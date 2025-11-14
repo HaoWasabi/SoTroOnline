@@ -2,49 +2,50 @@ package com.so_tro_online.quan_ly_tai_khoan.entity;
 
 import jakarta.persistence.*;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 
 @Entity
-@Table(name = "TaiKhoan")
+@Table(name = "tai_khoan")
 public class TaiKhoan {
 
-    @Column(name = "maTaiKhoan", updatable = false)
-    @Id
-    private Integer maTaiKhoan;
+    @Column(name = "ma_tai_khoan", updatable = false)
+    @Id()
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int maTaiKhoan;
 
-    @Column(name = "maCanCuoc", nullable = false, unique = true)
+    @Column(name = "ma_can_cuoc")
     private String maCanCuoc;
 
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "hoTen", nullable = false)
+    @Column(name = "ho_ten")
     private String hoTen;
 
-    @Column(name = "dienThoai", nullable = false)
+    @Column(name = "dien_thoai")
     private String dienThoai;
 
-    @Column(name = "thuongTru", nullable = false)
+    @Column(name = "thuong_tru")
     private String thuongTru;
 
-    @Column(name = "ngaySinh", nullable = false)
+    @Column(name = "ngay_sinh")
     private Date ngaySinh;
 
-    @Column(name = "matKhau", nullable = false)
+    @Column(name = "mat_khau")
     private String matKhau;
 
-    @Column(name = "ngayTao")
-    private Instant ngayTao;
+    @Column(name = "ngay_tao")
+    private LocalDateTime ngayTao;
 
-    @Column(name = "trangThai")
     @Enumerated(EnumType.STRING)
+    @Column(name = "trang_thai")
     private TrangThai trangThai;
 
     public TaiKhoan() {}
 
-    public TaiKhoan(Integer maTaiKhoan, String maCanCuoc, String email, String hoTen, String dienThoai, String thuongTru, Date ngaySinh, String matKhau, TrangThai trangThai) {
+    public TaiKhoan(int maTaiKhoan, String maCanCuoc, String email, String hoTen, String dienThoai, String thuongTru, Date ngaySinh, String matKhau, LocalDateTime ngayTao, TrangThai trangThai) {
         this.maTaiKhoan = maTaiKhoan;
         this.maCanCuoc = maCanCuoc;
         this.email = email;
@@ -53,14 +54,15 @@ public class TaiKhoan {
         this.thuongTru = thuongTru;
         this.ngaySinh = ngaySinh;
         this.matKhau = matKhau;
+        this.ngayTao = ngayTao;
         this.trangThai = trangThai;
     }
 
-    public Integer getMaTaiKhoan() {
+    public int getMaTaiKhoan() {
         return maTaiKhoan;
     }
 
-    public void setMaTaiKhoan(Integer maTaiKhoan) {
+    public void setMaTaiKhoan(int maTaiKhoan) {
         this.maTaiKhoan = maTaiKhoan;
     }
 
@@ -120,11 +122,11 @@ public class TaiKhoan {
         this.matKhau = matKhau;
     }
 
-    public Instant getNgayTao() {
+    public LocalDateTime getNgayTao() {
         return ngayTao;
     }
 
-    public void setNgayTao(Instant ngayTao) {
+    public void setNgayTao(LocalDateTime ngayTao) {
         this.ngayTao = ngayTao;
     }
 
@@ -137,5 +139,4 @@ public class TaiKhoan {
     }
 
 }
-
 

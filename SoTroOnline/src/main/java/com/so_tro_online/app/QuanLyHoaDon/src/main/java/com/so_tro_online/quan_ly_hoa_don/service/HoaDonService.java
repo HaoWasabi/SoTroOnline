@@ -37,6 +37,8 @@ import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import static com.so_tro_online.quan_ly_hop_dong_dich_vu.entity.TrangThai.hoatDong;
+
 @Service
 public class HoaDonService implements IHoaDonService{
     private final DichVuRepository dichVuRepository;
@@ -57,12 +59,21 @@ public class HoaDonService implements IHoaDonService{
     }
 
     @Override
+    public List<HoaDonResponse> getAllActiveHoaDon() {
+        return hoaDonRepository.findAllActive().stream().map(this::mapToResponse).toList();
+    }
+
+    @Override
     public HoaDonResponse getHoaDonById(Integer id) {
         return hoaDonRepository.findById(id).map(this::mapToResponse)
                 .orElseThrow(()->new RuntimeException("Không tìm thấy hóa đơn với id: "+id));
     }
 
-
+    @Override
+    public HoaDonResponse getActiveHoaDonById(Integer id) {
+        return hoaDonRepository.findActiveByMaHoaDon(id).map(this::mapToResponse)
+                .orElseThrow(()->new RuntimeException("Không tìm thấy hóa đơn với id: "+id));
+    }
 
     @Override
     public List<HoaDonResponse> getHoaDonByDate(Integer thang, Integer nam) {
@@ -231,7 +242,7 @@ public class HoaDonService implements IHoaDonService{
                 hopDong.getPhong().getMaPhong(),
                 request.getThang(),
                 request.getNam(),
-                TrangThai.hoatDong
+                hoatDong
         ).orElseThrow(() -> new ReseourceNotFoundException(
                 String.format("Không tìm thấy chỉ số điện nước của phòng %d tháng %d năm %d",
                         hopDong.getPhong().getMaPhong(), request.getThang(), request.getNam())
@@ -324,6 +335,14 @@ public class HoaDonService implements IHoaDonService{
         hoaDon.setNam(request.getNam());
 
         return mapToResponse(hoaDonRepository.save(hoaDon));
+    }
+
+    @Override
+    public void deleteHoaDon(Integer id) {
+        HoaDon hoaDon=hoaDonRepository.findActiveByMaHoaDon(id)
+                .orElseThrow(()->new ReseourceNotFoundException("không tìm thấy hợp đồng phòng với id: "+id));
+        hoaDon.setTrangThai(com.so_tro_online.quan_ly_hoa_don.entity.TrangThai.DA_XOA);
+        hoaDonRepository.save(hoaDon);
     }
 
     public HoaDonResponse mapToResponse(HoaDon hoaDon){

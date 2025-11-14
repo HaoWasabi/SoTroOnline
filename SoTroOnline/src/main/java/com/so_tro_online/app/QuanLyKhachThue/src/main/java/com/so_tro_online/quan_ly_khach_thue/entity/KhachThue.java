@@ -6,60 +6,67 @@ import java.time.Instant;
 import java.util.Date;
 
 @Entity
-@Table(name = "KhachThue")
+@Table(name = "khach_thue")
 public class KhachThue {
 
     @Id
-    @Column(name = "maKhach", updatable = false)
-    private Integer maKhach;
+    @Column(name = "ma_khach", updatable = false)
+    private int maKhach;
 
-    @Column(name = "maKhachDaiDien")
-    private String maKhachDaiDien;
+    @Column(name = "ma_khach_dai_dien")
+    private int maKhachDaiDien;
 
-    @Column(name = "maCanCuoc")
+    @Column(name = "ma_can_cuoc")
     private String maCanCuoc;
 
-    @Column(name = "hoTen")
+    @Column(name = "ho_ten")
     private String hoTen;
 
-    @Column(name = "thuongTru")
+    @Column(name = "dien_thoai")
+    private String dienThoai;
+
+    @Column(name = "thuong_tru")
     private String thuongTru;
 
-    @Column(name = "ngaySinh")
+    @Column(name = "ngay_sinh")
     private Date ngaySinh;
 
-    @Column(name = "ngayTao")
+    @Column(name = "ngay_tao")
     private Instant ngayTao;
+
     @Enumerated(EnumType.STRING)
+    @Column(name = "trang_thai")
     private TrangThai trangThai;
+
 
     public KhachThue() {
 
     }
 
-    public KhachThue(Integer maKhach, String maKhachDaiDien, String maCanCuoc, String hoTen, String thuongTru, Date ngaySinh, Instant ngayTao) {
+    public KhachThue(int maKhach, int maKhachDaiDien, String maCanCuoc, String hoTen, String dienThoai, String thuongTru, Date ngaySinh, Instant ngayTao) {
         this.maKhach = maKhach;
         this.maKhachDaiDien = maKhachDaiDien;
         this.maCanCuoc = maCanCuoc;
         this.hoTen = hoTen;
+        this.dienThoai = dienThoai;
         this.thuongTru = thuongTru;
         this.ngaySinh = ngaySinh;
         this.ngayTao = ngayTao;
     }
 
-    public Integer getMaKhach() {
+    public int getMaKhach() {
         return maKhach;
     }
 
-    public void setMaKhach(Integer maKhach) {
+    public void setMaKhach(int maKhach) {
         this.maKhach = maKhach;
     }
 
-    public String getMaKhachDaiDien() {
+    public int getMaKhachDaiDien() {
         return maKhachDaiDien;
     }
 
-    public void setMaKhachDaiDien(String maKhachDaiDien) {
+    public void setMaKhachDaiDien( int maKhachDaiDien) {
         this.maKhachDaiDien = maKhachDaiDien;
     }
 
@@ -103,5 +110,19 @@ public class KhachThue {
         this.ngayTao = ngayTao;
     }
 
+    public TrangThai getTrangThai() {
+        return trangThai;
+    }
 
+    public void setTrangThai(TrangThai trangThai) {
+        this.trangThai = trangThai;
+    }
+
+    public String getDienThoai() {
+        return dienThoai;
+    }
+
+    public void setDienThoai(String dienThoai) {
+        this.dienThoai = dienThoai;
+    }
 }

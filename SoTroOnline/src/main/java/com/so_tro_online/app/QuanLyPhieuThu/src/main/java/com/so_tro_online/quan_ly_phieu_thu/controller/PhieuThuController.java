@@ -22,6 +22,11 @@ public class PhieuThuController {
 
         return ResponseEntity.ok(new ApiResponse("success", phieuThuService.getAllPhieuThu()));
     }
+    @GetMapping("/active")
+    public ResponseEntity<ApiResponse> getAllActivePhieuThu() {
+
+        return ResponseEntity.ok(new ApiResponse("success", phieuThuService.getAllActivePhieuThu()));
+    }
     @GetMapping("/{id}")
     public  ResponseEntity<ApiResponse>getPhieuThuById(@PathVariable Integer id) {
         return ResponseEntity.ok(new ApiResponse("success",phieuThuService.getPhieuThuById(id)));
