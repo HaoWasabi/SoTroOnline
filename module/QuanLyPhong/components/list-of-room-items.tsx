@@ -33,9 +33,10 @@ const roomItems = [
 
 interface ListOfRoomItemsProps {
     room?: Room;
+    disabled?: boolean;
 }
 
-export default function ListOfRoomItems({ room }: ListOfRoomItemsProps) {
+export default function ListOfRoomItems({ room, disabled = false }: ListOfRoomItemsProps) {
 
     const {language} = useLanguageStore()
 
@@ -57,7 +58,7 @@ export default function ListOfRoomItems({ room }: ListOfRoomItemsProps) {
 
     return (
         <div className="space-y-4">
-            <div className="grid grid-cols-3 gap-4">
+            <div className={`grid grid-cols-3 gap-4 ${disabled ? 'opacity-50 pointer-events-none' : ''}`}>
                 {roomItems.map((item) => (
                     <div key={item.value}>
                         <div className="flex items-center space-x-2">
@@ -65,13 +66,27 @@ export default function ListOfRoomItems({ room }: ListOfRoomItemsProps) {
                                 id={item.value}
                                 name="room_items"
                                 value={item.value}
-                                defaultChecked={selectedItems.includes(item.value)}
+                                defaultChecked={!disabled && selectedItems.includes(item.value)}
+                                disabled={disabled}
                             />
-                            <Label htmlFor={item.value}>{language === "vi" ? item.label_vietnam_name : item.label_english_name}</Label>
+                            <Label 
+                                htmlFor={item.value}
+                                className={disabled ? 'text-gray-400 cursor-not-allowed' : 'cursor-pointer'}
+                            >
+                                {language === "vi" ? item.label_vietnam_name : item.label_english_name}
+                            </Label>
                         </div>
                     </div>
                 ))}
             </div>
+            {disabled && (
+                <p className="text-sm text-gray-500 italic text-center">
+                    {language === "vi" 
+                        ? "Phòng trống không có nội thất" 
+                        : "Empty rooms don't have furniture"
+                    }
+                </p>
+            )}
         </div>
     )
 }

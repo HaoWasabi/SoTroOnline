@@ -53,39 +53,30 @@ export default function GridOfRoomCard({
         
             let response: ApiResponse<PagedResponse<RoomResponse>>;
             
-            // Check if we have search parameters (excluding trangThai for backend)
-            const backendSearchParams = searchParams ? { ...searchParams } : {};
-            delete backendSearchParams.trangThai; // Remove status filter for backend search
-            
-            const hasSearchParams = backendSearchParams && Object.values(backendSearchParams)
+            // Check if we have search parameters
+            const hasSearchParams = searchParams && Object.values(searchParams)
                 .some(value => value !== undefined && value !== null && value !== '');
         
             if (hasSearchParams) {
-                response = await roomApi.searchRoomsPaged(backendSearchParams, page, pageSize);
+                response = await roomApi.searchRoomsPaged(searchParams, page, pageSize);
             } else {
-                // Always fetch active rooms by default
-                response = await roomApi.getAllRoomsActivePaged(page, pageSize);
+                // Fetch all rooms when no search parameters
+                response = await roomApi.getAllRoomsPaged(page, pageSize);
             }
             
             const pagedData = response.data;
-            let mappedRooms = pagedData.content.map(mapRoomResponseToRoom);
-            
-            // Apply client-side status filtering if trangThai is specified
-            if (searchParams?.trangThai) {
-                mappedRooms = mappedRooms.filter(room => room.status === searchParams.trangThai);
-            }
+            const mappedRooms = pagedData.content.map(mapRoomResponseToRoom);
             
             setRooms(mappedRooms);
             setCurrentPage(pagedData.page);
             setTotalPages(pagedData.totalPages);
-            setTotalElements(searchParams?.trangThai ? mappedRooms.length : pagedData.totalElements); // Adjust count for filtered results
+            setTotalElements(pagedData.totalElements);
             setHasNext(pagedData.hasNext);
             setHasPrevious(pagedData.hasPrevious);
             setRetryCount(0);
 
             // Show success toast for search results
-            const effectiveSearchParams = hasSearchParams || searchParams?.trangThai;
-            if (effectiveSearchParams && mappedRooms.length > 0) {
+            if (hasSearchParams && mappedRooms.length > 0) {
                 showSuccess(
                     language === 'vi' 
                         ? `Tìm thấy ${mappedRooms.length} phòng` 

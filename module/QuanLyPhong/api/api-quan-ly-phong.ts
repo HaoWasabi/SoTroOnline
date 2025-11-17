@@ -150,6 +150,7 @@ export const roomApi = {
         chieuRong?: number;
         vatDung?: string;
         giaThueCoBan?: number;
+        trangThai?: string;
     }): Promise<ApiResponse<RoomResponse[]>> => {
         const params = new URLSearchParams();
         Object.entries(searchParams).forEach(([key, value]) => {
@@ -175,6 +176,7 @@ export const roomApi = {
             chieuRong?: number;
             vatDung?: string;
             giaThueCoBan?: number;
+            trangThai?: string;
         },
         page: number = 0,
         size: number = 6

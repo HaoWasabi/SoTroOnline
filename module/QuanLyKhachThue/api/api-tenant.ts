@@ -74,7 +74,7 @@ export const debugAuthStatus = () => {
 };
 
 // Fetch all tenants with pagination
-export const fetchTenants = async (page: number = 0, search?: string): Promise<TenantResponse> => {
+export const fetchTenants = async (page: number = 0, search?: string, status?: string): Promise<TenantResponse> => {
     try {
         const params = new URLSearchParams({
             page: page.toString(),
@@ -84,21 +84,37 @@ export const fetchTenants = async (page: number = 0, search?: string): Promise<T
             params.append('search', search.trim());
         }
 
-        const headers = getAuthHeaders();
+        if (status && status.trim()) {
+            params.append('status', status.trim());
+        }
 
-        const response = await fetch(`${API_BASE_URL}/api/tenants?${params.toString()}`, {
+        const headers = getAuthHeaders();
+        const url = `${API_BASE_URL}/api/tenants?${params.toString()}`;
+        
+        // Debug logging
+        console.log('🌐 API Call:', {
+            url,
+            method: 'GET',
+            params: Object.fromEntries(params),
+            headers: headers
+        });
+
+        const response = await fetch(url, {
             method: 'GET',
             headers: headers,
         });
 
         if (!response.ok) {
             const errorText = await response.text();
+            console.error('❌ API Error Response:', { status: response.status, errorText });
             throw new Error(`HTTP error! status: ${response.status}, response: ${errorText}`);
         }
 
         const data = await response.json();
+        console.log('✅ API Success Response:', data);
         return data;
     } catch (error) {
+        console.error('💥 API Fetch Error:', error);
         throw error;
     }
 };

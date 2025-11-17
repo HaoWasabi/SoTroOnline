@@ -55,7 +55,6 @@ export default function LoginForm() {
                         router.push("/");
                     }, 500);
                 } else {
-                    //console.error('Invalid user data received:', response.data);
                     showError('Invalid user data received from server');
                     setIsSubmitting(false);
                 }
@@ -70,7 +69,6 @@ export default function LoginForm() {
                 setIsSubmitting(false);
             }
         } catch (error) {
-            //console.error('💥 Login error:', error);
             showError('Network error occurred');
             setIsSubmitting(false);
         }

@@ -21,16 +21,20 @@ export default function FilterComponent({ menu, onFilterChange, selectedFilter }
 
     const handleFilterClick = (item: { vietnamItem: string; englishItem: string; value?: string }) => {
         if (onFilterChange) {
-            // Pass the display text (not the value) to maintain consistency
-            const displayText = language === 'vi' ? item.vietnamItem : item.englishItem;
+            // Pass the value (not the display text) for backend compatibility
+            const filterValue = item.value || item.englishItem;
             // If the same filter is clicked, clear it; otherwise set the new filter
-            onFilterChange(selectedFilter === displayText ? "" : displayText);
+            onFilterChange(selectedFilter === filterValue ? "" : filterValue);
         }
     };
 
     const getSelectedLabel = () => {
         if (!selectedFilter) return null;
-        // selectedFilter is now the display text, so return it directly
+        // Find the menu item by value and return the appropriate display text
+        const selectedItem = menu.find(item => (item.value || item.englishItem) === selectedFilter);
+        if (selectedItem) {
+            return language === 'vi' ? selectedItem.vietnamItem : selectedItem.englishItem;
+        }
         return selectedFilter;
     };
 
@@ -58,10 +62,11 @@ export default function FilterComponent({ menu, onFilterChange, selectedFilter }
                 </DropdownMenuItem>
                 {menu.map(item => {
                     const displayText = language === 'vi' ? item.vietnamItem : item.englishItem;
+                    const itemValue = item.value || item.englishItem;
                     return (
                         <DropdownMenuItem 
                             key={item.value || item.englishItem} 
-                            className={`font-semibold cursor-pointer ${selectedFilter === displayText ? 'bg-blue-50' : ''}`}
+                            className={`font-semibold cursor-pointer ${selectedFilter === itemValue ? 'bg-blue-50' : ''}`}
                             onClick={() => handleFilterClick(item)}
                         >
                             {displayText}   

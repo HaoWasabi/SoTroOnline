@@ -47,14 +47,20 @@ export default function RoomManagementLayout() {
         }
         
         if (selectedFilter) {
-            // Map filter to status - use the exact values from the menu
-            const filterItem = menu.find(item => 
-                item.vietnamItem === selectedFilter || 
-                item.englishItem === selectedFilter
-            );
+            // Map filter to status - selectedFilter now contains the value field directly
+            const filterItem = menu.find(item => item.value === selectedFilter);
             
             if (filterItem) {
                 params.trangThai = filterItem.value; // Add status filter to search params
+            } else {
+                // Fallback: try to find by display text (for backward compatibility)
+                const fallbackItem = menu.find(item => 
+                    item.vietnamItem === selectedFilter || 
+                    item.englishItem === selectedFilter
+                );
+                if (fallbackItem) {
+                    params.trangThai = fallbackItem.value;
+                }
             }
         }
         

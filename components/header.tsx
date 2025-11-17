@@ -51,7 +51,6 @@ export function Header() {
         
         // First ensure store is hydrated
         if (!isHydrated) {
-            console.log('🚰 Header: Hydrating store...');
             hydrate();
             return;
         }
@@ -117,7 +116,7 @@ export function Header() {
                     </div>
                 </div>
             )}
-            <header className="lg:pl-64 bg-white border-b border-gray-200 py-4">
+            <header className="lg:pl-64 bg-white py-4">
                 <div className="px-4 lg:px-6 flex items-center justify-between">
                     <Menu 
                         className='lg:hidden font-semibold' 

@@ -16,14 +16,6 @@ export default function AuthCallback() {
       try {
         const accessToken = searchParams.get("accessToken");
         const refreshToken = searchParams.get("refreshToken");
-        const email = searchParams.get("email");
-        const name = searchParams.get("name");
-
-        console.log("🔐 Google OAuth callback received:");
-        console.log("  - Access Token:", accessToken ? accessToken.substring(0, 20) + "..." : "NOT FOUND");
-        console.log("  - Refresh Token:", refreshToken ? refreshToken.substring(0, 20) + "..." : "NOT FOUND");
-        console.log("  - Email:", email);
-        console.log("  - Name:", name);
 
         if (!accessToken) {
           throw new Error("No access token received from Google OAuth");
@@ -34,7 +26,6 @@ export default function AuthCallback() {
         if (refreshToken) {
           localStorage.setItem('refreshToken', refreshToken);
         }
-        console.log("✅ Tokens stored in localStorage");
 
         // Fetch complete user data from backend using the access token
         const response = await fetch("http://localhost:8080/api/auth/user-info", {
@@ -45,19 +36,16 @@ export default function AuthCallback() {
 
         if (response.ok) {
           const data = await response.json();
-          console.log("✅ User data fetched:", data.data);
           
           // Store user data in localStorage and Zustand
           localStorage.setItem('user', JSON.stringify(data.data));
           setTaiKhoan(data.data);
           
-          console.log("✅ Google login complete - redirecting to home");
           router.push("/");
         } else {
           throw new Error(`Failed to fetch user data: ${response.status}`);
         }
       } catch (err) {
-        console.error("💥 Google OAuth error:", err);
         setError(err instanceof Error ? err.message : "Authentication failed");
         // Redirect to login page after error
         setTimeout(() => router.push("/login-page"), 3000);

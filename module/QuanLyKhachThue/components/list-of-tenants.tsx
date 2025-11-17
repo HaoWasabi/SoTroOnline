@@ -31,7 +31,7 @@ export default function ListOfTenants({ searchTerm, statusFilter, refreshTrigger
         hasPrevious: false
     });
 
-    const loadTenants = async (page: number = 0, search?: string, isRefresh: boolean = false) => {
+    const loadTenants = async (page: number = 0, search?: string, status?: string, isRefresh: boolean = false) => {
         try {
             if (isRefresh) {
                 setRefreshing(true);
@@ -39,10 +39,20 @@ export default function ListOfTenants({ searchTerm, statusFilter, refreshTrigger
                 setLoading(true);
             }
             setError(null);
-            const response: TenantResponse = await fetchTenants(page, search);
+            
+            // Debug logging
+            console.log('🔍 Loading tenants with params:', { page, search, status, isRefresh });
+            
+            const response: TenantResponse = await fetchTenants(page, search, status);
+            
+            console.log('📡 API Response:', response);
             
             if (response.success) {
+                console.log('✅ Tenants loaded:', response.data.content.length, 'items');
+                console.log('📋 Tenants data:', response.data.content.map(t => ({ id: t.maKhach, name: t.hoTen, status: t.trangThai })));
+                
                 setAllTenants(response.data.content);
+                setFilteredTenants(response.data.content); // Since API handles filtering, display all returned data
                 setPagination({
                     currentPage: response.data.currentPage,
                     totalPages: response.data.totalPages,
@@ -52,64 +62,53 @@ export default function ListOfTenants({ searchTerm, statusFilter, refreshTrigger
                     hasPrevious: response.data.hasPrevious
                 });
             } else {
+                console.log('❌ API Error:', response.message);
                 setError(response.message);
             }
         } catch (err) {
+            console.error('💥 Load tenants error:', err);
             setError(language === 'vi' ? 'Không thể tải danh sách khách thuê' : 'Failed to load tenants');
-            console.error('Error loading tenants:', err);
         } finally {
             setLoading(false);
             setRefreshing(false);
         }
     };
 
-    // Filter tenants based on status
-    const filterTenants = (tenants: Tenant[], statusFilter: string) => {
-        if (!statusFilter) return tenants;
+    // Single effect to handle all data loading scenarios
+    useEffect(() => {
+        console.log('🔄 useEffect triggered:', { isAuthenticated, refreshTrigger, searchTerm, statusFilter });
         
-        return tenants.filter(tenant => {
-            if (statusFilter === "unknown") {
-                // Check for tenants with unknown status (not 'hoatDong' or 'daXoa')
-                return tenant.trangThai !== 'hoatDong' && tenant.trangThai !== 'daXoa';
-            }
-            return tenant.trangThai === statusFilter;
-        });
-    };
-
-    // Update filtered tenants when allTenants or statusFilter changes
-    useEffect(() => {
-        const filtered = filterTenants(allTenants, statusFilter);
-        setFilteredTenants(filtered);
-    }, [allTenants, statusFilter]);
-
-    useEffect(() => {
-        // Only load tenants if authenticated
-        if (isAuthenticated) {
-            loadTenants(0, '', false);
+        if (!isAuthenticated) {
+            console.log('❌ Not authenticated, skipping load');
+            return;
         }
-    }, [isAuthenticated]);
 
-    // Effect to handle search term changes
-    useEffect(() => {
-        if (isAuthenticated) {
+        // Handle refresh trigger (when new tenant is created)
+        if (refreshTrigger > 0) {
+            console.log('🔄 Refresh trigger activated');
+            loadTenants(0, searchTerm, statusFilter, true);
+            return;
+        }
+
+        // Handle search with debounce - only if searchTerm has actual content
+        if (searchTerm && searchTerm.trim().length > 0) {
+            console.log('🔍 Search debounce activated for:', searchTerm);
             const timeoutId = setTimeout(() => {
-                loadTenants(0, searchTerm, false);
-            }, 500); // Debounce search for 500ms
-
-            return () => clearTimeout(timeoutId);
+                loadTenants(0, searchTerm, statusFilter, false);
+            }, 500);
+            return () => {
+                console.log('🧹 Clearing search timeout');
+                clearTimeout(timeoutId);
+            };
         }
-    }, [searchTerm, isAuthenticated]);
 
-    // Effect to handle refresh trigger (when new tenant is created)
-    useEffect(() => {
-        if (isAuthenticated && refreshTrigger > 0) {
-            // Reset to first page and maintain current search when refreshing
-            loadTenants(0, searchTerm, true); // Pass true to indicate this is a refresh
-        }
-    }, [refreshTrigger, isAuthenticated, searchTerm]);
+        // Initial load and status filter changes (when no active search)
+        console.log('📋 Standard load triggered');
+        loadTenants(0, searchTerm || '', statusFilter || '', false);
+    }, [isAuthenticated, refreshTrigger, searchTerm, statusFilter]);
 
     const handlePageChange = (newPage: number) => {
-        loadTenants(newPage, searchTerm, false);
+        loadTenants(newPage, searchTerm, statusFilter, false);
     };
 
     if (loading) {
@@ -129,7 +128,7 @@ export default function ListOfTenants({ searchTerm, statusFilter, refreshTrigger
                 <div className="text-center">
                     <p className="text-red-600 mb-2">{error}</p>
                     <button 
-                        onClick={() => loadTenants(0, searchTerm, false)} 
+                        onClick={() => loadTenants(0, searchTerm, statusFilter, false)} 
                         className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                     >
                         {language === 'vi' ? 'Thử lại' : 'Try Again'}
@@ -181,8 +180,7 @@ export default function ListOfTenants({ searchTerm, statusFilter, refreshTrigger
                             <span className="ml-1">
                                 {language === 'vi' ? 'với trạng thái' : 'with status'} "
                                 {statusFilter === 'hoatDong' ? (language === 'vi' ? 'Đang hoạt động' : 'Active') :
-                                 statusFilter === 'daXoa' ? (language === 'vi' ? 'Đã xóa' : 'Deleted') :
-                                 statusFilter === 'unknown' ? (language === 'vi' ? 'Không xác định' : 'Unknown') : statusFilter}"
+                                 statusFilter === 'daXoa' ? (language === 'vi' ? 'Đã xóa' : 'Deleted') : statusFilter}"
                             </span>
                         )}
                     </span>
@@ -202,8 +200,8 @@ export default function ListOfTenants({ searchTerm, statusFilter, refreshTrigger
                     <TenantComponent 
                         key={tenant.maKhach} 
                         tenant={tenant}
-                        onUpdate={() => loadTenants(pagination.currentPage, searchTerm, false)}
-                        onDelete={() => loadTenants(pagination.currentPage, searchTerm, false)}
+                        onUpdate={() => loadTenants(pagination.currentPage, searchTerm, statusFilter, false)}
+                        onDelete={() => loadTenants(pagination.currentPage, searchTerm, statusFilter, false)}
                     />
                 ))}
             </div>

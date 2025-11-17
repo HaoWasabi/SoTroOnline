@@ -73,11 +73,8 @@ export function TenantForm({ onSuccess }: TenantFormProps) {
                 }
                 const birthDate = new Date(value);
                 const today = new Date();
-                const age = today.getFullYear() - birthDate.getFullYear();
-                if (age < 18) {
-                    return language === 'vi' ? 'Tuổi phải từ 18 trở lên' : 'Must be at least 18 years old';
-                }
-                if (age > 100) {
+
+                if (birthDate >= today) {
                     return language === 'vi' ? 'Ngày sinh không hợp lệ' : 'Invalid date of birth';
                 }
                 break;

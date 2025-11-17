@@ -72,7 +72,7 @@ export default function ProfileInformationForm({profile}: {profile: TaiKhoan}) {
         }
 
         if(!validateDateOfBirth(new Date(ngaySinh))) {
-            showError(language === 'vi' ? 'Bạn phải từ 18 tuổi trở lên' : 'You must be at least 18 years old');
+            showError(language === 'vi' ? 'Ngày sinh không hợp lệ' : 'Invalid date of birth');
             setIsSubmitting(false);
             return;
         }
@@ -156,7 +156,7 @@ export default function ProfileInformationForm({profile}: {profile: TaiKhoan}) {
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                         if (e.target.value !== (profile.email || '')) { setIsChanged(true) } else { setIsChanged(false) }
                                     }}
-                                    required
+                                    disabled
                                 />
                             </div>
                         </div>

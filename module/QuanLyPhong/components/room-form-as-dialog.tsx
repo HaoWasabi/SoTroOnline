@@ -28,12 +28,12 @@ const rooms = [
     {
         label_vietnam_name: "Phòng trống",
         label_english_name: "Available",
-        value: "available",
+        value: "Phòng trống",
     },
     {
         label_vietnam_name: "Phòng có nội thất",
         label_english_name: "Furnished Room",
-        value: "furnished",
+        value: "Phòng có nội thất",
     },
 ]
 
@@ -69,6 +69,7 @@ export function RoomFormAsDialog({ children, room, onUpdate }: RoomFormAsDialogP
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [open, setOpen] = useState(false);
     const [roomStatus, setRoomStatus] = useState(room?.status || room?.roomStatus || "phongTrong");
+    const [roomType, setRoomType] = useState(room?.typeOfRoom || "Phòng trống");
     const [validationErrors, setValidationErrors] = useState<RoomValidationErrors>({});
     const taikhoan = useTaiKhoanStore();
 
@@ -99,7 +100,7 @@ export function RoomFormAsDialog({ children, room, onUpdate }: RoomFormAsDialogP
             
             const roomData = {
                 tenPhong: (formData.get('room_name') as string).trim(),
-                loaiPhong: formData.get('room_type') as string || 'available',
+                loaiPhong: roomType,
                 diaChi: (formData.get('address') as string).trim(),
                 chieuDai: parseFloat(formData.get('length') as string),
                 chieuRong: parseFloat(formData.get('width') as string),
@@ -238,7 +239,7 @@ export function RoomFormAsDialog({ children, room, onUpdate }: RoomFormAsDialogP
                                 <Label htmlFor="room_type">
                                     {language === 'vi' ? 'Loại phòng' : 'Room type'}
                                 </Label>
-                                <Select name="room_type" defaultValue={room?.typeOfRoom || 'available'}>
+                                <Select name="room_type" value={roomType} onValueChange={setRoomType}>
                                     <SelectTrigger className={validationErrors.room_type ? 'border-red-500' : ''}>
                                         <SelectValue placeholder={language === 'vi' ? 'Chọn loại phòng' : 'Select room type'} />
                                     </SelectTrigger>
@@ -338,10 +339,15 @@ export function RoomFormAsDialog({ children, room, onUpdate }: RoomFormAsDialogP
                         </div>
 
                         <div className="flex flex-col gap-4">
-                            <Label htmlFor="room_items">
+                            <Label htmlFor="room_items" className={roomType === 'Phòng trống' ? 'text-gray-400' : ''}>
                                 { language === 'vi' ? 'Nội thất phòng' : 'Room items'}
+                                {roomType === 'Phòng trống' && (
+                                    <span className="ml-2 text-sm text-gray-500">
+                                        ({language === 'vi' ? 'Không có nội thất cho phòng trống' : 'No furniture for empty rooms'})
+                                    </span>
+                                )}
                             </Label>
-                            <ListOfRoomItems room={room} />
+                            <ListOfRoomItems room={room} disabled={roomType === 'Phòng trống'} />
                         </div>
                     </CardContent>
                     </div>

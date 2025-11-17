@@ -17,11 +17,6 @@ const menu = [
         value: "hoatDong"
     },
     {
-        vietnamItem: "Không xác định",
-        englishItem: "Unknown",
-        value: "unknown"
-    },
-    {
         vietnamItem: "Đã xóa",
         englishItem: "Deleted",
         value: "daXoa"

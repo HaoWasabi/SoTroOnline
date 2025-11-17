@@ -18,15 +18,12 @@ export default function ProfileIconMenu() {
 
     const handleLogout = useCallback(async () => {
         try {
-            console.log('🚪 Starting logout process...');
             
             // Clear all authentication data
             await logout();
             
             // Clear the Zustand store
             clearTaiKhoan();
-            
-            console.log('✅ Logout completed, redirecting...');
             
             // Redirect to login page
             router.push('/login-page');

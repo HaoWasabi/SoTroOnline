@@ -22,13 +22,6 @@ export const useAuthGuard = (redirectTo: string = '/login-page') => {
         // Check if user is authenticated
         const isAuth = isAuthenticated();
         
-        console.log('🛡️ Auth Guard Check:', {
-            isAuthenticated: isAuth,
-            hasUserInStore: !!taiKhoan,
-            isHydrated,
-            redirectTo
-        });
-        
         if (!isAuth) {
             clearTaiKhoan();
             router.push(redirectTo);
