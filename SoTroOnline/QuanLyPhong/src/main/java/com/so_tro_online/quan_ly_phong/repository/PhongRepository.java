@@ -35,9 +35,9 @@ public interface PhongRepository extends JpaRepository<Phong,Integer> {
             "(:chieuRong IS NULL OR p.chieuRong = :chieuRong) AND " +
             "(:vatDung IS NULL OR LOWER(p.vatDung) LIKE LOWER(CONCAT('%', :vatDung, '%'))) AND " +
             "(:giaThueCoBan IS NULL OR p.giaThueCoBan = :giaThueCoBan) AND " +
-            "p.trangThai != 'daXoa'")
+            "(:trangThai IS NULL OR CAST(p.trangThai AS string) = :trangThai)")
     List<Phong>searchRoom(String tenPhong, String loaiPhong, String diaChi,
-                          BigDecimal chieuDai, BigDecimal chieuRong, String vatDung, BigDecimal giaThueCoBan);
+                          BigDecimal chieuDai, BigDecimal chieuRong, String vatDung, BigDecimal giaThueCoBan, String trangThai);
 
     @Query("SELECT p FROM Phong p WHERE " +
             "(:tenPhong IS NULL OR LOWER(p.tenPhong) LIKE LOWER(CONCAT('%', :tenPhong, '%'))) AND " +
@@ -47,9 +47,9 @@ public interface PhongRepository extends JpaRepository<Phong,Integer> {
             "(:chieuRong IS NULL OR p.chieuRong = :chieuRong) AND " +
             "(:vatDung IS NULL OR LOWER(p.vatDung) LIKE LOWER(CONCAT('%', :vatDung, '%'))) AND " +
             "(:giaThueCoBan IS NULL OR p.giaThueCoBan = :giaThueCoBan) AND " +
-            "p.trangThai != 'daXoa'")
+            "(:trangThai IS NULL OR CAST(p.trangThai AS string) = :trangThai)")
     Page<Phong> searchRoomPaged(String tenPhong, String loaiPhong, String diaChi,
                                 BigDecimal chieuDai, BigDecimal chieuRong, String vatDung, BigDecimal giaThueCoBan,
-                                Pageable pageable);
+                                String trangThai, Pageable pageable);
 
 }

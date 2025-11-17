@@ -24,9 +24,9 @@ public interface IPhongService {
     Integer importExcel(MultipartFile file);
     void exportToExcel(HttpServletResponse response);
     List<RoomResponse>searchRoom(String tenPhong, String loaiPhong, String diaChi, BigDecimal chieuDai,
-                                 BigDecimal chieuRong,String vatDung, BigDecimal giaThueCoBan
+                                 BigDecimal chieuRong,String vatDung, BigDecimal giaThueCoBan, String trangThai
     );
     PagedResponse<RoomResponse> searchRoomPaged(String tenPhong, String loaiPhong, String diaChi, 
                                                BigDecimal chieuDai, BigDecimal chieuRong, String vatDung, 
-                                               BigDecimal giaThueCoBan, int page, int size);
+                                               BigDecimal giaThueCoBan, String trangThai, int page, int size);
 }

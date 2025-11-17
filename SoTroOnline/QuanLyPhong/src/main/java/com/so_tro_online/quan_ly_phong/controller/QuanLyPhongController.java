@@ -73,6 +73,7 @@ public class QuanLyPhongController {
         phongService.deleteRoom(id);
         return ResponseEntity.ok(new ApiResponseV2("success", null));
     }
+    
     @PostMapping("/import")
     public ResponseEntity<ApiResponseV2> importExcel(@RequestParam("file") MultipartFile file) {
         int count = phongService.importExcel(file);
@@ -88,8 +89,9 @@ public class QuanLyPhongController {
             @RequestParam(required = false) String diaChi,@RequestParam(required = false) BigDecimal chieuDai,
             @RequestParam(required = false) BigDecimal chieuRong,
             @RequestParam(required = false) String vatDung,
-            @RequestParam(required = false) BigDecimal giaThueCoBan){
-        List<RoomResponse>list=phongService.searchRoom(tenPhong, loaiPhong, diaChi, chieuDai, chieuRong, vatDung, giaThueCoBan);
+            @RequestParam(required = false) BigDecimal giaThueCoBan,
+            @RequestParam(required = false) String trangThai){
+        List<RoomResponse>list=phongService.searchRoom(tenPhong, loaiPhong, diaChi, chieuDai, chieuRong, vatDung, giaThueCoBan, trangThai);
         return ResponseEntity.ok(new ApiResponseV2("success",list));
     }
     
@@ -102,10 +104,11 @@ public class QuanLyPhongController {
             @RequestParam(required = false) BigDecimal chieuRong,
             @RequestParam(required = false) String vatDung,
             @RequestParam(required = false) BigDecimal giaThueCoBan,
+            @RequestParam(required = false) String trangThai,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "6") int size) {
         PagedResponse<RoomResponse> pagedResponse = phongService.searchRoomPaged(
-                tenPhong, loaiPhong, diaChi, chieuDai, chieuRong, vatDung, giaThueCoBan, page, size);
+                tenPhong, loaiPhong, diaChi, chieuDai, chieuRong, vatDung, giaThueCoBan, trangThai, page, size);
         return ResponseEntity.ok(new ApiResponseV2("success", pagedResponse));
     }
 }

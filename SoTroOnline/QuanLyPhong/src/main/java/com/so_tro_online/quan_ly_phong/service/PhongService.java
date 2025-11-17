@@ -21,7 +21,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -137,10 +136,9 @@ public class PhongService implements IPhongService{
 
     @Override
     public void deleteRoom(Integer id) {
-        Phong phong= phongRepository.findByMaPhongAndTrangThaiNot(id,TrangThai.daXoa)
-                .orElseThrow(()->new ReseourceNotFoundException("không tìm thấy phòng với id: "+id));
-        phong.setTrangThai(TrangThai.daXoa);
-        phongRepository.save(phong);
+        Phong phong = phongRepository.findById(id)
+                .orElseThrow(() -> new ReseourceNotFoundException("không tìm thấy phòng với id: " + id));
+        phongRepository.delete(phong); // Permanently delete the record
     }
 
     @Override
@@ -217,18 +215,18 @@ public class PhongService implements IPhongService{
     }
 
     @Override
-    public List<RoomResponse> searchRoom(String tenPhong, String loaiPhong, String diaChi, BigDecimal chieuDai, BigDecimal chieuRong, String vatDung, BigDecimal giaThueCoBan) {
-        return phongRepository.searchRoom(tenPhong,loaiPhong,diaChi,chieuDai,chieuRong,vatDung,giaThueCoBan)
+    public List<RoomResponse> searchRoom(String tenPhong, String loaiPhong, String diaChi, BigDecimal chieuDai, BigDecimal chieuRong, String vatDung, BigDecimal giaThueCoBan, String trangThai) {
+        return phongRepository.searchRoom(tenPhong,loaiPhong,diaChi,chieuDai,chieuRong,vatDung,giaThueCoBan,trangThai)
                 .stream().map(this::mapToRoomResponse).toList();
     }
 
     @Override
     public PagedResponse<RoomResponse> searchRoomPaged(String tenPhong, String loaiPhong, String diaChi, 
                                                       BigDecimal chieuDai, BigDecimal chieuRong, String vatDung, 
-                                                      BigDecimal giaThueCoBan, int page, int size) {
+                                                      BigDecimal giaThueCoBan, String trangThai, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Phong> phongPage = phongRepository.searchRoomPaged(tenPhong, loaiPhong, diaChi, 
-                                                               chieuDai, chieuRong, vatDung, giaThueCoBan, pageable);
+                                                               chieuDai, chieuRong, vatDung, giaThueCoBan, trangThai, pageable);
         List<RoomResponse> roomResponses = phongPage.getContent().stream()
                 .map(this::mapToRoomResponse)
                 .toList();
