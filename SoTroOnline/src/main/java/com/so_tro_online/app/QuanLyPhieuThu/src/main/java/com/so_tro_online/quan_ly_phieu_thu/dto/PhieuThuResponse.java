@@ -21,7 +21,15 @@ public class PhieuThuResponse {
     private TrangThai trangThai;
     private LocalDate ngayThu;
 
+private BigDecimal conNo;
 
+    public BigDecimal getConNo() {
+        return conNo;
+    }
+
+    public void setConNo(BigDecimal conNo) {
+        this.conNo = conNo;
+    }
 
     public Integer getMaPhieuThu() {
         return maPhieuThu;

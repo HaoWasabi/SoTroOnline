@@ -19,8 +19,8 @@ public class JobScheduler {
         this.taoHoaDonJob = taoHoaDonJob;
     }
 
-//    @Scheduled(cron = "0 0 2 1 * *") // 2h sáng ngày 1 mỗi tháng
-@Scheduled(initialDelay = 20 * 1000, fixedDelay = Long.MAX_VALUE)
+    @Scheduled(cron = "0 0 2 1 * *") // 2h sáng ngày 1 mỗi tháng
+//@Scheduled(initialDelay = 20 * 1000, fixedDelay = Long.MAX_VALUE)
     public void runJob() throws Exception {
 
         System.out.println("Starting job...");

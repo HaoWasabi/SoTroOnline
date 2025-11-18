@@ -12,4 +12,9 @@ public class GlobalExceptionHandle {
     public ResponseEntity<ApiResponse> handleReviewNotFoundException(RuntimeException ex, WebRequest request) {
         return ResponseEntity.status(500).body(new ApiResponse(ex.getMessage(), null));
     }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse> handleRException(Exception ex, WebRequest request) {
+        return ResponseEntity.status(500).body(new ApiResponse(ex.getMessage(), null));
+    }
+
 }

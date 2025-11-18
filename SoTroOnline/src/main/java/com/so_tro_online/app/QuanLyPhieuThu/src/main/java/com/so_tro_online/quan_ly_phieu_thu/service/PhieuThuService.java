@@ -13,14 +13,26 @@ import com.so_tro_online.quan_ly_phieu_thu.dto.PhieuThuResponse;
 import com.so_tro_online.quan_ly_phieu_thu.entity.PhieuThu;
 import com.so_tro_online.quan_ly_phieu_thu.exception.BusinessException;
 import com.so_tro_online.quan_ly_phieu_thu.repository.PhieuThuRepository;
+import com.so_tro_online.quan_ly_phong.dto.PhongReportDTO;
+import com.so_tro_online.quan_ly_phong.entity.Phong;
 import com.so_tro_online.quan_ly_phong.exception.ReseourceNotFoundException;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.export.HtmlExporter;
+import net.sf.jasperreports.engine.export.ooxml.JRDocxExporter;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.math.BigDecimal;
+import java.text.DateFormat;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
 @Service
 public class PhieuThuService implements IPhieuThuService{
@@ -28,6 +40,7 @@ public class PhieuThuService implements IPhieuThuService{
     private final HoaDonRepository hoaDonRepository;
     private final KhachThueRepository khachThueRepository;
     private final HopDongPhongRepository hopDongPhongRepo;
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     public PhieuThuService(PhieuThuRepository phieuThuRepository, HoaDonRepository hoaDonRepository, KhachThueRepository khachThueRepository, HopDongPhongRepository hopDongPhongRepo) {
         this.phieuThuRepository = phieuThuRepository;
         this.hoaDonRepository = hoaDonRepository;
@@ -52,6 +65,7 @@ public class PhieuThuService implements IPhieuThuService{
         response.setGhiChu(phieuThu.getGhiChu());
         response.setCapNhatLanCuoi(phieuThu.getCapNhatLanCuoi());
         response.setTrangThai(phieuThu.getTrangThai());
+        response.setConNo(phieuThu.getConNo());
         return response;
     }
 
@@ -136,12 +150,12 @@ public class PhieuThuService implements IPhieuThuService{
         List<HoaDon> hoaDons = hoaDonRepository
                 .findHoaDonConNo(maHopDongPhong, BigDecimal.ZERO);
 
-        // 👉 Tính tổng nợ hiện tại
+        //  Tính tổng nợ hiện tại
         BigDecimal tongNo = hoaDons.stream()
                 .map(HoaDon::getTienConNo)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // 👉 Nếu khách nộp nhiều hơn tổng nợ
+        //  Nếu khách nộp nhiều hơn tổng nợ
         if (soTienThu.compareTo(tongNo) > 0) {
             BigDecimal tienDu = soTienThu.subtract(tongNo);
             throw new BusinessException(String.format("Khách nộp dư %.0f VNĐ so với tổng nợ %.0f VNĐ",
@@ -187,5 +201,47 @@ public class PhieuThuService implements IPhieuThuService{
         return phieuThus.stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public byte[] exportReport(String format,Integer maPhieu) throws FileNotFoundException, JRException {
+
+        PhieuThu phieuThu=phieuThuRepository.findById(maPhieu)
+                .orElseThrow(()->new ReseourceNotFoundException("không tìm thấy phiếu thu với id:"+maPhieu));
+
+        HashMap<String, Object> phieuThuMap = new HashMap<>();
+        phieuThuMap.put("maPhieuThu", phieuThu.getMaPhieuThu());
+        phieuThuMap.put("maHoaDon", phieuThu.getHoaDon().getMaHoaDon());
+        phieuThuMap.put("tenKhach", phieuThu.getKhachThue().getHoTen());
+        phieuThuMap.put("soTienThu", phieuThu.getSoTienThu());
+        phieuThuMap.put("ngayThu", phieuThu.getNgayThu().format(formatter));
+        phieuThuMap.put("ghiChu", phieuThu.getGhiChu()==null?"không có":phieuThu.getGhiChu());
+        phieuThuMap.put("noiDungThu", phieuThu.getNoiDungThu());
+        phieuThuMap.put("conNo", phieuThu.getConNo());
+        JasperReport jasperReport = JasperCompileManager.compileReport(
+                ResourceUtils.getFile("classpath:reports/phieu_thu.jrxml").getAbsolutePath()
+        );
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, phieuThuMap, new JREmptyDataSource());
+
+        switch (format.toLowerCase()) {
+            case "pdf":
+                return JasperExportManager.exportReportToPdf(jasperPrint);
+            case "html":
+                ByteArrayOutputStream htmlOut = new ByteArrayOutputStream();
+                HtmlExporter htmlExporter = new HtmlExporter();
+                htmlExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+                htmlExporter.setExporterOutput(new SimpleHtmlExporterOutput(htmlOut));
+                htmlExporter.exportReport();
+                return htmlOut.toByteArray();
+            case "docx":
+                ByteArrayOutputStream docOut = new ByteArrayOutputStream();
+                JRDocxExporter docxExporter = new JRDocxExporter();
+                docxExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+                docxExporter.setExporterOutput(new SimpleOutputStreamExporterOutput(docOut));
+                docxExporter.exportReport();
+                return docOut.toByteArray();
+            default:
+                throw new IllegalArgumentException("Định dạng không hợp lệ: " + format);
+        }
     }
 }

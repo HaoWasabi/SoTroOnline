@@ -1,0 +1,81 @@
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="phieuthu" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="72f841b2-2b35-48e4-b508-73d07ddf15c4">
+    <parameter name="maPhieuThu" class="java.lang.Integer"/>
+    <parameter name="maHoaDon" class="java.lang.Integer"/>
+    <parameter name="maKhachThue" class="java.lang.Integer"/>
+    <parameter name="soTienThu" class="java.math.BigDecimal"/>
+    <parameter name="conNo" class="java.math.BigDecimal"/>
+    <parameter name="ghiChu" class="java.lang.String"/>
+    <parameter name="noiDungThu" class="java.lang.String"/>
+    <parameter name="ngayThu" class="java.lang.String"/>
+    <parameter name="tenKhach" class="java.lang.String"/>
+    <query language="sql"><![CDATA[]]></query>
+    <title height="350" splitType="Stretch">
+        <element kind="staticText" uuid="875c6683-0046-4965-8b1e-51a6d45dd516" x="20" y="180" width="80" height="20" fontName="Times New Roman" fontSize="14.0" hTextAlign="Left" vTextAlign="Top">
+            <text><![CDATA[Nội dung thu]]></text>
+        </element>
+        <element kind="textField" uuid="178e39c0-9883-4eb2-8bb6-8a8e3c5e42c7" x="120" y="180" width="422" height="20" fontName="Times New Roman" fontSize="14.0" hTextAlign="Left" vTextAlign="Top">
+            <expression><![CDATA[$P{noiDungThu}]]></expression>
+        </element>
+        <element kind="staticText" uuid="214427d4-d0c0-438b-bb46-4798580be833" x="20" y="120" width="100" height="19" fontName="Times New Roman" fontSize="14.0" hTextAlign="Left" vTextAlign="Top">
+            <text><![CDATA[Tên khách thuê:]]></text>
+        </element>
+        <element kind="textField" uuid="7187a46a-b1c4-4141-911f-b8773218c989" x="120" y="120" width="121" height="18" fontName="Times New Roman" fontSize="14.0" hTextAlign="Left" vTextAlign="Top">
+            <expression><![CDATA[$P{tenKhach}]]></expression>
+        </element>
+        <element kind="staticText" uuid="5e39eeb1-f037-409c-8477-f93634c7896f" x="20" y="210" width="80" height="20" fontName="Times New Roman" fontSize="14.0" hTextAlign="Left" vTextAlign="Top">
+            <text><![CDATA[Số tiền thu:]]></text>
+        </element>
+        <element kind="textField" uuid="2bf28c26-d054-4ab0-8f6c-09c83504565f" x="120" y="210" width="121" height="20" fontName="Times New Roman" fontSize="14.0" bold="true" hTextAlign="Left" vTextAlign="Top">
+            <expression><![CDATA[$P{soTienThu}]]></expression>
+        </element>
+        <element kind="staticText" uuid="f005a4bb-68ec-4bc9-892d-4d27a3048dbc" x="20" y="240" width="80" height="20" fontName="Times New Roman" fontSize="14.0" hTextAlign="Left" vTextAlign="Top">
+            <text><![CDATA[Còn nợ:]]></text>
+        </element>
+        <element kind="textField" uuid="418dd50c-6d33-4db4-a235-8b26528d4f10" x="120" y="240" width="121" height="20" fontName="Times New Roman" fontSize="14.0" bold="true" hTextAlign="Left" vTextAlign="Top">
+            <expression><![CDATA[$P{conNo}]]></expression>
+        </element>
+        <element kind="staticText" uuid="6a5883df-e531-4cd4-b301-08b54bf54815" x="370" y="270" width="60" height="18" fontName="Times New Roman" fontSize="14.0" hTextAlign="Left" vTextAlign="Top">
+            <text><![CDATA[Ngày thu:]]></text>
+        </element>
+        <element kind="textField" uuid="a6ba1bc9-376e-4997-982f-52f2f738eb4b" x="430" y="270" width="121" height="19" fontName="Times New Roman" fontSize="14.0" hTextAlign="Left" vTextAlign="Top">
+            <expression><![CDATA[$P{ngayThu}]]></expression>
+        </element>
+        <element kind="staticText" uuid="b429086b-8b26-4665-8863-e64bf1bfa86d" x="20" y="0" width="189" height="20" fontName="Times New Roman" fontSize="14.0">
+            <text><![CDATA[Khu trọ A VIEW]]></text>
+        </element>
+        <element kind="staticText" uuid="0fc5bec1-717f-4712-84cd-a6f182d06ad1" x="20" y="300" width="100" height="18" fontName="Times New Roman" fontSize="14.0" bold="true" hTextAlign="Left" vTextAlign="Top">
+            <text><![CDATA[Người nộp tiền]]></text>
+        </element>
+        <element kind="staticText" uuid="5841c671-a6a4-49fc-951a-122448241149" x="340" y="300" width="100" height="19" fontName="Times New Roman" fontSize="14.0" bold="true" hTextAlign="Left" vTextAlign="Top">
+            <text><![CDATA[Người thu tiền]]></text>
+        </element>
+        <element kind="staticText" uuid="8717e1b1-fea8-4584-901c-bf9c9af9b2c1" x="20" y="322" width="100" height="18" fontName="Times New Roman" fontSize="14.0" hTextAlign="Left" vTextAlign="Top">
+            <text><![CDATA[Ký, họ tên]]></text>
+        </element>
+        <element kind="staticText" uuid="020c5df0-1be5-42cf-8cac-2cfc609ec28f" x="340" y="322" width="100" height="18" fontName="Times New Roman" fontSize="14.0" hTextAlign="Left" vTextAlign="Top">
+            <text><![CDATA[Ký, họ tên]]></text>
+        </element>
+        <element kind="image" uuid="cc81ca3d-53cb-4403-874d-02006fa3c631" x="20" y="30" width="100" height="80">
+            <expression><![CDATA["D:/images.png"]]></expression>
+            <property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+        </element>
+        <element kind="staticText" uuid="533e2e47-f10e-4abb-a2c3-e4e516547feb" x="180" y="30" width="220" height="69" fontName="Times New Roman" fontSize="24.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+            <text><![CDATA[Phiếu Thu]]></text>
+        </element>
+        <element kind="staticText" uuid="4de78032-b2e0-4280-8fce-5557ea2bd841" x="20" y="150" width="80" height="19" fontName="Times New Roman" fontSize="14.0" hTextAlign="Left" vTextAlign="Top">
+            <text><![CDATA[Địa chỉ:]]></text>
+        </element>
+        <element kind="staticText" uuid="66090f65-80c1-4814-8281-995f3e8e123a" x="119" y="150" width="424" height="19" fontName="Times New Roman" fontSize="14.0">
+            <text><![CDATA[59 Đường số 3, Cư xá Chu Văn An, Quận Bình Thạnh, TP. Hồ Chí Minh]]></text>
+        </element>
+        <element kind="staticText" uuid="0aa0bb5e-9ae9-4c1d-a6b0-7213de49f662" x="450" y="40" width="90" height="19" fontName="Times New Roman" fontSize="14.0">
+            <text><![CDATA[Quyển số: 01]]></text>
+        </element>
+        <element kind="staticText" uuid="8906c499-c9b6-4dcb-bbe6-97fccd0c8e94" x="450" y="61" width="90" height="19" fontName="Times New Roman" fontSize="14.0" bold="true">
+            <text><![CDATA[Số: PT001]]></text>
+            <property name="com.jaspersoft.studio.unit.y" value="px"/>
+        </element>
+        <property name="com.jaspersoft.studio.unit.height" value="px"/>
+    </title>
+</jasperReport>

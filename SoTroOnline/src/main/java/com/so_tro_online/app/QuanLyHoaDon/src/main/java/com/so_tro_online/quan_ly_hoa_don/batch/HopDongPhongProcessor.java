@@ -187,7 +187,7 @@ hoaDon.setThang(thang);
     hoaDon.setTrangThai(com.so_tro_online.quan_ly_hoa_don.entity.TrangThai.CON_NO);
     hoaDon.setChiTietHoaDons(chiTietList);
     hoaDon.setHopDongPhong(item);
-    hoaDon.setNoiDung("Hoa don thang " + thang + "/" + nam);
+    hoaDon.setNoiDung("Hóa đơn tháng " + thang + "/" + nam);
     return hoaDon;
 }
 

@@ -4,6 +4,8 @@ import com.so_tro_online.dto.ApiResponse;
 import com.so_tro_online.quan_ly_phieu_thu.dto.PhieuThuRequest;
 import com.so_tro_online.quan_ly_phieu_thu.dto.ThuNoRequest;
 import com.so_tro_online.quan_ly_phieu_thu.service.IPhieuThuService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,5 +47,22 @@ public class PhieuThuController {
     @PostMapping("/thu-no")
     public ResponseEntity<ApiResponse> thuNo(@RequestBody ThuNoRequest request) {
         return ResponseEntity.status(201).body(new ApiResponse("success", phieuThuService.thuTienTuDong(request.getMaHopDongPhong(),request.getSoTienThu())));
+    }
+    @GetMapping("/xuatPhieu")
+    public ResponseEntity<byte[]> exportPhong(@RequestParam String format,@RequestParam Integer maPhieu) throws Exception {
+        byte[] data = phieuThuService.exportReport(format,maPhieu);
+
+        String contentType = switch (format.toLowerCase()) {
+            case "pdf" -> "application/pdf";
+            case "html" -> "text/html";
+            case "docx" -> "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+            default -> "application/octet-stream";
+        };
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; " +
+                        "filename=phieu_thu_" + maPhieu + "." + format)
+                .contentType(MediaType.parseMediaType(contentType))
+                .body(data);
     }
 }
