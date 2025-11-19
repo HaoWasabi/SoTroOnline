@@ -4,7 +4,7 @@ import com.so_tro_online.quan_ly_hoa_don.entity.HoaDon;
 import com.so_tro_online.quan_ly_hoa_don.entity.TrangThai;
 import com.so_tro_online.quan_ly_hoa_don.repository.HoaDonRepository;
 
-import com.so_tro_online.quan_ly_hop_dong_phong.enity.HopDongPhong;
+import com.so_tro_online.quan_ly_hop_dong_phong.entity.HopDongPhong;
 import com.so_tro_online.quan_ly_hop_dong_phong.repository.HopDongPhongRepository;
 import com.so_tro_online.quan_ly_khach_thue.entity.KhachThue;
 import com.so_tro_online.quan_ly_khach_thue.repository.KhachThueRepository;
@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 @Service

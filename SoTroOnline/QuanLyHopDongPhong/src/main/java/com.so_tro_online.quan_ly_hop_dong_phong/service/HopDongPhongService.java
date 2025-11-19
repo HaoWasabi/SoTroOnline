@@ -4,7 +4,7 @@ import com.deepoove.poi.XWPFTemplate;
 import com.so_tro_online.quan_ly_hop_dong_phong.dto.HopDongPhongRequest;
 import com.so_tro_online.quan_ly_hop_dong_phong.dto.HopDongPhongResponse;
 
-import com.so_tro_online.quan_ly_hop_dong_phong.enity.HopDongPhong;
+import com.so_tro_online.quan_ly_hop_dong_phong.entity.HopDongPhong;
 import com.so_tro_online.quan_ly_hop_dong_phong.exception.HopDongAlreadyExists;
 import com.so_tro_online.quan_ly_hop_dong_phong.repository.HopDongPhongRepository;
 import com.so_tro_online.quan_ly_khach_thue.entity.KhachThue;
@@ -18,12 +18,13 @@ import com.so_tro_online.quan_ly_tai_khoan.entity.TaiKhoan;
 import com.so_tro_online.quan_ly_tai_khoan.repository.TaiKhoanRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,9 +51,15 @@ public class HopDongPhongService implements IHopDongPhongService {
 
     @Override
     public List<HopDongPhongResponse> getAllHopDongPhongActive() {
-        return hopDongPhongRepository.findByTrangThai(com.so_tro_online.quan_ly_hop_dong_phong.enity.TrangThai.hoatDong).stream()
+        return hopDongPhongRepository.findByTrangThai(com.so_tro_online.quan_ly_hop_dong_phong.entity.TrangThai.hoatDong).stream()
                 .map(this::mapToHopDongPhongResponse)
                 .toList();
+    }
+
+    @Override
+    public Page<HopDongPhongResponse> getAllHopDongPhongActivePaged(Pageable pageable) {
+        return hopDongPhongRepository.findByTrangThai(com.so_tro_online.quan_ly_hop_dong_phong.entity.TrangThai.hoatDong, pageable)
+                .map(this::mapToHopDongPhongResponse);
     }
 
     private HopDongPhongResponse mapToHopDongPhongResponse(HopDongPhong hopDongPhong) {
@@ -84,7 +91,7 @@ public class HopDongPhongService implements IHopDongPhongService {
 
     @Override
     public HopDongPhongResponse getHopDongPhongActiveById(Integer id) {
-        return hopDongPhongRepository.findByMaHopDongPhongAndTrangThai(id, com.so_tro_online.quan_ly_hop_dong_phong.enity.TrangThai.hoatDong)
+        return hopDongPhongRepository.findByMaHopDongPhongAndTrangThai(id, com.so_tro_online.quan_ly_hop_dong_phong.entity.TrangThai.hoatDong)
                 .map(this::mapToHopDongPhongResponse)
                 .orElseThrow(() -> new ReseourceNotFoundException("không tìm thấy hợp đồng phòng  với id: " + id));
     }
@@ -104,7 +111,7 @@ public class HopDongPhongService implements IHopDongPhongService {
                 .orElseThrow(() -> new ReseourceNotFoundException(
                         "không tìm thấy khách hàng với id: " + hopDongRequest.getMaKhachThue()
                 ));
-        if(hopDongPhongRepository.existsByPhongAndTrangThai(phong, com.so_tro_online.quan_ly_hop_dong_phong.enity.TrangThai.hoatDong)){
+        if(hopDongPhongRepository.existsByPhongAndTrangThai(phong, com.so_tro_online.quan_ly_hop_dong_phong.entity.TrangThai.hoatDong)){
             throw new HopDongAlreadyExists("phòng này đã được thuê");
         }
         HopDongPhong hopDongPhong=new HopDongPhong();
@@ -126,7 +133,7 @@ public class HopDongPhongService implements IHopDongPhongService {
 
     @Override
     public HopDongPhongResponse updateHopDongPhong(Integer id, HopDongPhongRequest roomRequest) {
-        HopDongPhong hopDongPhong=hopDongPhongRepository.findByMaHopDongPhongAndTrangThai(id, com.so_tro_online.quan_ly_hop_dong_phong.enity.TrangThai.hoatDong)
+        HopDongPhong hopDongPhong=hopDongPhongRepository.findByMaHopDongPhongAndTrangThai(id, com.so_tro_online.quan_ly_hop_dong_phong.entity.TrangThai.hoatDong)
                 .orElseThrow(()->new ReseourceNotFoundException("không tìm thấy hợp đồng phòng với id: "+id));
         hopDongPhong.setTienPhong(roomRequest.getTienPhong());
         hopDongPhong.setTienCoc(roomRequest.getTienCoc());
@@ -137,9 +144,9 @@ public class HopDongPhongService implements IHopDongPhongService {
 
     @Override
     public void deleteHopDongPhong(Integer id) {
-        HopDongPhong hopDongPhong=hopDongPhongRepository.findByMaHopDongPhongAndTrangThai(id, com.so_tro_online.quan_ly_hop_dong_phong.enity.TrangThai.hoatDong)
+        HopDongPhong hopDongPhong=hopDongPhongRepository.findByMaHopDongPhongAndTrangThai(id, com.so_tro_online.quan_ly_hop_dong_phong.entity.TrangThai.hoatDong)
                 .orElseThrow(()->new ReseourceNotFoundException("không tìm thấy hợp đồng phòng với id: "+id));
-        hopDongPhong.setTrangThai(com.so_tro_online.quan_ly_hop_dong_phong.enity.TrangThai.daXoa);
+        hopDongPhong.setTrangThai(com.so_tro_online.quan_ly_hop_dong_phong.entity.TrangThai.daXoa);
         hopDongPhongRepository.save(hopDongPhong);
     }
 

@@ -1,4 +1,4 @@
-package com.so_tro_online.quan_ly_hop_dong_phong.enity;
+package com.so_tro_online.quan_ly_hop_dong_phong.entity;
 
 import com.so_tro_online.quan_ly_khach_thue.entity.KhachThue;
 import com.so_tro_online.quan_ly_phong.entity.Phong;

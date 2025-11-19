@@ -1,8 +1,10 @@
 package com.so_tro_online.quan_ly_hop_dong_phong.repository;
 
-import com.so_tro_online.quan_ly_hop_dong_phong.enity.HopDongPhong;
-import com.so_tro_online.quan_ly_hop_dong_phong.enity.TrangThai;
+import com.so_tro_online.quan_ly_hop_dong_phong.entity.HopDongPhong;
+import com.so_tro_online.quan_ly_hop_dong_phong.entity.TrangThai;
 import com.so_tro_online.quan_ly_phong.entity.Phong;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,6 +15,8 @@ import java.util.Optional;
 public interface HopDongPhongRepository extends JpaRepository<HopDongPhong,Integer> {
 
     List<HopDongPhong>  findByTrangThai(TrangThai trangThai);
+
+    Page<HopDongPhong> findByTrangThai(TrangThai trangThai, Pageable pageable);
 
     List<HopDongPhong> findByKhachThueMaKhach(Integer maKhachThue);
 

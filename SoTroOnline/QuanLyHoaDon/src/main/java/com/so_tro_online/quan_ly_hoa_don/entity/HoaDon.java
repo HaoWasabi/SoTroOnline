@@ -1,13 +1,12 @@
 package com.so_tro_online.quan_ly_hoa_don.entity;
 
 
-import com.so_tro_online.quan_ly_hop_dong_phong.enity.HopDongPhong;
+import com.so_tro_online.quan_ly_hop_dong_phong.entity.HopDongPhong;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity

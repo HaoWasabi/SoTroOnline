@@ -11,7 +11,7 @@ import com.so_tro_online.quan_ly_hop_dong_dich_vu.entity.SuDungDichVu;
 import com.so_tro_online.quan_ly_hop_dong_dich_vu.entity.TrangThai;
 import com.so_tro_online.quan_ly_hop_dong_dich_vu.repository.SuDungDichVuRepository;
 
-import com.so_tro_online.quan_ly_hop_dong_phong.enity.HopDongPhong;
+import com.so_tro_online.quan_ly_hop_dong_phong.entity.HopDongPhong;
 import com.so_tro_online.quan_ly_phong.exception.ReseourceNotFoundException;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;

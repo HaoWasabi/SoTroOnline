@@ -34,7 +34,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
         "com.so_tro_online.quan_ly_khach_thue.entity",
         "com.so_tro_online.quan_ly_dich_vu_phong.entity",
         "com.so_tro_online.quan_ly_phong.entity",
-        "com.so_tro_online.quan_ly_hop_dong_phong.enity",
+        "com.so_tro_online.quan_ly_hop_dong_phong.entity",
         "com.so_tro_online.quan_ly_hop_dong_dich_vu.entity",
         "com.so_tro_online.quan_ly_hoa_don.entity",
         "com.so_tro_online.quan_ly_phieu_thu.entity",

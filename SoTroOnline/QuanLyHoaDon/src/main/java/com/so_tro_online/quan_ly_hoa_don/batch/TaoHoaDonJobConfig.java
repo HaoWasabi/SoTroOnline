@@ -2,7 +2,7 @@ package com.so_tro_online.quan_ly_hoa_don.batch;
 
 import com.so_tro_online.quan_ly_hoa_don.entity.HoaDon;
 
-import com.so_tro_online.quan_ly_hop_dong_phong.enity.HopDongPhong;
+import com.so_tro_online.quan_ly_hop_dong_phong.entity.HopDongPhong;
 
 import org.springframework.batch.core.job.Job;
 import org.springframework.batch.core.job.builder.JobBuilder;
@@ -12,7 +12,6 @@ import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
