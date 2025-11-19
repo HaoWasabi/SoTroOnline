@@ -5,6 +5,7 @@ import com.so_tro_online.quan_ly_phong.entity.Phong;
 import com.so_tro_online.quan_ly_tai_khoan.entity.TaiKhoan;
 import jakarta.persistence.*;
 
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -17,7 +18,7 @@ public class HopDongPhong {
     private Integer maHopDongPhong;
 
     @ManyToOne
-    @JoinColumn(name="ma_quan_ly", nullable = false)
+    @JoinColumn(name = "ma_quan_ly", nullable = false)
     private TaiKhoan taiKhoan;
 
     @ManyToOne
@@ -25,7 +26,7 @@ public class HopDongPhong {
     private KhachThue khachThue;
 
     @ManyToOne
-    @JoinColumn(name="ma_phong")
+    @JoinColumn(name = "ma_phong")
     private Phong phong;
 
     @Column(name = "tien_phong")
@@ -33,6 +34,18 @@ public class HopDongPhong {
 
     @Column(name = "tien_coc")
     private BigDecimal tienCoc;
+
+    @Column(name = "dv_rac")
+    private Boolean dvRac;
+
+    @Column(name = "dv_wifi")
+    private Boolean dvWifi;
+
+    @Column(name = "dv_cap")
+    private Boolean dvCap;
+
+    @Column(name = "dv_khac")
+    private Boolean dvKhac;
 
     @Column(name = "ngay_bat_dau")
     private LocalDate ngayBatDau;
@@ -71,6 +84,14 @@ public class HopDongPhong {
         return tienCoc;
     }
 
+    public Boolean getDvRac() { return dvRac;}
+
+    public Boolean getDvWifi() { return dvWifi;}
+
+    public Boolean getDvCap() { return dvCap;}
+
+    public Boolean getDvKhac() { return dvKhac;}
+
     public TrangThai getTrangThai() {
         return trangThai;
     }
@@ -99,6 +120,13 @@ public class HopDongPhong {
         this.tienCoc = tienCoc;
     }
 
+    public void setDvRac(Boolean dvRac) { this.dvRac = dvRac; }
+
+    public void setDvWifi(Boolean dvWifi) { this.dvWifi = dvWifi; }
+
+    public void setDvCap(Boolean dvCap) { this.dvCap = dvCap; }
+
+    public void setDvKhac(Boolean dvKhac) { this.dvKhac = dvKhac; }
 
     public LocalDate getNgayBatDau() {
         return ngayBatDau;

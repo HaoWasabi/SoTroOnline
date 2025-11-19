@@ -1,8 +1,9 @@
 package com.so_tro_online.quan_ly_hop_dong_phong.service;
 
-import com.so_tro_online.dung_chung.dto.PagedResponse;
+import com.deepoove.poi.XWPFTemplate;
 import com.so_tro_online.quan_ly_hop_dong_phong.dto.HopDongPhongRequest;
 import com.so_tro_online.quan_ly_hop_dong_phong.dto.HopDongPhongResponse;
+
 import com.so_tro_online.quan_ly_hop_dong_phong.enity.HopDongPhong;
 import com.so_tro_online.quan_ly_hop_dong_phong.exception.HopDongAlreadyExists;
 import com.so_tro_online.quan_ly_hop_dong_phong.repository.HopDongPhongRepository;
@@ -15,15 +16,17 @@ import com.so_tro_online.quan_ly_phong.exception.ReseourceNotFoundException;
 import com.so_tro_online.quan_ly_phong.repository.PhongRepository;
 import com.so_tro_online.quan_ly_tai_khoan.entity.TaiKhoan;
 import com.so_tro_online.quan_ly_tai_khoan.repository.TaiKhoanRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.ZoneOffset;
+import java.time.YearMonth;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class HopDongPhongService implements IHopDongPhongService {
@@ -33,7 +36,7 @@ public class HopDongPhongService implements IHopDongPhongService {
         this.taiKhoanRepository = taiKhoanRepository;
         this.hopDongPhongRepository = hopDongPhongRepository;
     }
-
+    private final SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
     private final KhachThueRepository khachThueRepository;
     private final PhongRepository phongRepository;
     private  final TaiKhoanRepository taiKhoanRepository;
@@ -52,16 +55,6 @@ public class HopDongPhongService implements IHopDongPhongService {
                 .toList();
     }
 
-    @Override
-    public PagedResponse<HopDongPhongResponse> getAllHopDongPhongActivePaged(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<HopDongPhong> hopDongPage = hopDongPhongRepository.findByTrangThai(com.so_tro_online.quan_ly_hop_dong_phong.enity.TrangThai.hoatDong, pageable);
-        List<HopDongPhongResponse> hopDongResponses = hopDongPage.getContent().stream()
-                .map(this::mapToHopDongPhongResponse)
-                .toList();
-        return new PagedResponse<>(hopDongResponses, page, size, hopDongPage.getTotalElements());
-    }
-
     private HopDongPhongResponse mapToHopDongPhongResponse(HopDongPhong hopDongPhong) {
         return new HopDongPhongResponse(hopDongPhong.getMaHopDongPhong(),
                 hopDongPhong.getTaiKhoan().getMaTaiKhoan(),
@@ -72,9 +65,13 @@ public class HopDongPhongService implements IHopDongPhongService {
                 hopDongPhong.getPhong().getTenPhong(),
                 hopDongPhong.getTienPhong(),
                 hopDongPhong.getTienCoc(),
-                Date.from(hopDongPhong.getNgayBatDau().atStartOfDay().toInstant(java.time.ZoneOffset.UTC)),
-                Date.from(hopDongPhong.getNgayKetThuc().atStartOfDay().toInstant(java.time.ZoneOffset.UTC)),
-                Date.from(hopDongPhong.getNgayTao().atStartOfDay().toInstant(ZoneOffset.UTC)),
+                hopDongPhong.getDvRac(),
+                hopDongPhong.getDvWifi(),
+                hopDongPhong.getDvCap(),
+                hopDongPhong.getDvKhac(),
+                hopDongPhong.getNgayBatDau(),
+                hopDongPhong.getNgayKetThuc(),
+                hopDongPhong.getNgayTao(),
                 hopDongPhong.getTrangThai());
     }
 
@@ -94,23 +91,34 @@ public class HopDongPhongService implements IHopDongPhongService {
 
     @Override
     public HopDongPhongResponse createHopDongPhong(HopDongPhongRequest hopDongRequest) {
+        System.out.println("maTaiKhoan = " + hopDongRequest.getMaTaiKhoan());
+        System.out.println("phong=" + hopDongRequest.getMaPhong());
+        System.out.println("khachThue=" + hopDongRequest.getMaKhachThue());
+        System.out.println("tienPhong=" + hopDongRequest.getTienPhong());
+        System.out.println("tienCoc=" + hopDongRequest.getTienCoc());
         TaiKhoan taiKhoan=taiKhoanRepository.findByMaTaiKhoanAndTrangThai(hopDongRequest.getMaTaiKhoan(), com.so_tro_online.quan_ly_tai_khoan.entity.TrangThai.hoatDong)
                 .orElseThrow(()->new ReseourceNotFoundException("không tìm thấy người dùng với id: "+hopDongRequest.getMaTaiKhoan()));
         Phong phong=phongRepository.findByMaPhongAndTrangThai(hopDongRequest.getMaPhong(), TrangThai.hoatDong)
                 .orElseThrow(()->new ReseourceNotFoundException("không tìm thấy phòng với id: "+hopDongRequest.getMaPhong()));
-        KhachThue khachThue=khachThueRepository.findById(hopDongRequest.getMaKhachThue())
-                .orElseThrow(()->new ReseourceNotFoundException("không tìm thấy khách hàng với id: "+hopDongRequest.getMaKhachThue()));
-        if(hopDongPhongRepository.existsHopDong(phong.getMaPhong(),khachThue.getMaKhach(), com.so_tro_online.quan_ly_hop_dong_phong.enity.TrangThai.hoatDong)){
-            throw new HopDongAlreadyExists("Hop dong phong da ton tai");
+        KhachThue khachThue = khachThueRepository.findById(hopDongRequest.getMaKhachThue())
+                .orElseThrow(() -> new ReseourceNotFoundException(
+                        "không tìm thấy khách hàng với id: " + hopDongRequest.getMaKhachThue()
+                ));
+        if(hopDongPhongRepository.existsByPhongAndTrangThai(phong, com.so_tro_online.quan_ly_hop_dong_phong.enity.TrangThai.hoatDong)){
+            throw new HopDongAlreadyExists("phòng này đã được thuê");
         }
         HopDongPhong hopDongPhong=new HopDongPhong();
         hopDongPhong.setPhong(phong);
         hopDongPhong.setTaiKhoan(taiKhoan);
         hopDongPhong.setKhachThue(khachThue);
-        hopDongPhong.setTienPhong(hopDongRequest.getTienPhong());
+        hopDongPhong.setTienPhong(phong.getGiaThueCoBan());
         hopDongPhong.setTienCoc(hopDongRequest.getTienCoc());
-        hopDongPhong.setNgayBatDau(LocalDate.ofInstant(hopDongRequest.getNgayBatDau().toInstant(), java.time.ZoneId.systemDefault()));
-        hopDongPhong.setNgayKetThuc(LocalDate.ofInstant(hopDongRequest.getNgayKetThuc().toInstant(), java.time.ZoneId.systemDefault()));
+        hopDongPhong.setDvRac(hopDongRequest.getDvRac());
+        hopDongPhong.setDvWifi(hopDongRequest.getDvWifi());
+        hopDongPhong.setDvCap(hopDongRequest.getDvCap());
+        hopDongPhong.setDvKhac(hopDongRequest.getDvKhac());
+        hopDongPhong.setNgayBatDau(hopDongRequest.getNgayBatDau());
+        hopDongPhong.setNgayKetThuc(hopDongRequest.getNgayKetThuc());
         hopDongPhong.setTrangThai(hopDongRequest.getTrangThai());
         hopDongPhong.setNgayTao(LocalDate.now());
         return mapToHopDongPhongResponse(hopDongPhongRepository.save(hopDongPhong));
@@ -121,8 +129,8 @@ public class HopDongPhongService implements IHopDongPhongService {
         HopDongPhong hopDongPhong=hopDongPhongRepository.findByMaHopDongPhongAndTrangThai(id, com.so_tro_online.quan_ly_hop_dong_phong.enity.TrangThai.hoatDong)
                 .orElseThrow(()->new ReseourceNotFoundException("không tìm thấy hợp đồng phòng với id: "+id));
         hopDongPhong.setTienPhong(roomRequest.getTienPhong());
-        hopDongPhong.setNgayKetThuc(LocalDate.ofInstant(roomRequest.getNgayKetThuc().toInstant(), java.time.ZoneId.systemDefault()));
-        hopDongPhong.setNgayBatDau(LocalDate.ofInstant(roomRequest.getNgayBatDau().toInstant(), java.time.ZoneId.systemDefault()));
+        hopDongPhong.setTienCoc(roomRequest.getTienCoc());
+        hopDongPhong.setNgayKetThuc(roomRequest.getNgayKetThuc());
         hopDongPhong.setTrangThai(roomRequest.getTrangThai());
         return mapToHopDongPhongResponse(hopDongPhongRepository.save(hopDongPhong));
     }
@@ -141,4 +149,70 @@ public class HopDongPhongService implements IHopDongPhongService {
                 .map(this::mapToHopDongPhongResponse)
                 .toList();
     }
+
+    @Override
+    public void printHopDongPhong(HttpServletResponse response, Integer id) {
+        // 1. Lấy dữ liệu hợp đồng
+        HopDongPhong hopDong = hopDongPhongRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy hợp đồng"));
+
+        // 2. Chuẩn bị dữ liệu cho template
+        Map<String, Object> data = new HashMap<>();
+        data.put("maHopDongPhong", hopDong.getMaHopDongPhong());
+        data.put("tenQuanLy", hopDong.getTaiKhoan().getHoTen());
+        data.put("soDienThoaiQuanLy",hopDong.getTaiKhoan().getDienThoai());
+        data.put("diaChiQuanLy",hopDong.getTaiKhoan().getThuongTru());
+        data.put("tenKhach", hopDong.getKhachThue().getHoTen());
+        data.put("cccdKhach",hopDong.getTaiKhoan().getMaCanCuoc());
+        data.put("diaChiKhach",hopDong.getKhachThue().getThuongTru());
+        data.put("tenPhong", hopDong.getPhong().getTenPhong());
+        data.put("diaChiPhong", hopDong.getPhong().getDiaChi());
+        data.put("dienTichPhong", hopDong.getPhong().getChieuDai().multiply(hopDong.getPhong().getChieuRong()));
+        data.put("tienPhong", hopDong.getTienPhong());
+        data.put("tienCoc", hopDong.getTienCoc());
+        data.put("dvRac", hopDong.getDvRac());
+        data.put("dvWifi", hopDong.getDvWifi());
+        data.put("dvCap", hopDong.getDvCap());
+        data.put("dvKhac", hopDong.getDvKhac());
+        data.put("ngayBatDau", df.format(hopDong.getNgayBatDau()));
+        data.put("ngayKetThuc", df.format(hopDong.getNgayKetThuc()));
+        data.put("ngayTao", df.format(hopDong.getNgayTao()));
+
+        // 3. Nạp template Word
+        try (var templateStream = getClass().getResourceAsStream("/templates/template-hopdong.docx");
+             var out = response.getOutputStream()) {
+
+            if (templateStream == null) {
+                throw new IllegalStateException("Không tìm thấy file template-hopdong.docx trong resources/templates/");
+            }
+
+            XWPFTemplate template = XWPFTemplate.compile(templateStream).render(data);
+
+            // 4. Thiết lập header tải file
+            response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+            response.setHeader("Content-Disposition", "attachment; filename=hop-dong-" + id + ".docx");
+
+            // 5. Ghi trực tiếp ra response
+            template.write(out);
+            out.flush();
+            template.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<HopDongPhongResponse> findAllNotHasHoaDonByThangAndNam(int thang, int nam) {
+        YearMonth currentMonth=YearMonth.of(nam,thang);
+        List<HopDongPhong>temp=hopDongPhongRepository.findAllNotHasHoaDonByThangAndNam(thang,nam);
+        return hopDongPhongRepository.findAllNotHasHoaDonByThangAndNam(thang,nam).stream()
+                .filter(hd->{
+                    YearMonth ngayBatDau=YearMonth.of(hd.getNgayBatDau().getYear(),hd.getNgayBatDau().getMonth());
+                    YearMonth ngayKetThuc=YearMonth.of(hd.getNgayKetThuc().getYear(),hd.getNgayKetThuc().getMonth());
+                    return (ngayBatDau.isBefore(currentMonth) || ngayBatDau.equals(currentMonth)) &&
+                            (ngayKetThuc.isAfter(currentMonth) || ngayKetThuc.equals(currentMonth));
+                }).map(this::mapToHopDongPhongResponse )
+                .toList();
+    }
+
 }

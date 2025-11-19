@@ -32,6 +32,10 @@ public class DichVuService implements IDichVuService {
         dichVuReponse.setDonGiaNuoc(dichVu.getDonGiaNuoc());
         dichVuReponse.setDonGiaRac(dichVu.getDonGiaRac());
         dichVuReponse.setMaDichVu(dichVu.getMaDichVu());
+        dichVuReponse.setDonGiaCap(dichVu.getDonGiaCap());
+        dichVuReponse.setDonGiaKhac(dichVu.getDonGiaKhac());
+        dichVuReponse.setDonGiaWifi(dichVu.getDonGiaWifi());
+
         return dichVuReponse;
     }
 
@@ -44,8 +48,13 @@ public class DichVuService implements IDichVuService {
         dichVu.setDonGiaDien(dichVuRequest.getDonGiaDien());
         dichVu.setDonGiaNuoc(dichVuRequest.getDonGiaNuoc());
         dichVu.setDonGiaRac(dichVuRequest.getDonGiaRac());
+        dichVu.setDonGiaCap(dichVuRequest.getDonGiaCap());
+        dichVu.setDonGiaWifi(dichVuRequest.getDonGiaWifi());
+        dichVu.setDonGiaKhac(dichVuRequest.getDonGiaKhac());
         
         dichVuRepository.save(dichVu);
         return convertToResponse(dichVu);
     }
+
+
 }

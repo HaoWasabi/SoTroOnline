@@ -13,8 +13,8 @@
     <artifactId>QuanLyHopDongDichVu</artifactId>
 
     <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.source>23</maven.compiler.source>
+        <maven.compiler.target>23</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -23,6 +23,26 @@
             <groupId>com.j2ee-2526</groupId>
             <artifactId>SoTroOnline-dungchung</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.j2ee-2526</groupId>
+            <artifactId>QuanLyDichVuPhong</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.j2ee-2526</groupId>
+            <artifactId>QuanLyTaiKhoan</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.j2ee-2526</groupId>
+            <artifactId>QuanLyHopDongPhong</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.j2ee-2526</groupId>
+            <artifactId>QuanLyKhachThue</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
     

@@ -313,6 +313,9 @@ CREATE TABLE `dich_vu` (
   `don_gia_dien` decimal(38,2) DEFAULT NULL,
   `don_gia_nuoc` decimal(38,2) DEFAULT NULL,
   `don_gia_rac` decimal(38,2) DEFAULT NULL,
+  `don_gia_wifi` decimal(38,2) DEFAULT NULL,
+  `don_gia_cap` decimal(38,2) DEFAULT NULL,
+  `don_gia_khac` decimal(38,2) DEFAULT NULL,
   PRIMARY KEY (`ma_dich_vu`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -379,6 +382,10 @@ CREATE TABLE `hop_dong_phong` (
   `ma_khach_dai_dien` int DEFAULT NULL,
   `ma_phong` int DEFAULT NULL,
   `ma_quan_ly` int DEFAULT NULL,
+  `dv_rac` boolean,
+  `dv_wifi` boolean,
+  `dv_cap` boolean,
+  `dv_khac` boolean,
   PRIMARY KEY (`ma_hop_dong_phong`),
   KEY `FKkcvauytrtxfac8wffh16y5lty` (`ma_khach_dai_dien`),
   KEY `FKnfh0ojnja5vnxjpy65rx1nt2g` (`ma_phong`),

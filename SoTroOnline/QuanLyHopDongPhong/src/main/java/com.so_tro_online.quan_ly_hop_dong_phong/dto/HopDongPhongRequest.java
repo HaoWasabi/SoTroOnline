@@ -1,19 +1,26 @@
 package com.so_tro_online.quan_ly_hop_dong_phong.dto;
 
+
+
 import com.so_tro_online.quan_ly_hop_dong_phong.enity.TrangThai;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
-public class HopDongPhongRequest {
+
+public class    HopDongPhongRequest {
     private Integer maTaiKhoan;
     private Integer maKhachThue;
     private Integer maPhong;
     private BigDecimal tienPhong;
     private BigDecimal tienCoc;
-    private Date ngayBatDau;
-    private Date ngayKetThuc;
-    private Date ngayTao;
+    private Boolean dvRac;
+    private Boolean dvWifi;
+    private Boolean dvCap;
+    private Boolean dvKhac;
+    private LocalDate ngayBatDau;
+    private LocalDate ngayKetThuc;
+    private LocalDate ngayTao;
     private TrangThai trangThai;
 
 
@@ -23,6 +30,10 @@ public class HopDongPhongRequest {
 
     public void setMaTaiKhoan(Integer maTaiKhoan) {
         this.maTaiKhoan = maTaiKhoan;
+    }
+
+    public Integer getMaQuanLy() {
+        return this.maTaiKhoan;
     }
 
     public Integer getMaKhachThue() {
@@ -45,23 +56,17 @@ public class HopDongPhongRequest {
         this.tienCoc = tienCoc;
     }
 
-    public void setNgayBatDau(Date ngayBatDau) {
-        this.ngayBatDau = ngayBatDau;
-    }
+    public void setDvRac(Boolean dvRac) { this.dvRac = dvRac; }
 
-    public void setNgayKetThuc(Date ngayKetThuc) {
-        this.ngayKetThuc = ngayKetThuc;
-    }
+    public void setDvWifi(Boolean dvWifi) { this.dvWifi = dvWifi; }
 
-    public void setNgayTao(Date ngayTao) {
-        this.ngayTao = ngayTao;
-    }
+    public void setDvCap(Boolean dvCap) { this.dvCap = dvCap; }
+
+    public void setDvKhac(Boolean dvKhac) { this.dvKhac = dvKhac; }
 
     public void setTrangThai(TrangThai trangThai) {
         this.trangThai = trangThai;
     }
-
-
 
     public Integer getMaPhong() {
         return maPhong;
@@ -75,16 +80,36 @@ public class HopDongPhongRequest {
         return tienCoc;
     }
 
-    public Date getNgayBatDau() {
+    public Boolean getDvRac() { return dvRac; }
+
+    public Boolean getDvWifi() { return dvWifi; }
+
+    public Boolean getDvCap() { return dvCap; }
+
+    public Boolean getDvKhac() { return dvKhac; }
+
+    public LocalDate getNgayBatDau() {
         return ngayBatDau;
     }
 
-    public Date getNgayKetThuc() {
+    public void setNgayBatDau(LocalDate ngayBatDau) {
+        this.ngayBatDau = ngayBatDau;
+    }
+
+    public LocalDate getNgayKetThuc() {
         return ngayKetThuc;
     }
 
-    public Date getNgayTao() {
+    public void setNgayKetThuc(LocalDate ngayKetThuc) {
+        this.ngayKetThuc = ngayKetThuc;
+    }
+
+    public LocalDate getNgayTao() {
         return ngayTao;
+    }
+
+    public void setNgayTao(LocalDate ngayTao) {
+        this.ngayTao = ngayTao;
     }
 
     public TrangThai getTrangThai() {
