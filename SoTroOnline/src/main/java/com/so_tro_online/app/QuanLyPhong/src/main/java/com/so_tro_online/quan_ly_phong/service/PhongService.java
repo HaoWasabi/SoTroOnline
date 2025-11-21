@@ -1,14 +1,12 @@
 package com.so_tro_online.quan_ly_phong.service;
 
-import com.so_tro_online.quan_ly_phong.dto.PhongReportDTO;
-import com.so_tro_online.quan_ly_phong.dto.ReminderElectricityMessage;
-import com.so_tro_online.quan_ly_phong.dto.RoomRequest;
-import com.so_tro_online.quan_ly_phong.dto.RoomResponse;
+import com.so_tro_online.quan_ly_phong.dto.*;
 
 import com.so_tro_online.quan_ly_phong.entity.Phong;
 import com.so_tro_online.quan_ly_phong.entity.TrangThai;
 import com.so_tro_online.quan_ly_phong.exception.ReseourceNotFoundException;
 import com.so_tro_online.quan_ly_phong.exception.RoomAldreadyExist;
+import com.so_tro_online.quan_ly_phong.notification.NotificationPhongEvent;
 import com.so_tro_online.quan_ly_phong.repository.PhongRepository;
 import com.so_tro_online.quan_ly_tai_khoan.entity.TaiKhoan;
 import com.so_tro_online.quan_ly_tai_khoan.repository.TaiKhoanRepository;
@@ -28,7 +26,6 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -48,10 +45,12 @@ public class PhongService implements IPhongService{
     private final PhongRepository phongRepository;
     private final EmailReminderRoomService emailService;
 
-    public PhongService(TaiKhoanRepository taiKhoanRepository, PhongRepository phongRepository, EmailReminderRoomService emailService) {
+    private final NotificationPhongEvent notificationPhongEvent;
+    public PhongService(TaiKhoanRepository taiKhoanRepository, PhongRepository phongRepository, EmailReminderRoomService emailService, NotificationPhongEvent notificationPhongEvent) {
         this.taiKhoanRepository = taiKhoanRepository;
         this.phongRepository = phongRepository;
         this.emailService = emailService;
+        this.notificationPhongEvent = notificationPhongEvent;
     }
 
     @Override
@@ -80,15 +79,16 @@ public class PhongService implements IPhongService{
 
     @Override
     public RoomResponse createRoom(RoomRequest roomRequest) {
-
         TaiKhoan taiKhoan=taiKhoanRepository.findByMaTaiKhoanAndTrangThai(roomRequest.getMaQuanLy(), com.so_tro_online.quan_ly_tai_khoan.entity.TrangThai.hoatDong)
                 .orElseThrow(()->new ReseourceNotFoundException("không tìm thấy người dùng với id: "+roomRequest.getMaQuanLy()));
         if(phongRepository.existsByTenPhongAndTrangThai(roomRequest.getTenPhong(),TrangThai.hoatDong)){
             throw new RoomAldreadyExist("phòng đã tồn tại: "+roomRequest.getTenPhong());
         }
         Phong phong = getPhong(roomRequest, taiKhoan);
-        return mapToRoomResponse(phongRepository.save(phong));
-
+        Phong savedPhong= phongRepository.save(phong);
+        PhongEvent phongEvent= mapToPhongEvent(savedPhong,"CREATE");
+        notificationPhongEvent.sentPhongEvent(phongEvent);
+        return mapToRoomResponse(savedPhong);
     }
 
     private static Phong getPhong(RoomRequest roomRequest, TaiKhoan taiKhoan) {
@@ -123,7 +123,10 @@ public class PhongService implements IPhongService{
         phong.setGiaThueCoBan(roomRequest.getGiaThueCoBan());
         phong.setTrangThai(roomRequest.getTrangThai());
         phong.setTaiKhoan(taiKhoan);
-        return mapToRoomResponse(phongRepository.save(phong));
+        Phong updatedPhong= phongRepository.save(phong);
+        PhongEvent phongEvent= mapToPhongEvent(updatedPhong,"UPDATE");
+        notificationPhongEvent.sentPhongEvent(phongEvent);
+        return mapToRoomResponse(updatedPhong);
     }
 
     @Override
@@ -132,6 +135,8 @@ public class PhongService implements IPhongService{
                 .orElseThrow(()->new ReseourceNotFoundException("không tìm thấy phòng với id: "+id));
         phong.setTrangThai(TrangThai.daXoa);
         phongRepository.save(phong);
+        PhongEvent phongEvent= mapToPhongEvent(phong,"DELETE");
+        notificationPhongEvent.sentPhongEvent(phongEvent);
     }
 
     @Override
@@ -161,6 +166,8 @@ public class PhongService implements IPhongService{
                     phong.setGiaThueCoBan(BigDecimal.valueOf(row.getCell(7).getNumericCellValue()));
                     phong.setTrangThai(TrangThai.valueOf(row.getCell(8).getStringCellValue()));
                     phongRepository.save(phong);
+                    PhongEvent phongEvent= mapToPhongEvent(phong,"CREATE");
+                    notificationPhongEvent.sentPhongEvent(phongEvent);
                     countSaved++;
                 }
                 catch (Exception e){
@@ -267,6 +274,19 @@ public class PhongService implements IPhongService{
                 phong.getTenPhong() ,phong.getLoaiPhong(), phong.getDiaChi(),phong.getChieuDai(),phong.getChieuRong()
                 ,phong.getVatDung(),phong.getGiaThueCoBan(),phong.getTrangThai()
         );
+    }
+    public PhongEvent mapToPhongEvent(Phong phong, String action) {
+        PhongEvent phongEvent = new PhongEvent();
+        phongEvent.setMaPhong(phong.getMaPhong());
+        phongEvent.setTenPhong(phong.getTenPhong());
+        phongEvent.setLoaiPhong(phong.getLoaiPhong());
+        phongEvent.setDiaChi(phong.getDiaChi());
+        phongEvent.setChieuDai(phong.getChieuDai());
+        phongEvent.setChieuRong(phong.getChieuRong());
+        phongEvent.setVatDung(phong.getVatDung());
+        phongEvent.setGiaThueCoBan(phong.getGiaThueCoBan());
+        phongEvent.setAction(action);
+        return phongEvent;
     }
     // 🕘 Chạy lúc 9:00 sáng ngày 28 và 29 hàng tháng
 //    @Scheduled(cron = "0 0 9 28,29 * *", zone = "Asia/Ho_Chi_Minh")
