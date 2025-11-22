@@ -22,7 +22,7 @@ public class JobScheduler {
     }
 
 //    @Scheduled(cron = "0 0 2 1 * *") // 2h sáng ngày 1 mỗi tháng
-@Scheduled(initialDelay = 20 * 1000, fixedDelay = Long.MAX_VALUE)
+// @Scheduled(initialDelay = 20 * 1000, fixedDelay = Long.MAX_VALUE) // Disabled - requires batch tables
     public void runJob() throws Exception {
 
         System.out.println("Starting job...");

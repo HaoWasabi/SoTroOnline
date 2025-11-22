@@ -6,10 +6,11 @@ public class KhachThueRequest {
     private String thuongTru;
     private String ngaySinh;
     private String dienThoai;
+    private Integer maNguoiQuanLy; // Add manager ID field for SAAS support
 
     public KhachThueRequest() {}
 
-    public KhachThueRequest(String maKhachDaiDien, String maCanCuoc, String hoTen,
+    public KhachThueRequest(String maCanCuoc, String hoTen,
                            String thuongTru, String ngaySinh, String dienThoai) {
         this.maCanCuoc = maCanCuoc;
         this.hoTen = hoTen;
@@ -56,5 +57,13 @@ public class KhachThueRequest {
 
     public void setDienThoai(String dienThoai) {
         this.dienThoai = dienThoai;
+    }
+
+    public Integer getMaNguoiQuanLy() {
+        return maNguoiQuanLy;
+    }
+
+    public void setMaNguoiQuanLy(Integer maNguoiQuanLy) {
+        this.maNguoiQuanLy = maNguoiQuanLy;
     }
 }

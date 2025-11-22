@@ -379,7 +379,6 @@ CREATE TABLE `hop_dong_phong` (
   `tien_coc` decimal(38,2) DEFAULT NULL,
   `tien_phong` decimal(38,2) DEFAULT NULL,
   `trang_thai` enum('daXoa','hoatDong') DEFAULT NULL,
-  `ma_khach_dai_dien` int DEFAULT NULL,
   `ma_phong` int DEFAULT NULL,
   `ma_quan_ly` int DEFAULT NULL,
   `dv_rac` boolean,
@@ -387,11 +386,9 @@ CREATE TABLE `hop_dong_phong` (
   `dv_cap` boolean,
   `dv_khac` boolean,
   PRIMARY KEY (`ma_hop_dong_phong`),
-  KEY `FKkcvauytrtxfac8wffh16y5lty` (`ma_khach_dai_dien`),
   KEY `FKnfh0ojnja5vnxjpy65rx1nt2g` (`ma_phong`),
   KEY `FKib94f8a9xbmo4oivxxet9fmjo` (`ma_quan_ly`),
   CONSTRAINT `FKib94f8a9xbmo4oivxxet9fmjo` FOREIGN KEY (`ma_quan_ly`) REFERENCES `tai_khoan` (`ma_tai_khoan`),
-  CONSTRAINT `FKkcvauytrtxfac8wffh16y5lty` FOREIGN KEY (`ma_khach_dai_dien`) REFERENCES `khach_thue` (`ma_khach`),
   CONSTRAINT `FKnfh0ojnja5vnxjpy65rx1nt2g` FOREIGN KEY (`ma_phong`) REFERENCES `phong` (`ma_phong`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -416,13 +413,15 @@ CREATE TABLE `khach_thue` (
   `ma_khach` int NOT NULL AUTO_INCREMENT,
   `ho_ten` varchar(255) DEFAULT NULL,
   `ma_can_cuoc` varchar(255) DEFAULT NULL,
-  `ma_khach_dai_dien` varchar(255) DEFAULT NULL,
   `dien_thoai` varchar(255) DEFAULT NULL,
   `ngay_sinh` datetime(6) DEFAULT NULL,
   `ngay_tao` datetime(6) DEFAULT NULL,
   `thuong_tru` varchar(255) DEFAULT NULL,
   `trang_thai` enum('daXoa','hoatDong') DEFAULT NULL,
-  PRIMARY KEY (`ma_khach`)
+  `ma_nguoi_quan_ly` int DEFAULT NULL,
+  PRIMARY KEY (`ma_khach`),
+  KEY `FK_khach_thue_nguoi_quan_ly` (`ma_nguoi_quan_ly`),
+  CONSTRAINT `FK_khach_thue_nguoi_quan_ly` FOREIGN KEY (`ma_nguoi_quan_ly`) REFERENCES `tai_khoan` (`ma_tai_khoan`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -452,12 +451,9 @@ CREATE TABLE `phieu_thu` (
   `so_tien_thu` decimal(38,2) DEFAULT NULL,
   `trang_thai` enum('daXoa','hoatDong') DEFAULT NULL,
   `ma_hoa_don` int DEFAULT NULL,
-  `ma_khach_dai_dien` int DEFAULT NULL,
   PRIMARY KEY (`ma_phieu_thu`),
   KEY `FKc3fw50fg7r94dhgq7te26t6jl` (`ma_hoa_don`),
-  KEY `FKkqyx48vge1ays3fv5mp7tia6s` (`ma_khach_dai_dien`),
   CONSTRAINT `FKc3fw50fg7r94dhgq7te26t6jl` FOREIGN KEY (`ma_hoa_don`) REFERENCES `hoa_don` (`ma_hoa_don`),
-  CONSTRAINT `FKkqyx48vge1ays3fv5mp7tia6s` FOREIGN KEY (`ma_khach_dai_dien`) REFERENCES `khach_thue` (`ma_khach`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -577,3 +573,35 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2025-10-17 18:24:46
+
+-- Simplified migration script without triggers
+-- Run this in your MySQL database to enable multi-tenant support
+
+-- Step 1: Create the tenant-contract relationship table
+-- Multi-tenant Support Migration Script
+-- Run this script in your MySQL database to enable multi-tenant functionality
+
+USE so_tro_online;
+
+-- Step 1: Create the tenant-contract relationship table
+CREATE TABLE IF NOT EXISTS `hop_dong_khach_thue` (
+  `ma_hop_dong_khach_thue` int NOT NULL AUTO_INCREMENT,
+  `ma_hop_dong_phong` int NOT NULL,
+  `ma_khach` int NOT NULL,
+  `ngay_vao_o` date DEFAULT NULL,
+  `ngay_ra_o` date DEFAULT NULL,
+  `la_khach_dai_dien` boolean DEFAULT FALSE,
+  `trang_thai` enum('hoatDong', 'daRa', 'tamNghi') DEFAULT 'hoatDong',
+  `ngay_tao` timestamp DEFAULT CURRENT_TIMESTAMP,
+  `ngay_cap_nhat` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`ma_hop_dong_khach_thue`),
+  UNIQUE KEY `unique_contract_tenant` (`ma_hop_dong_phong`, `ma_khach`),
+  KEY `FK_hop_dong_khach_thue_hop_dong` (`ma_hop_dong_phong`),
+  KEY `FK_hop_dong_khach_thue_khach` (`ma_khach`),
+  CONSTRAINT `FK_hop_dong_khach_thue_hop_dong` 
+    FOREIGN KEY (`ma_hop_dong_phong`) REFERENCES `hop_dong_phong` (`ma_hop_dong_phong`) 
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK_hop_dong_khach_thue_khach` 
+    FOREIGN KEY (`ma_khach`) REFERENCES `khach_thue` (`ma_khach`) 
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

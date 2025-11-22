@@ -8,30 +8,25 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public interface HopDongPhongRepository extends JpaRepository<HopDongPhong,Integer> {
 
     List<HopDongPhong>  findByTrangThai(TrangThai trangThai);
 
     Page<HopDongPhong> findByTrangThai(TrangThai trangThai, Pageable pageable);
 
-    List<HopDongPhong> findByKhachThueMaKhach(Integer maKhachThue);
-
     Optional<HopDongPhong> findByMaHopDongPhongAndTrangThai(Integer id, TrangThai trangThai);
 
-    @Query("SELECT CASE WHEN COUNT(h) > 0 THEN true ELSE false END " +
-            "FROM HopDongPhong h " +
-            "WHERE h.phong.maPhong = :maPhong " +
-            "AND h.khachThue.maKhach = :maKhach " +
-            "AND h.trangThai = :trangThai")
-    boolean existsHopDong(@Param("maPhong") Integer maPhong,
-                          @Param("maKhach") Integer maKhach,
-                          @Param("trangThai") TrangThai trangThai);
-
     boolean existsByPhongAndTrangThai(Phong phong, TrangThai trangThai);
+
+    // Find active contracts by room ID
+    @Query("SELECT hdp FROM HopDongPhong hdp WHERE hdp.phong.maPhong = :roomId AND hdp.trangThai = :trangThai")
+    List<HopDongPhong> findByPhongMaPhongAndTrangThai(@Param("roomId") Integer roomId, @Param("trangThai") TrangThai trangThai);
 
     @Query(value = """
     SELECT * FROM hop_dong_phong hdp where trang_thai = 'hoatDong' AND NOT EXISTS (

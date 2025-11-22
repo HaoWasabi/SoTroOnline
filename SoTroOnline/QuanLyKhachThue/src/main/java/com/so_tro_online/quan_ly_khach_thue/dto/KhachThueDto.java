@@ -11,7 +11,6 @@ public class KhachThueDto implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private int maKhach;
-    private String maKhachDaiDien;
     private String maCanCuoc;
     private String hoTen;
     private String dienThoai;
@@ -19,13 +18,13 @@ public class KhachThueDto implements Serializable {
     private String ngaySinh;
     private String ngayTao;
     private TrangThai trangThai;
+    private Integer maNguoiQuanLy; // Add manager ID field for SAAS support
 
     public KhachThueDto() {}
 
-    public KhachThueDto(int maKhach, String maKhachDaiDien, String maCanCuoc, String hoTen, String dienThoai,
-                       String thuongTru, String ngaySinh, String ngayTao, TrangThai trangThai) {
+    public KhachThueDto(int maKhach, String maCanCuoc, String hoTen, String dienThoai,
+                       String thuongTru, String ngaySinh, String ngayTao, TrangThai trangThai, Integer maNguoiQuanLy) {
         this.maKhach = maKhach;
-        this.maKhachDaiDien = maKhachDaiDien;
         this.maCanCuoc = maCanCuoc;
         this.hoTen = hoTen;
         this.dienThoai = dienThoai;
@@ -33,6 +32,13 @@ public class KhachThueDto implements Serializable {
         this.ngaySinh = ngaySinh;
         this.ngayTao = ngayTao;
         this.trangThai = trangThai;
+        this.maNguoiQuanLy = maNguoiQuanLy;
+    }
+
+    // Backward compatibility constructor without manager ID
+    public KhachThueDto(int maKhach, String maCanCuoc, String hoTen, String dienThoai,
+                       String thuongTru, String ngaySinh, String ngayTao, TrangThai trangThai) {
+        this(maKhach, maCanCuoc, hoTen, dienThoai, thuongTru, ngaySinh, ngayTao, trangThai, null);
     }
 
     // Getters and Setters
@@ -42,14 +48,6 @@ public class KhachThueDto implements Serializable {
 
     public void setMaKhach(int maKhach) {
         this.maKhach = maKhach;
-    }
-
-    public String getMaKhachDaiDien() {
-        return maKhachDaiDien;
-    }
-
-    public void setMaKhachDaiDien(String maKhachDaiDien) {
-        this.maKhachDaiDien = maKhachDaiDien;
     }
 
     public String getMaCanCuoc() {
@@ -106,5 +104,13 @@ public class KhachThueDto implements Serializable {
 
     public void setDienThoai(String dienThoai) {
         this.dienThoai = dienThoai;
+    }
+
+    public Integer getMaNguoiQuanLy() {
+        return maNguoiQuanLy;
+    }
+
+    public void setMaNguoiQuanLy(Integer maNguoiQuanLy) {
+        this.maNguoiQuanLy = maNguoiQuanLy;
     }
 }

@@ -117,25 +117,26 @@ public class KhachThueController {
     public ResponseEntity<Map<String, Object>> getAllKhachThue(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(required = false) String search,
-            @RequestParam(required = false) String status) {
-        logger.info("Received request for getAllKhachThue with page: {}, search: {}, status: {}", page, search, status);
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) Integer managerId) {
+        logger.info("Received request for getAllKhachThue with page: {}, search: {}, status: {}, managerId: {}", page, search, status, managerId);
         Map<String, Object> response = new HashMap<>();
         try {
             Page<KhachThueDto> khachThuePage;
 
             if (search != null && !search.trim().isEmpty()) {
-                khachThuePage = khachThueService.searchKhachThue(search.trim(), page);
+                khachThuePage = khachThueService.searchKhachThue(search.trim(), page, managerId);
             } else if (status != null && !status.trim().isEmpty()) {
                 // Filter by status if provided
                 if ("active".equalsIgnoreCase(status.trim()) || "hoatDong".equalsIgnoreCase(status.trim())) {
-                    khachThuePage = khachThueService.getActiveKhachThue(page);
+                    khachThuePage = khachThueService.getActiveKhachThue(page, managerId);
                 } else if ("deleted".equalsIgnoreCase(status.trim()) || "daXoa".equalsIgnoreCase(status.trim())) {
-                    khachThuePage = khachThueService.getDeletedKhachThue(page);
+                    khachThuePage = khachThueService.getDeletedKhachThue(page, managerId);
                 } else {
-                    khachThuePage = khachThueService.getAllKhachThue(page);
+                    khachThuePage = khachThueService.getAllKhachThue(page, managerId);
                 }
             } else {
-                khachThuePage = khachThueService.getAllKhachThue(page);
+                khachThuePage = khachThueService.getAllKhachThue(page, managerId);
             }
 
             Map<String, Object> pageInfo = new HashMap<>();

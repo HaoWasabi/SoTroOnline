@@ -62,6 +62,11 @@ public class Phong {
         this.taiKhoan = taiKhoan;
     }
 
+    // Convenience method for SAAS manager access
+    public Integer getMaQuanLy() {
+        return taiKhoan != null ? taiKhoan.getMaTaiKhoan() : null;
+    }
+
     public String getTenPhong() {
         return tenPhong;
     }

@@ -135,7 +135,7 @@ public class PhieuThuService implements IPhieuThuService{
     public List<PhieuThuResponse> thuTienTuDong(Integer maHopDongPhong, BigDecimal soTienThu) {
         HopDongPhong hopDong = hopDongPhongRepo.findById(maHopDongPhong)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy hợp đồng"));
-        KhachThue khach = hopDong.getKhachThue();
+        //KhachThue khach = hopDong.getKhachThue();
 
         // Lấy danh sách hóa đơn còn nợ
         List<HoaDon> hoaDons = hoaDonRepository
@@ -177,7 +177,7 @@ public class PhieuThuService implements IPhieuThuService{
             // Tạo phiếu thu
             PhieuThu phieu = new PhieuThu();
             phieu.setHoaDon(hoaDon);
-            phieu.setKhachThue(khach);
+            //phieu.setKhachThue(khach);
             phieu.setSoTienThu(soTienTru);
             phieu.setConNo(hoaDon.getTienConNo());
             phieu.setNoiDungThu("Thu tiền phòng và dịch vụ của " + hoaDon.getNoiDung());

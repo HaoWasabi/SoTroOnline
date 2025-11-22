@@ -1,13 +1,9 @@
 package com.so_tro_online.quan_ly_hop_dong_phong.dto;
 
-
-
 import com.so_tro_online.quan_ly_hop_dong_phong.entity.TrangThai;
-
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-
 
 public class HopDongPhongResponse {
     private Integer maHopDongPhong;
@@ -107,5 +103,4 @@ public class HopDongPhongResponse {
     public TrangThai getTrangThai() {
         return trangThai;
     }
-
 }

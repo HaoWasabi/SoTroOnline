@@ -103,7 +103,7 @@ public class HoaDonService implements IHoaDonService{
         for (HoaDon hoaDon : hoaDons) {
             Map<String, Object> data = new HashMap<>();
             data.put("maHoaDon", hoaDon.getMaHoaDon());
-            data.put("tenKhach", hoaDon.getHopDongPhong().getKhachThue().getHoTen());
+//data.put("tenKhach", hoaDon.getHopDongPhong().getKhachThue().getHoTen());
             data.put("tenPhong", hoaDon.getHopDongPhong().getPhong().getTenPhong());
             data.put("ngayLap", hoaDon.getNgayTao());
             data.put("tienPhong", hoaDon.getTienPhong());

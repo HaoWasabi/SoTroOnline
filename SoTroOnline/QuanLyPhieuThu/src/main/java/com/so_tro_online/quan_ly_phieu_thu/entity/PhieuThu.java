@@ -21,7 +21,7 @@ public class PhieuThu {
     private HoaDon hoaDon;
 
     @ManyToOne
-    @JoinColumn(name = "ma_khach_dai_dien")
+    @JoinColumn(name = "ma_khach")
     private KhachThue khachThue;
 
     @Column(name = "so_tien_thu")

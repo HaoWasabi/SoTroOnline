@@ -10,9 +10,9 @@
 	</parent>
 
 	<groupId>com.j2ee-2526</groupId>
-	<artifactId>sotroonline</artifactId>
+	<artifactId>soTroOnline</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>sotroonline</name>
+	<name>SoTroOnline</name>
 	<description>Demo project for Spring Boot</description>
 	<packaging>pom</packaging>
 	<url/>
@@ -43,6 +43,7 @@
 		<module>SoTroOnline</module>
 		<module>SoTroOnline/QuanLyHopDongDichVu</module>
 		<module>SoTroOnline/QuanLyKhachThue</module>
+        <module>SoTroOnline/QuanLyHopDongKhachThue</module>
         <module>SoTroOnline/app</module>
 	</modules>
 

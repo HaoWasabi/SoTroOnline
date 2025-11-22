@@ -1,10 +1,8 @@
 package com.so_tro_online.quan_ly_hop_dong_phong.entity;
 
-import com.so_tro_online.quan_ly_khach_thue.entity.KhachThue;
 import com.so_tro_online.quan_ly_phong.entity.Phong;
 import com.so_tro_online.quan_ly_tai_khoan.entity.TaiKhoan;
 import jakarta.persistence.*;
-
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -20,10 +18,6 @@ public class HopDongPhong {
     @ManyToOne
     @JoinColumn(name = "ma_quan_ly", nullable = false)
     private TaiKhoan taiKhoan;
-
-    @ManyToOne
-    @JoinColumn(name = "ma_khach_dai_dien")
-    private KhachThue khachThue;
 
     @ManyToOne
     @JoinColumn(name = "ma_phong")
@@ -68,10 +62,6 @@ public class HopDongPhong {
         return taiKhoan;
     }
 
-    public KhachThue getKhachThue() {
-        return khachThue;
-    }
-
     public Phong getPhong() {
         return phong;
     }
@@ -102,10 +92,6 @@ public class HopDongPhong {
 
     public void setTaiKhoan(TaiKhoan taiKhoan) {
         this.taiKhoan = taiKhoan;
-    }
-
-    public void setKhachThue(KhachThue khachThue) {
-        this.khachThue = khachThue;
     }
 
     public void setPhong(Phong phong) {

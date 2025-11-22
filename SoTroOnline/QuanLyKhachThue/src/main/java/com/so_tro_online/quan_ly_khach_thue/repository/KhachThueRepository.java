@@ -29,13 +29,10 @@ public interface KhachThueRepository extends JpaRepository<KhachThue, Integer> {
     // Find all deleted tenants
     Page<KhachThue> findByTrangThai(TrangThai trangThai, Pageable pageable);
 
-    boolean existsByMaKhachDaiDien(String maKhachDaiDien);
-
     // Enhanced search methods - exclude deleted tenants
     @Query("SELECT k FROM KhachThue k WHERE k.trangThai != :excludedStatus AND (" +
            "LOWER(k.hoTen) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
            "k.maCanCuoc LIKE CONCAT('%', :searchTerm, '%') OR " +
-           "k.maKhachDaiDien LIKE CONCAT('%', :searchTerm, '%') OR " +
            "CONCAT('', k.maKhach) LIKE CONCAT('%', :searchTerm, '%'))")
     Page<KhachThue> findByMultipleFields(String searchTerm, TrangThai excludedStatus, Pageable pageable);
 
@@ -43,7 +40,19 @@ public interface KhachThueRepository extends JpaRepository<KhachThue, Integer> {
     @Query("SELECT k FROM KhachThue k WHERE " +
            "LOWER(k.hoTen) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
            "k.maCanCuoc LIKE CONCAT('%', :searchTerm, '%') OR " +
-           "k.maKhachDaiDien LIKE CONCAT('%', :searchTerm, '%') OR " +
            "CONCAT('', k.maKhach) LIKE CONCAT('%', :searchTerm, '%')")
     Page<KhachThue> findByMultipleFieldsAll(String searchTerm, Pageable pageable);
+
+    // SAAS Support - Manager-based filtering methods
+    Page<KhachThue> findByMaNguoiQuanLy(Integer maNguoiQuanLy, Pageable pageable);
+    
+    Page<KhachThue> findByMaNguoiQuanLyAndTrangThaiNot(Integer maNguoiQuanLy, TrangThai trangThai, Pageable pageable);
+    
+    Page<KhachThue> findByMaNguoiQuanLyAndTrangThai(Integer maNguoiQuanLy, TrangThai trangThai, Pageable pageable);
+    
+    @Query("SELECT k FROM KhachThue k WHERE k.maNguoiQuanLy = :managerId AND k.trangThai != :excludedStatus AND (" +
+           "LOWER(k.hoTen) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
+           "k.maCanCuoc LIKE CONCAT('%', :searchTerm, '%') OR " +
+           "CONCAT('', k.maKhach) LIKE CONCAT('%', :searchTerm, '%'))")
+    Page<KhachThue> findByManagerAndMultipleFields(Integer managerId, String searchTerm, TrangThai excludedStatus, Pageable pageable);
 }

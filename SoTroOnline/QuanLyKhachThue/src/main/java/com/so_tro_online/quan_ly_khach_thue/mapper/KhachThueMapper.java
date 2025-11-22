@@ -20,21 +20,20 @@ public class KhachThueMapper {
     public static KhachThueDto toDto(KhachThue khachThue) {
         return new KhachThueDto(
                 khachThue.getMaKhach(),
-                khachThue.getMaKhachDaiDien(),
                 khachThue.getMaCanCuoc(),
                 khachThue.getHoTen(),
                 khachThue.getDienThoai(),
                 khachThue.getThuongTru(),
                 khachThue.getNgaySinh() != null ? DATE_FORMAT.format(khachThue.getNgaySinh()) : null,
                 khachThue.getNgayTao() != null ? khachThue.getNgayTao().toString() : null,
-                khachThue.getTrangThai()
+                khachThue.getTrangThai(),
+                khachThue.getMaNguoiQuanLy() // Include manager ID
         );
     }
 
     public static KhachThue toEntity(KhachThueDto dto) {
         KhachThue khachThue = new KhachThue();
         khachThue.setMaKhach(dto.getMaKhach());
-        khachThue.setMaKhachDaiDien(dto.getMaKhachDaiDien());
         khachThue.setMaCanCuoc(dto.getMaCanCuoc());
         khachThue.setHoTen(dto.getHoTen());
         khachThue.setThuongTru(dto.getThuongTru());
@@ -52,9 +51,6 @@ public class KhachThueMapper {
     }
 
     public static void updateEntityFromDto(KhachThue khachThue, KhachThueDto dto) {
-        if (dto.getMaKhachDaiDien() != null && !dto.getMaKhachDaiDien().equals(khachThue.getMaKhachDaiDien())) {
-            khachThue.setMaKhachDaiDien(dto.getMaKhachDaiDien());
-        }
         if (dto.getMaCanCuoc() != null && !dto.getMaCanCuoc().equals(khachThue.getMaCanCuoc())) {
             khachThue.setMaCanCuoc(dto.getMaCanCuoc());
         }
@@ -76,9 +72,8 @@ public class KhachThueMapper {
     /**
      * Create entity from KhachThueRequest for tenant creation
      */
-    public static KhachThue createEntityFromRequest(KhachThueRequest request, String maKhachDaiDien) {
+    public static KhachThue createEntityFromRequest(KhachThueRequest request) {
         KhachThue khachThue = new KhachThue();
-        khachThue.setMaKhachDaiDien(maKhachDaiDien);
         khachThue.setMaCanCuoc(request.getMaCanCuoc().trim());
         khachThue.setHoTen(request.getHoTen().trim());
         khachThue.setDienThoai(request.getDienThoai() != null ? request.getDienThoai().trim() : null);
@@ -95,6 +90,11 @@ public class KhachThueMapper {
             } catch (Exception dateException) {
                 throw new InvalidKhachThueDataException("Định dạng ngày sinh không hợp lệ. Vui lòng sử dụng định dạng YYYY-MM-DD");
             }
+        }
+
+        // Set manager ID for SAAS multi-tenant support
+        if (request.getMaNguoiQuanLy() != null) {
+            khachThue.setMaNguoiQuanLy(request.getMaNguoiQuanLy());
         }
 
         return khachThue;

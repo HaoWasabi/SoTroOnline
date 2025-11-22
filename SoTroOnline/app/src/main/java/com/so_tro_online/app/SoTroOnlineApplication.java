@@ -5,8 +5,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
+@EnableScheduling
 @ComponentScan(basePackages = {
         "com.so_tro_online.app",
         "com.so_tro_online.quan_ly_tai_khoan",
@@ -17,6 +19,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
         "com.so_tro_online.quan_ly_hop_dong_dich_vu",
         "com.so_tro_online.quan_ly_hoa_don",
         "com.so_tro_online.quan_ly_phieu_thu",
+        "com.so_tro_online.quan_ly_hop_dong_khach_thue",
         "com.so_tro_online.dung_chung"
 })
 @EnableJpaRepositories(basePackages = {
@@ -28,6 +31,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
         "com.so_tro_online.quan_ly_hop_dong_dich_vu.repository",
         "com.so_tro_online.quan_ly_hoa_don.repository",
         "com.so_tro_online.quan_ly_phieu_thu.repository",
+        "com.so_tro_online.quan_ly_hop_dong_khach_thue.repository",
 })
 @EntityScan(basePackages = {
         "com.so_tro_online.quan_ly_tai_khoan.entity",
@@ -38,6 +42,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
         "com.so_tro_online.quan_ly_hop_dong_dich_vu.entity",
         "com.so_tro_online.quan_ly_hoa_don.entity",
         "com.so_tro_online.quan_ly_phieu_thu.entity",
+        "com.so_tro_online.quan_ly_hop_dong_khach_thue.entity",
 })
 public class SoTroOnlineApplication {
 

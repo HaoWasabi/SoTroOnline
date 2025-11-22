@@ -1,14 +1,11 @@
 package com.so_tro_online.quan_ly_hop_dong_phong.dto;
 
-
-
 import com.so_tro_online.quan_ly_hop_dong_phong.entity.TrangThai;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-
-public class    HopDongPhongRequest {
+public class HopDongPhongRequest {
     private Integer maTaiKhoan;
     private Integer maKhachThue;
     private Integer maPhong;
@@ -23,7 +20,6 @@ public class    HopDongPhongRequest {
     private LocalDate ngayTao;
     private TrangThai trangThai;
 
-
     public Integer getMaTaiKhoan() {
         return maTaiKhoan;
     }
@@ -34,6 +30,10 @@ public class    HopDongPhongRequest {
 
     public Integer getMaQuanLy() {
         return this.maTaiKhoan;
+    }
+
+    public void setMaQuanLy(Integer maQuanLy) {
+        this.maTaiKhoan = maQuanLy; // Map maQuanLy to maTaiKhoan for backward compatibility
     }
 
     public Integer getMaKhachThue() {
@@ -66,6 +66,13 @@ public class    HopDongPhongRequest {
 
     public void setTrangThai(TrangThai trangThai) {
         this.trangThai = trangThai;
+    }
+    
+    public void setTrangThai(String trangThaiString) {
+        // Handle string input from frontend (e.g., "hoatDong")
+        if (trangThaiString != null) {
+            this.trangThai = TrangThai.valueOf(trangThaiString);
+        }
     }
 
     public Integer getMaPhong() {

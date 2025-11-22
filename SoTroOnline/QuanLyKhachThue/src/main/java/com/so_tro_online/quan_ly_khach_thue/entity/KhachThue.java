@@ -13,9 +13,6 @@ public class KhachThue {
     @Column(name = "ma_khach", updatable = false)
     private int maKhach;
 
-    @Column(name = "ma_khach_dai_dien")
-    private String maKhachDaiDien;
-
     @Column(name = "ma_can_cuoc")
     private String maCanCuoc;
 
@@ -38,14 +35,16 @@ public class KhachThue {
     @Column(name = "trang_thai")
     private TrangThai trangThai;
 
+    @Column(name = "ma_nguoi_quan_ly")
+    private Integer maNguoiQuanLy;
+
 
     public KhachThue() {
 
     }
 
-    public KhachThue(int maKhach, String maKhachDaiDien, String maCanCuoc, String hoTen, String dienThoai, String thuongTru, Date ngaySinh, Instant ngayTao) {
+    public KhachThue(int maKhach, String maCanCuoc, String hoTen, String dienThoai, String thuongTru, Date ngaySinh, Instant ngayTao) {
         this.maKhach = maKhach;
-        this.maKhachDaiDien = maKhachDaiDien;
         this.maCanCuoc = maCanCuoc;
         this.hoTen = hoTen;
         this.dienThoai = dienThoai;
@@ -60,14 +59,6 @@ public class KhachThue {
 
     public void setMaKhach(int maKhach) {
         this.maKhach = maKhach;
-    }
-
-    public String getMaKhachDaiDien() {
-        return maKhachDaiDien;
-    }
-
-    public void setMaKhachDaiDien(String maKhachDaiDien) {
-        this.maKhachDaiDien = maKhachDaiDien;
     }
 
     public String getMaCanCuoc() {
@@ -124,5 +115,13 @@ public class KhachThue {
 
     public void setDienThoai(String dienThoai) {
         this.dienThoai = dienThoai;
+    }
+
+    public Integer getMaNguoiQuanLy() {
+        return maNguoiQuanLy;
+    }
+
+    public void setMaNguoiQuanLy(Integer maNguoiQuanLy) {
+        this.maNguoiQuanLy = maNguoiQuanLy;
     }
 }
