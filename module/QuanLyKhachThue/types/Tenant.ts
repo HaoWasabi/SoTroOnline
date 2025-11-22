@@ -1,6 +1,5 @@
 export interface Tenant {
     maKhach: number,
-    maKhachDaiDien: string,
     maCanCuoc: string,
     hoTen: string,
     thuongTru: string,
@@ -8,4 +7,5 @@ export interface Tenant {
     ngayTao: string,
     trangThai: string,
     dienThoai: string,
+    maNguoiQuanLy?: number,
 }

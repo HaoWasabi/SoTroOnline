@@ -12,6 +12,25 @@ const getAuthToken = (): string | null => {
     return null;
 };
 
+// Get current manager ID from user session for SAAS support
+export const getCurrentManagerId = (): number | null => {
+    if (typeof window !== 'undefined') {
+        const userStr = sessionStorage.getItem('user') || localStorage.getItem('user');
+        
+        if (userStr) {
+            try {
+                const user = JSON.parse(userStr);
+                const managerId = user.maTaiKhoan || user.id || null;
+                return managerId;
+            } catch (error) {
+                console.warn('Failed to parse user data:', error);
+                return null;
+            }
+        }
+    }
+    return null;
+};
+
 // Create headers with authentication
 const getAuthHeaders = (): HeadersInit => {
     const token = getAuthToken();
@@ -74,7 +93,7 @@ export const debugAuthStatus = () => {
 };
 
 // Fetch all tenants with pagination
-export const fetchTenants = async (page: number = 0, search?: string, status?: string): Promise<TenantResponse> => {
+export const fetchTenants = async (page: number = 0, search?: string, status?: string, managerId?: number): Promise<TenantResponse> => {
     try {
         const params = new URLSearchParams({
             page: page.toString(),
@@ -86,6 +105,11 @@ export const fetchTenants = async (page: number = 0, search?: string, status?: s
 
         if (status && status.trim()) {
             params.append('status', status.trim());
+        }
+
+        // Add manager ID for SAAS multi-tenant support
+        if (managerId) {
+            params.append('managerId', managerId.toString());
         }
 
         const headers = getAuthHeaders();
@@ -119,6 +143,12 @@ export const fetchTenants = async (page: number = 0, search?: string, status?: s
     }
 };
 
+// Convenience function to fetch tenants for current manager (SAAS support)
+export const fetchTenantsForCurrentManager = async (page: number = 0, search?: string, status?: string): Promise<TenantResponse> => {
+    const managerId = getCurrentManagerId();
+    return fetchTenants(page, search, status, managerId || undefined);
+};
+
 // Fetch single tenant by ID
 export const fetchTenantById = async (id: number): Promise<SingleTenantResponse> => {
     try {
@@ -138,17 +168,28 @@ export const fetchTenantById = async (id: number): Promise<SingleTenantResponse>
     }
 };
 
-// Create new tenant
-export const createTenant = async (tenantData: Omit<Tenant, 'id'>): Promise<SingleTenantResponse> => {
+// Create new tenant with manager ID
+export const createTenant = async (tenantData: Omit<Tenant, 'maKhach'>, managerId?: number): Promise<SingleTenantResponse> => {
     try {
-        console.log('🆕 Creating tenant with data:', tenantData);
+        // Add manager ID to tenant data for SAAS support
+        // Use provided managerId or get from current user session
+        const finalManagerId = managerId || tenantData.maNguoiQuanLy || getCurrentManagerId();
+        
+        const tenantWithManager = {
+            ...tenantData,
+            maNguoiQuanLy: finalManagerId
+        };
+        
+        console.log('🆕 Creating tenant with data:', tenantWithManager);
+        console.log('🔑 Manager ID:', finalManagerId);
+        console.log('🔑 Current user:', getCurrentManagerId());
         
         const headers = getAuthHeaders();
 
         const response = await fetch(`${API_BASE_URL}/api/tenants/create`, {
             method: 'POST',
             headers: headers,
-            body: JSON.stringify(tenantData),
+            body: JSON.stringify(tenantWithManager),
         });
 
         if (!response.ok) {

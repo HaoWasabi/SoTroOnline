@@ -1,5 +1,24 @@
 import { authenticatedFetch, getAuthHeaders, getAuthToken } from '@/utils/auth-api';
 
+// Get current manager ID from user session for SAAS support
+export const getCurrentManagerId = (): number | null => {
+    if (typeof window !== 'undefined') {
+        const userStr = sessionStorage.getItem('user') || localStorage.getItem('user');
+        
+        if (userStr) {
+            try {
+                const user = JSON.parse(userStr);
+                const managerId = user.maTaiKhoan || user.id || null;
+                return managerId;
+            } catch (error) {
+                console.warn('Failed to parse user data:', error);
+                return null;
+            }
+        }
+    }
+    return null;
+};
+
 const API_BASE_URL = 'http://localhost:8080/api/rooms';
 
 // Types for API responses
@@ -48,18 +67,24 @@ export interface RoomRequest {
 
 // Room API functions
 export const roomApi = {
-    // Get all rooms (non-paginated)
-    getAllRooms: async (): Promise<ApiResponse<RoomResponse[]>> => {
-        const response = await authenticatedFetch(`${API_BASE_URL}/all`);
+    // Get all rooms (non-paginated) - SAAS enabled
+    getAllRooms: async (managerId?: number): Promise<ApiResponse<RoomResponse[]>> => {
+        const currentManagerId = managerId ?? getCurrentManagerId();
+        const url = currentManagerId ? `${API_BASE_URL}/all?managerId=${currentManagerId}` : `${API_BASE_URL}/all`;
+        const response = await authenticatedFetch(url);
         if (!response.ok) {
         throw new Error('Failed to fetch rooms');
         }
         return response.json();
     },
 
-    // Get all rooms with pagination
-    getAllRoomsPaged: async (page: number = 0, size: number = 6): Promise<ApiResponse<PagedResponse<RoomResponse>>> => {
-        const url = `${API_BASE_URL}/all/paged?page=${page}&size=${size}`;
+    // Get all rooms with pagination - SAAS enabled
+    getAllRoomsPaged: async (page: number = 0, size: number = 6, managerId?: number): Promise<ApiResponse<PagedResponse<RoomResponse>>> => {
+        const currentManagerId = managerId ?? getCurrentManagerId();
+        let url = `${API_BASE_URL}/all/paged?page=${page}&size=${size}`;
+        if (currentManagerId) {
+            url += `&managerId=${currentManagerId}`;
+        }
         const response = await authenticatedFetch(url);
         if (!response.ok) {
         throw new Error('Failed to fetch paged rooms');
@@ -67,18 +92,24 @@ export const roomApi = {
         return response.json();
     },
 
-    // Get all active rooms (non-paginated)
-    getAllRoomsActive: async (): Promise<ApiResponse<RoomResponse[]>> => {
-        const response = await authenticatedFetch(`${API_BASE_URL}/active`);
+    // Get all active rooms (non-paginated) - SAAS enabled
+    getAllRoomsActive: async (managerId?: number): Promise<ApiResponse<RoomResponse[]>> => {
+        const currentManagerId = managerId ?? getCurrentManagerId();
+        const url = currentManagerId ? `${API_BASE_URL}/active?managerId=${currentManagerId}` : `${API_BASE_URL}/active`;
+        const response = await authenticatedFetch(url);
         if (!response.ok) {
         throw new Error('Failed to fetch active rooms');
         }
         return response.json();
     },
 
-    // Get all active rooms with pagination
-    getAllRoomsActivePaged: async (page: number = 0, size: number = 6): Promise<ApiResponse<PagedResponse<RoomResponse>>> => {
-        const url = `${API_BASE_URL}/active/paged?page=${page}&size=${size}`;
+    // Get all active rooms with pagination - SAAS enabled
+    getAllRoomsActivePaged: async (page: number = 0, size: number = 6, managerId?: number): Promise<ApiResponse<PagedResponse<RoomResponse>>> => {
+        const currentManagerId = managerId ?? getCurrentManagerId();
+        let url = `${API_BASE_URL}/active/paged?page=${page}&size=${size}`;
+        if (currentManagerId) {
+            url += `&managerId=${currentManagerId}`;
+        }
         const response = await authenticatedFetch(url);
         if (!response.ok) {
         throw new Error('Failed to fetch paged active rooms');
@@ -141,23 +172,18 @@ export const roomApi = {
         return response.json();
     },
 
-    // Search rooms (non-paginated)
-    searchRooms: async (searchParams: {
-        tenPhong?: string;
-        loaiPhong?: string;
-        diaChi?: string;
-        chieuDai?: number;
-        chieuRong?: number;
-        vatDung?: string;
-        giaThueCoBan?: number;
-        trangThai?: string;
-    }): Promise<ApiResponse<RoomResponse[]>> => {
+    // Search rooms (non-paginated) - SAAS enabled
+    searchRooms: async (searchTerm: string, managerId?: number): Promise<ApiResponse<RoomResponse[]>> => {
         const params = new URLSearchParams();
-        Object.entries(searchParams).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && value !== '') {
-            params.append(key, value.toString());
+        if (searchTerm && typeof searchTerm === 'string' && searchTerm.trim()) {
+            params.append('search', searchTerm.trim());
         }
-        });
+        
+        // Add manager filter for SAAS support
+        const currentManagerId = managerId ?? getCurrentManagerId();
+        if (currentManagerId) {
+            params.append('managerId', currentManagerId.toString());
+        }
         
         const response = await authenticatedFetch(`${API_BASE_URL}/search?${params.toString()}`);
         if (!response.ok) {
@@ -166,29 +192,29 @@ export const roomApi = {
         return response.json();
     },
 
-    // Search rooms with pagination
+    // Search rooms with pagination - SAAS enabled
     searchRoomsPaged: async (
-        searchParams: {
-            tenPhong?: string;
-            loaiPhong?: string;
-            diaChi?: string;
-            chieuDai?: number;
-            chieuRong?: number;
-            vatDung?: string;
-            giaThueCoBan?: number;
-            trangThai?: string;
-        },
+        searchTerm: string,
         page: number = 0,
-        size: number = 6
+        size: number = 6,
+        managerId?: number,
+        statusFilter?: string
     ): Promise<ApiResponse<PagedResponse<RoomResponse>>> => {
         const params = new URLSearchParams();
-        Object.entries(searchParams).forEach(([key, value]) => {
-            if (value !== undefined && value !== null && value !== '') {
-                params.append(key, value.toString());
-            }
-        });
+        if (searchTerm && typeof searchTerm === 'string' && searchTerm.trim()) {
+            params.append('search', searchTerm.trim());
+        }
+        if (statusFilter && typeof statusFilter === 'string' && statusFilter.trim()) {
+            params.append('status', statusFilter.trim());
+        }
         params.append('page', page.toString());
         params.append('size', size.toString());
+        
+        // Add manager filter for SAAS support
+        const currentManagerId = managerId ?? getCurrentManagerId();
+        if (currentManagerId) {
+            params.append('managerId', currentManagerId.toString());
+        }
         
         const response = await authenticatedFetch(`${API_BASE_URL}/search/paged?${params.toString()}`);
         if (!response.ok) {
@@ -236,4 +262,107 @@ export const roomApi = {
         }
         return response.blob();
     },
+
+    // Tenant Management Functions
+    getRoomTenants: async (roomId: number): Promise<ApiResponse<any[]>> => {
+        const response = await authenticatedFetch(`${API_BASE_URL}/${roomId}/tenants`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch room tenants');
+        }
+        return response.json();
+    },
+
+    addTenantToRoom: async (roomId: number, tenantId: number, managerId: number): Promise<ApiResponse<any>> => {
+        const response = await authenticatedFetch(`${API_BASE_URL}/${roomId}/tenants/${tenantId}?managerId=${managerId}`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+        });
+        if (!response.ok) {
+            let errorMessage = 'Failed to add tenant to room';
+            try {
+                const errorData = await response.json();
+                errorMessage = errorData.data || errorData.message || errorMessage;
+            } catch (e) {
+                // If response is not JSON, use status text
+                errorMessage = `${errorMessage}: ${response.status} ${response.statusText}`;
+            }
+            throw new Error(errorMessage);
+        }
+        return response.json();
+    },
+
+    removeTenantFromRoom: async (roomId: number, tenantId: number): Promise<ApiResponse<string>> => {
+        const response = await authenticatedFetch(`${API_BASE_URL}/${roomId}/tenants/${tenantId}`, {
+            method: 'DELETE',
+            headers: getAuthHeaders(),
+        });
+        if (!response.ok) {
+            let errorMessage = 'Failed to remove tenant from room';
+            try {
+                const errorData = await response.json();
+                errorMessage = errorData.data || errorData.message || errorMessage;
+            } catch (e) {
+                // If response is not JSON, use status text
+                errorMessage = `${errorMessage}: ${response.status} ${response.statusText}`;
+            }
+            throw new Error(errorMessage);
+        }
+        return response.json();
+    },
+};
+
+// Get available rooms for contract creation (rooms with 'phongTrong' status) - SAAS enabled
+export async function getAvailableRoomsForContract(): Promise<{ status: string; message: string; data: RoomResponse[] | null }> {
+    try {
+        // Get current manager ID for SAAS filtering
+        const managerId = getCurrentManagerId();
+        let url = `${API_BASE_URL}/search?trangThai=phongTrong`;
+        
+        if (managerId) {
+            url += `&managerId=${managerId}`;
+        }
+        
+        const response = await authenticatedFetch(url)
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        
+        const result = await response.json()
+        
+        if (result.message === 'success' && result.data) {
+            return {
+                status: 'success',
+                message: 'Available rooms fetched successfully',
+                data: result.data
+            }
+        }
+        
+        return {
+            status: 'error',
+            message: 'Failed to fetch available rooms',
+            data: null
+        }
+    } catch (error) {
+        console.error('Error fetching available rooms:', error)
+        return {
+            status: 'error',
+            message: error instanceof Error ? error.message : 'Failed to fetch available rooms',
+            data: null
+        }
+    }
+}
+
+// Convenience methods for current user's manager scope (SAAS-friendly)
+export const currentManagerRoomApi = {
+    // Get all rooms for current manager
+    getAllRooms: () => roomApi.getAllRooms(),
+    getAllRoomsPaged: (page?: number, size?: number) => roomApi.getAllRoomsPaged(page, size),
+    getAllRoomsActive: () => roomApi.getAllRoomsActive(),
+    getAllRoomsActivePaged: (page?: number, size?: number) => roomApi.getAllRoomsActivePaged(page, size),
+    
+    // Search rooms for current manager
+    searchRooms: (searchTerm: string) => roomApi.searchRooms(searchTerm),
+    
+    searchRoomsPaged: (searchTerm: string, page?: number, size?: number) => roomApi.searchRoomsPaged(searchTerm, page, size),
 };

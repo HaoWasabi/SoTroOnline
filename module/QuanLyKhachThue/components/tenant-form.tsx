@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useLanguageStore } from "@/zustand/language-tranlator"
-import { createTenant } from "../api/api-tenant"
+import { createTenant, getCurrentManagerId } from "../api/api-tenant"
 import { useToast } from "@/hook/useToast"
 import { Toast } from "@/components/toast"
 import { Plus } from "lucide-react"
@@ -96,8 +96,10 @@ export function TenantForm({ onSuccess }: TenantFormProps) {
         e.preventDefault();
         
         const formData = new FormData(e.currentTarget);
+        // Get current manager ID for SAAS multi-tenant support
+        const currentManagerId = getCurrentManagerId();
+        
         const tenantData = {
-            maKhach: 0, // Will be set by backend
             maKhachDaiDien: `KT${Date.now()}`, // Generate a representative code
             maCanCuoc: formData.get('maCanCuoc') as string,
             hoTen: formData.get('hoTen') as string,
@@ -106,12 +108,13 @@ export function TenantForm({ onSuccess }: TenantFormProps) {
             ngayTao: new Date().toISOString(), // Current date
             trangThai: 'hoatDong', // Default status
             dienThoai: formData.get('dienThoai') as string,
+            maNguoiQuanLy: currentManagerId || undefined, // Add manager ID for SAAS support
         };
 
         // Validate all fields
         const errors: Record<string, string> = {};
         Object.keys(tenantData).forEach(key => {
-            if (key !== 'maKhach' && key !== 'maKhachDaiDien' && key !== 'ngayTao' && key !== 'trangThai') {
+            if (key !== 'maKhach' && key !== 'maKhachDaiDien' && key !== 'ngayTao' && key !== 'trangThai' && key !== 'maNguoiQuanLy') {
                 const error = validateField(key, tenantData[key as keyof typeof tenantData] as string);
                 if (error) {
                     errors[key] = error;
@@ -134,6 +137,7 @@ export function TenantForm({ onSuccess }: TenantFormProps) {
 
         try {
             setIsCreating(true);
+            // Manager ID is already included in tenantData
             const result = await createTenant(tenantData);
             
             // Handle different response formats
@@ -193,21 +197,32 @@ export function TenantForm({ onSuccess }: TenantFormProps) {
                     {language === 'vi' ? 'Thêm khách thuê' : 'Add Tenant'}
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:min-w-[800px]">
-                <DialogHeader>
-                    <DialogTitle>
+            <DialogContent className="min-w-4xl rounded-2xl border-0 shadow-2xl bg-gradient-to-br from-white via-slate-50/50 to-emerald-50/30 backdrop-blur-sm max-h-[85vh] overflow-y-auto">
+                <DialogHeader className="space-y-2 pb-4 border-b border-gray-100">
+                    <DialogTitle className="flex items-center gap-3 text-xl font-bold text-gray-900">
+                        <div className="p-2 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl shadow-lg">
+                            <Plus className="h-5 w-5 text-white" />
+                        </div>
                         {language === 'vi' ? 'Thêm khách thuê' : 'Add Tenant'}
                     </DialogTitle>
-                    <DialogDescription>
+                    <DialogDescription className="text-sm text-gray-600 ml-10">
                         {language === 'vi' ? 'Điền thông tin khách thuê của bạn vào biểu mẫu bên dưới.' : 'Fill out the form below with your tenant information.'}
                     </DialogDescription>
                 </DialogHeader>
-                <form onSubmit={handleSubmit}>
-                    <div className="grid gap-4">
-                        <CardContent className="space-y-4">
-                            <div className="space-y-4 sm:space-y-0 sm:grid grid-cols-2 gap-2">
-                                <div className="space-y-2">
-                                    <Label htmlFor="hoTen">
+                <form onSubmit={handleSubmit} className="py-1">
+                    <div className="space-y-4">
+                        {/* Personal Information Section */}
+                        <div className="bg-white rounded-xl p-4 border border-emerald-100 shadow-sm">
+                            <div className="flex items-center gap-2 mb-4">
+                                <div className="w-2 h-2 rounded-full bg-gradient-to-r from-emerald-500 to-green-500"></div>
+                                <h4 className="font-bold text-base text-gray-900">
+                                    {language === 'vi' ? 'Thông tin cá nhân' : 'Personal Information'}
+                                </h4>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-lg p-4 border border-emerald-100 space-y-2">
+                                    <Label htmlFor="hoTen" className="text-sm font-semibold text-emerald-700 flex items-center gap-2">
+                                        <span className="text-xs">👤</span>
                                         {language === 'vi' ? 'Họ và tên' : 'Full Name'} <span className="text-red-500">*</span>
                                     </Label>
                                     <Input
@@ -215,16 +230,21 @@ export function TenantForm({ onSuccess }: TenantFormProps) {
                                         name="hoTen"
                                         placeholder={language === 'vi' ? 'Nguyễn Văn A' : 'John Doe'}
                                         onChange={handleInputChange}
-                                        className={validationErrors.hoTen ? 'border-red-500 focus:ring-red-500' : ''}
+                                        className={`rounded-lg border-2 font-medium transition-all duration-200 text-sm ${
+                                            validationErrors.hoTen 
+                                                ? 'border-red-300 focus:border-red-500 bg-red-50' 
+                                                : 'border-emerald-200 focus:border-emerald-400 bg-emerald-50/30'
+                                        }`}
                                         required
                                     />
                                     {validationErrors.hoTen && (
-                                        <p className="text-sm text-red-500 mt-1">{validationErrors.hoTen}</p>
+                                        <p className="text-xs text-red-500 bg-red-50 p-2 rounded-lg">{validationErrors.hoTen}</p>
                                     )}
                                 </div>
 
-                                <div className="space-y-2">
-                                    <Label htmlFor="maCanCuoc">
+                                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-100 space-y-2">
+                                    <Label htmlFor="maCanCuoc" className="text-sm font-semibold text-blue-700 flex items-center gap-2">
+                                        <span className="text-xs">🆔</span>
                                         {language === 'vi' ? 'Căn cước công dân' : 'ID Card'} <span className="text-red-500">*</span>
                                     </Label>
                                     <Input
@@ -233,18 +253,32 @@ export function TenantForm({ onSuccess }: TenantFormProps) {
                                         type="text"
                                         placeholder={language === 'vi' ? '001234567890' : '001234567890'}
                                         onChange={handleInputChange}
-                                        className={validationErrors.maCanCuoc ? 'border-red-500 focus:ring-red-500' : ''}
+                                        className={`rounded-lg border-2 font-medium transition-all duration-200 text-sm ${
+                                            validationErrors.maCanCuoc 
+                                                ? 'border-red-300 focus:border-red-500 bg-red-50' 
+                                                : 'border-blue-200 focus:border-blue-400 bg-blue-50/30'
+                                        }`}
                                         required
                                     />
                                     {validationErrors.maCanCuoc && (
-                                        <p className="text-sm text-red-500 mt-1">{validationErrors.maCanCuoc}</p>
+                                        <p className="text-xs text-red-500 bg-red-50 p-2 rounded-lg">{validationErrors.maCanCuoc}</p>
                                     )}
                                 </div>
                             </div>
+                        </div>
 
-                            <div className="space-y-4 sm:space-y-0 sm:grid grid-cols-2 gap-2">
-                                <div className="space-y-2">
-                                    <Label htmlFor="dienThoai">
+                        {/* Contact Information Section */}
+                        <div className="bg-white rounded-2xl p-6 border border-purple-100 shadow-sm">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="w-3 h-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-500"></div>
+                                <h4 className="font-bold text-lg text-gray-900">
+                                    {language === 'vi' ? 'Thông tin liên hệ' : 'Contact Information'}
+                                </h4>
+                            </div>
+                            <div className="grid grid-cols-2 gap-6">
+                                <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-5 border border-purple-100 space-y-3">
+                                    <Label htmlFor="dienThoai" className="text-base font-semibold text-purple-700 flex items-center gap-2">
+                                        <span className="text-sm">📱</span>
                                         {language === 'vi' ? 'Số điện thoại' : 'Phone Number'} <span className="text-red-500">*</span>
                                     </Label>
                                     <Input
@@ -253,16 +287,21 @@ export function TenantForm({ onSuccess }: TenantFormProps) {
                                         type="tel"
                                         placeholder={language === 'vi' ? '0123456789' : '+1 (555) 123-4567'}
                                         onChange={handleInputChange}
-                                        className={validationErrors.dienThoai ? 'border-red-500 focus:ring-red-500' : ''}
+                                        className={`rounded-xl border-2 font-semibold transition-all duration-200 ${
+                                            validationErrors.dienThoai 
+                                                ? 'border-red-300 focus:border-red-500 bg-red-50' 
+                                                : 'border-purple-200 focus:border-purple-400 bg-purple-50/30'
+                                        }`}
                                         required
                                     />
                                     {validationErrors.dienThoai && (
-                                        <p className="text-sm text-red-500 mt-1">{validationErrors.dienThoai}</p>
+                                        <p className="text-sm text-red-500 bg-red-50 p-3 rounded-xl">{validationErrors.dienThoai}</p>
                                     )}
                                 </div>
 
-                                <div className="space-y-2">
-                                    <Label htmlFor="thuongTru">
+                                <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-5 border border-amber-100 space-y-3">
+                                    <Label htmlFor="thuongTru" className="text-base font-semibold text-amber-700 flex items-center gap-2">
+                                        <span className="text-sm">🏠</span>
                                         {language === 'vi' ? 'Địa chỉ thường trú' : 'Permanent Address'} <span className="text-red-500">*</span>
                                     </Label>
                                     <Input
@@ -271,42 +310,66 @@ export function TenantForm({ onSuccess }: TenantFormProps) {
                                         type="text"
                                         placeholder={language === 'vi' ? '123 An Dương Vương, Hà Nội' : '123 Main Street, City'}
                                         onChange={handleInputChange}
-                                        className={validationErrors.thuongTru ? 'border-red-500 focus:ring-red-500' : ''}
+                                        className={`rounded-xl border-2 font-semibold transition-all duration-200 ${
+                                            validationErrors.thuongTru 
+                                                ? 'border-red-300 focus:border-red-500 bg-red-50' 
+                                                : 'border-amber-200 focus:border-amber-400 bg-amber-50/30'
+                                        }`}
                                         required
                                     />
                                     {validationErrors.thuongTru && (
-                                        <p className="text-sm text-red-500 mt-1">{validationErrors.thuongTru}</p>
+                                        <p className="text-sm text-red-500 bg-red-50 p-3 rounded-xl">{validationErrors.thuongTru}</p>
                                     )}
                                 </div>
                             </div>
+                        </div>
 
-                            <div className="space-y-4 sm:space-y-0 sm:grid grid-cols-1 gap-2">
-                                <div className="space-y-2">
-                                    <Label htmlFor="ngaySinh">
-                                        {language === 'vi' ? 'Ngày sinh' : 'Date of Birth'} <span className="text-red-500">*</span>
-                                    </Label>
-                                    <Input
-                                        id="ngaySinh"
-                                        name="ngaySinh"
-                                        type="date"
-                                        onChange={handleInputChange}
-                                        className={validationErrors.ngaySinh ? 'border-red-500 focus:ring-red-500' : ''}
-                                        required
-                                    />
-                                    {validationErrors.ngaySinh && (
-                                        <p className="text-sm text-red-500 mt-1">{validationErrors.ngaySinh}</p>
-                                    )}
-                                </div>
+                        {/* Birth Date Section */}
+                        <div className="bg-white rounded-2xl p-6 border border-indigo-100 shadow-sm">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="w-3 h-3 rounded-full bg-gradient-to-r from-indigo-500 to-blue-500"></div>
+                                <h4 className="font-bold text-lg text-gray-900">
+                                    {language === 'vi' ? 'Thông tin sinh nhật' : 'Birth Information'}
+                                </h4>
                             </div>
-                        </CardContent>
+                            <div className="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-xl p-5 border border-indigo-100 space-y-3">
+                                <Label htmlFor="ngaySinh" className="text-base font-semibold text-indigo-700 flex items-center gap-2">
+                                    <span className="text-sm">🎂</span>
+                                    {language === 'vi' ? 'Ngày sinh' : 'Date of Birth'} <span className="text-red-500">*</span>
+                                </Label>
+                                <Input
+                                    id="ngaySinh"
+                                    name="ngaySinh"
+                                    type="date"
+                                    onChange={handleInputChange}
+                                    className={`rounded-xl border-2 font-semibold transition-all duration-200 ${
+                                        validationErrors.ngaySinh 
+                                            ? 'border-red-300 focus:border-red-500 bg-red-50' 
+                                            : 'border-indigo-200 focus:border-indigo-400 bg-indigo-50/30'
+                                    }`}
+                                    required
+                                />
+                                {validationErrors.ngaySinh && (
+                                    <p className="text-sm text-red-500 bg-red-50 p-3 rounded-xl">{validationErrors.ngaySinh}</p>
+                                )}
+                            </div>
+                        </div>
                     </div>
-                    <DialogFooter className="mt-4">
+                    <DialogFooter className="gap-4 pt-6 border-t border-gray-100">
                         <DialogClose asChild>
-                            <Button variant="outline" type="button">
+                            <Button 
+                                variant="outline" 
+                                type="button"
+                                className="rounded-xl px-6 py-2 border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 font-semibold transition-all duration-200"
+                            >
                                 {language === 'vi' ? 'Hủy' : 'Cancel'}
                             </Button>
                         </DialogClose>
-                        <Button type="submit" disabled={isCreating}>
+                        <Button 
+                            type="submit" 
+                            disabled={isCreating}
+                            className="rounded-xl px-8 py-2 bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white font-semibold shadow-lg shadow-emerald-200 transition-all duration-200"
+                        >
                             {isCreating 
                                 ? (language === 'vi' ? 'Đang tạo...' : 'Creating...') 
                                 : (language === 'vi' ? 'Tạo khách thuê' : 'Create Tenant')

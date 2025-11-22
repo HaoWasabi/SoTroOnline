@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import { fetchTenants, TenantResponse } from "../api/api-tenant";
+import { fetchTenantsForCurrentManager, TenantResponse } from "../api/api-tenant";
 import { Tenant } from "../types/Tenant";
 import { useLanguageStore } from "@/zustand/language-tranlator";
 import TenantComponent from "./tenant-component";
@@ -43,7 +43,7 @@ export default function ListOfTenants({ searchTerm, statusFilter, refreshTrigger
             // Debug logging
             console.log('🔍 Loading tenants with params:', { page, search, status, isRefresh });
             
-            const response: TenantResponse = await fetchTenants(page, search, status);
+            const response: TenantResponse = await fetchTenantsForCurrentManager(page, search, status);
             
             console.log('📡 API Response:', response);
             

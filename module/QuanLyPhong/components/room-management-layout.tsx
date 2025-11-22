@@ -1,13 +1,14 @@
 "use client"
 
 import { useLanguageStore } from "@/zustand/language-tranlator";
+import { useTaiKhoanStore } from "@/zustand/taikhoan-store";
 import { Search } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import GridOfRoomCard from "./grid-of-room-card";
 import FilterComponent from "@/components/filter-component";
 import { RoomFormAsDialog } from "./room-form-as-dialog";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 const menu = [
     {
@@ -29,46 +30,16 @@ const menu = [
 
 export default function RoomManagementLayout() {
     const { language } = useLanguageStore();
+    const { taiKhoan } = useTaiKhoanStore();
     const [searchTerm, setSearchTerm] = useState("");
-    const [selectedFilter, setSelectedFilter] = useState("");
-    const [searchParams, setSearchParams] = useState<{
-        tenPhong?: string;
-        loaiPhong?: string;
-        diaChi?: string;
-    }>({});
+    const [statusFilter, setStatusFilter] = useState<string>("");
 
-    // Update search params when search term or filter changes
-    useEffect(() => {
-        const params: any = {};
-        
-        if (searchTerm.trim()) {
-            // Search in room name or address
-            params.tenPhong = searchTerm.trim();
-        }
-        
-        if (selectedFilter) {
-            // Map filter to status - selectedFilter now contains the value field directly
-            const filterItem = menu.find(item => item.value === selectedFilter);
-            
-            if (filterItem) {
-                params.trangThai = filterItem.value; // Add status filter to search params
-            } else {
-                // Fallback: try to find by display text (for backward compatibility)
-                const fallbackItem = menu.find(item => 
-                    item.vietnamItem === selectedFilter || 
-                    item.englishItem === selectedFilter
-                );
-                if (fallbackItem) {
-                    params.trangThai = fallbackItem.value;
-                }
-            }
-        }
-        
-        setSearchParams(params);
-    }, [searchTerm, selectedFilter]);
-
-    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(e.target.value);
+    };
+
+    const handleStatusFilter = (status: string) => {
+        setStatusFilter(status);
     };
 
     return (
@@ -80,6 +51,11 @@ export default function RoomManagementLayout() {
                     </h1>
                     <p className="text-gray-600">
                         {language === 'vi' ? 'Quản lý thông tin phòng' : 'Manage all your rooms and their availability'}
+                        {taiKhoan && (
+                            <span className="text-sm text-blue-600 ml-2">
+                                ({language === 'vi' ? 'Quản lý bởi' : 'Managed by'}: {taiKhoan.hoTen})
+                            </span>
+                        )}
                     </p>
                 </div>
                 <RoomFormAsDialog />
@@ -91,23 +67,24 @@ export default function RoomManagementLayout() {
                         <div className="relative flex-1">
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                             <Input
-                                placeholder={language === 'vi' ? 'Tìm kiếm phòng...' : 'Search rooms...'}
+                                placeholder={language === 'vi' ? 'Tìm theo mã phòng, tên phòng hoặc địa chỉ...' : 'Search by room ID, name or address...'}
                                 className="pl-10"
                                 value={searchTerm}
-                                onChange={handleSearch}
+                                onChange={handleSearchChange}
                             />
                         </div>
                         <FilterComponent 
                             menu={menu}
-                            onFilterChange={setSelectedFilter}
-                            selectedFilter={selectedFilter}
+                            onFilterChange={handleStatusFilter}
+                            selectedFilter={statusFilter}
                         />
                     </div>
                 </CardContent>
             </Card>
             
             <GridOfRoomCard 
-                searchParams={searchParams}
+                searchTerm={searchTerm}
+                statusFilter={statusFilter}
             />
         </main>
     )

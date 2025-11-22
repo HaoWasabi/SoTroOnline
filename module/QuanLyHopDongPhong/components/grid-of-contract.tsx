@@ -5,6 +5,8 @@ import type { Contract } from "../types/contract";
 import { useEffect, useState, useCallback } from "react";
 import { getAllActiveContractsPaged } from "../api/api-quan-ly-hop-dong";
 import PaginationComponent from "@/components/pagination";
+import { Button } from "@/components/ui/button";
+import { RefreshCw } from "lucide-react";
 
 interface GridOfContractCardProps {
   refreshTrigger?: number;
@@ -72,6 +74,10 @@ export default function GridOfContractCard({ refreshTrigger }: GridOfContractCar
     }
   };
 
+  const handleRefresh = useCallback(async () => {
+    await fetchContracts(currentPage);
+  }, [fetchContracts, currentPage]);
+
   if (loading) {
     return (
       <div className="p-6 flex justify-center items-center">
@@ -87,27 +93,39 @@ export default function GridOfContractCard({ refreshTrigger }: GridOfContractCar
     return (
       <div className="p-6 text-center">
         <div className="text-red-600 mb-4">{error}</div>
-        <button 
+        <Button 
           onClick={() => fetchContracts(currentPage)}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          variant="default"
+          className="gap-2"
         >
+          <RefreshCw className="w-4 h-4" />
           Retry
-        </button>
+        </Button>
       </div>
     );
   }
 
   if (contracts.length === 0) {
     return (
-      <div className="p-6 text-center">
+      <div className="p-6 text-center space-y-4">
         <p className="text-gray-600">No contracts found.</p>
+        <Button 
+          onClick={handleRefresh}
+          variant="outline"
+          size="sm"
+          className="gap-2"
+          disabled={loading}
+        >
+          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          Refresh
+        </Button>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      {/* Header with stats */}
+      {/* Header with stats and refresh button */}
       <div className="flex justify-between items-center">
         <div>
           <p className="text-lg font-semibold text-gray-900">
@@ -117,10 +135,20 @@ export default function GridOfContractCard({ refreshTrigger }: GridOfContractCar
             Showing {contracts.length} of {totalElements} contracts
           </p>
         </div>
+        <Button 
+          onClick={handleRefresh}
+          variant="outline"
+          size="sm"
+          className="gap-2"
+          disabled={loading}
+        >
+          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          Refresh
+        </Button>
       </div>
 
       {/* Contract grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
         {contracts.map((contract) => (
           <ContractCard 
             key={String(contract.maHopDongPhong)} 

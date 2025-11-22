@@ -12,10 +12,16 @@ export interface DichVuResponse {
     donGiaDien: number;
     donGiaNuoc: number;
     donGiaRac: number;
+    donGiaWifi?: number | null;
+    donGiaCap?: number | null;
+    donGiaKhac?: number | null;
 }
 
 export interface DichVuRequest {
     donGiaDien: number;
     donGiaNuoc: number;
     donGiaRac: number;
+    donGiaWifi: number;
+    donGiaCap: number;
+    donGiaKhac: number;
 }

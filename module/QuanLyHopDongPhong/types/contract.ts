@@ -13,5 +13,29 @@ export interface Contract {
     ngayBatDau?: string; // LocalDate -> ISO string
     ngayKetThuc?: string;
     ngayTao?: string;
-    trangThai?: string // backend enum name
+    trangThai?: string; // backend enum name
+    
+    // Enhanced fields for tenant management
+    tenants?: ContractTenant[]; // List of tenants associated with this contract
+    tenPhong?: string; // Room name for display
+    tenQuanLy?: string; // Manager name for display
+    maxTenants?: number; // Maximum number of tenants allowed
+}
+
+// Tenant representation in contract context
+export interface ContractTenant {
+    maKhach: number;
+    hoTen: string;
+    maCanCuoc?: string;
+    dienThoai?: string;
+    ngaySinh?: string;
+    thuongTru?: string;
+    trangThai?: string;
+    ngayVaoO?: string; // Date tenant joined the contract
+    isMainTenant?: boolean; // Whether this is the main contract tenant
+}
+
+// Contract creation/update request
+export interface ContractRequest extends Omit<Contract, 'maHopDongPhong' | 'tenants'> {
+    tenantIds?: number[]; // Array of tenant IDs to include in contract
 }

@@ -8,6 +8,7 @@ import FilterComponent from "@/components/filter-component"
 import { TenantForm } from "./tenant-form"
 import ListOfTenants from "./list-of-tenants"
 import { useState } from "react"
+import { useTaiKhoanStore } from "@/zustand/taikhoan-store"
 
 
 const menu = [
@@ -25,6 +26,7 @@ const menu = [
 
 export default function TenantManagementLayout() {
 
+    const { taiKhoan } = useTaiKhoanStore();
     const {language} = useLanguageStore()
     const [searchTerm, setSearchTerm] = useState("")
     const [statusFilter, setStatusFilter] = useState<string>("")
@@ -50,9 +52,16 @@ export default function TenantManagementLayout() {
                     <h1 className="text-2xl font-bold text-gray-900">
                         {language === 'vi' ? 'Quản lý khách thuê' : 'Tenant Management'}
                     </h1>
-                    <p className="text-gray-600">
-                        {language === 'vi' ? 'Quản lý thông tin khách thuê' : 'Manage all your tenants and their information'}
-                    </p>
+                    <div className="flex gap-2">
+                        <p className="text-gray-600">
+                            {language === 'vi' ? 'Quản lý thông tin khách thuê' : 'Manage all your tenants and their information'}
+                        </p>
+                        {taiKhoan && (
+                                <span className="text-sm text-blue-600 ml-2">
+                                    ({language === 'vi' ? 'Quản lý bởi' : 'Managed by'}: {taiKhoan.hoTen})
+                                </span>
+                        )}
+                    </div>
                 </div>
                 <TenantForm onSuccess={handleTenantCreated} />
             </div>

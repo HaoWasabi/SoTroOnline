@@ -3,7 +3,7 @@
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader} from "@/components/ui/card"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { useLanguageStore } from "@/zustand/language-tranlator"
 import { useTaiKhoanStore } from "@/zustand/taikhoan-store"
@@ -173,9 +173,11 @@ export default function TenantComponent({ tenant, onUpdate, onDelete }: TenantCo
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end" className="w-56">
                                         <TenantFormEditing tenant={tenant} onUpdate={onUpdate}>
-                                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                                                <Edit className="h-4 w-4 mr-2" />
-                                                {language === 'vi' ? 'Chỉnh sửa' : 'Edit'}
+                                            <DropdownMenuItem asChild>
+                                                <div className="flex items-center gap-2 cursor-pointer">
+                                                    <Edit className="h-4 w-4" />
+                                                    {language === 'vi' ? 'Chỉnh sửa' : 'Edit'}
+                                                </div>
                                             </DropdownMenuItem>
                                         </TenantFormEditing>
                                         
@@ -387,6 +389,7 @@ export default function TenantComponent({ tenant, onUpdate, onDelete }: TenantCo
                                 </h4>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
+
                                 
                                 <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-lg p-4 border border-emerald-100">
                                     <div className="flex items-center gap-2 text-sm mb-2">
@@ -531,7 +534,7 @@ export default function TenantComponent({ tenant, onUpdate, onDelete }: TenantCo
                 </DialogContent>
             </Dialog>
             
-            {toast && toast.message && <Toast {...toast} onClose={removeToast} />}
+            {toast && <Toast {...toast} onClose={removeToast} />}
         </>
     )
 }

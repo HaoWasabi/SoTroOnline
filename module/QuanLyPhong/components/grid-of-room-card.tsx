@@ -6,28 +6,22 @@ import PaginationComponent from "@/components/pagination";
 import { roomApi } from "../api/api-quan-ly-phong";
 import { Room, RoomResponse, PagedResponse, ApiResponse, mapRoomResponseToRoom } from "../types/room-types";
 import { useLanguageStore } from "@/zustand/language-tranlator";
+import { useTaiKhoanStore } from "@/zustand/taikhoan-store";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, AlertCircle, Search, Filter, Download, Upload } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hook/useToast";
 
 interface GridOfRoomCardProps {
-  searchParams?: {
-    tenPhong?: string;
-    loaiPhong?: string;
-    diaChi?: string;
-    chieuDai?: number;
-    chieuRong?: number;
-    vatDung?: string;
-    giaThueCoBan?: number;
-    trangThai?: string; // Add status filter
-  };
+  searchTerm?: string;
+  statusFilter?: string;
   onRoomUpdate?: (room: Room) => void;
   onRoomDelete?: (room: Room) => void;
 }
 
 export default function GridOfRoomCard({ 
-  searchParams, 
+  searchTerm,
+  statusFilter, 
   onRoomUpdate,
   onRoomDelete
 }: GridOfRoomCardProps) {
@@ -42,30 +36,73 @@ export default function GridOfRoomCard({
     const [retryCount, setRetryCount] = useState(0);
     
     const { language } = useLanguageStore();
+    const { taiKhoan } = useTaiKhoanStore();
     const { showSuccess, showError } = useToast();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const pageSize = 6;
+
+    // Get current manager ID for SAAS filtering
+    const currentManagerId = taiKhoan?.maTaiKhoan;
 
     const fetchRooms = useCallback(async (page: number, showLoading: boolean = true) => {
         try {
             if (showLoading) setLoading(true);
             setError(null);
-        
+
+            // Validate manager context for SAAS
+            if (!currentManagerId) {
+                const errorMessage = language === 'vi' 
+                    ? 'Không thể xác định người quản lý hiện tại. Vui lòng đăng nhập lại.' 
+                    : 'Unable to identify current manager. Please login again.';
+                setError(errorMessage);
+                showError(errorMessage);
+                setLoading(false);
+                return;
+            }
+
+            console.log('🏠 Room Search - Manager ID:', currentManagerId, '| Search Term:', searchTerm, '| Status Filter:', statusFilter);
+
             let response: ApiResponse<PagedResponse<RoomResponse>>;
             
-            // Check if we have search parameters
-            const hasSearchParams = searchParams && Object.values(searchParams)
-                .some(value => value !== undefined && value !== null && value !== '');
+            // Determine if we have any search/filter criteria
+            const hasSearchTerm = searchTerm && searchTerm.trim();
+            const hasStatusFilter = statusFilter && statusFilter.trim();
+            
+            console.log('Fetching rooms for manager:', currentManagerId, 'searchTerm:', hasSearchTerm, 'statusFilter:', hasStatusFilter);
         
-            if (hasSearchParams) {
-                response = await roomApi.searchRoomsPaged(searchParams, page, pageSize);
+            if (hasSearchTerm || hasStatusFilter) {
+                // Use search API with both search term and status filter
+                response = await roomApi.searchRoomsPaged(
+                    hasSearchTerm ? searchTerm.trim() : '', 
+                    page, 
+                    pageSize, 
+                    currentManagerId,
+                    hasStatusFilter ? statusFilter : undefined
+                );
             } else {
-                // Fetch all rooms when no search parameters
-                response = await roomApi.getAllRoomsPaged(page, pageSize);
+                // Fetch all rooms when no search parameters - ensure manager filtering
+                response = await roomApi.getAllRoomsPaged(page, pageSize, currentManagerId);
             }
             
             const pagedData = response.data;
-            const mappedRooms = pagedData.content.map(mapRoomResponseToRoom);
+            
+            // Debug: Log raw API response to check manager fields
+            if (pagedData.content && pagedData.content.length > 0) {
+                console.log('🔍 DEBUG - Raw API response (first room):', pagedData.content[0]);
+                console.log('🔍 DEBUG - Manager fields:', {
+                    hoTenQuanLy: pagedData.content[0].hoTenQuanLy,
+                    maQuanLy: pagedData.content[0].maQuanLy
+                });
+            }
+            
+            const mappedRooms = pagedData.content.map((roomResponse: RoomResponse) => {
+                const mapped = mapRoomResponseToRoom(roomResponse);
+                console.log('🔄 Mapping:', { 
+                    original: { hoTenQuanLy: roomResponse.hoTenQuanLy, maQuanLy: roomResponse.maQuanLy },
+                    mapped: { managerName: mapped.managerName, managerId: mapped.managerId }
+                });
+                return mapped;
+            });
             
             setRooms(mappedRooms);
             setCurrentPage(pagedData.page);
@@ -76,7 +113,7 @@ export default function GridOfRoomCard({
             setRetryCount(0);
 
             // Show success toast for search results
-            if (hasSearchParams && mappedRooms.length > 0) {
+            if ((hasSearchTerm || hasStatusFilter) && mappedRooms.length > 0) {
                 showSuccess(
                     language === 'vi' 
                         ? `Tìm thấy ${mappedRooms.length} phòng` 
@@ -93,7 +130,7 @@ export default function GridOfRoomCard({
         } finally {
             if (showLoading) setLoading(false);
         }
-    }, [searchParams, pageSize, language, showError, showSuccess]);
+    }, [searchTerm, statusFilter, pageSize, language, showError, showSuccess, currentManagerId]);
 
     useEffect(() => {
         fetchRooms(0);
@@ -204,23 +241,20 @@ export default function GridOfRoomCard({
     };
 
     const getSearchSummary = () => {
-        if (!searchParams) return null;
-        
-        const activeFilters = Object.entries(searchParams)
-            .filter(([_, value]) => value !== undefined && value !== null && value !== '')
-            .map(([key, value]) => {
-                const fieldNames: { [key: string]: string } = {
-                    tenPhong: language === 'vi' ? 'Tên phòng' : 'Room name',
-                    loaiPhong: language === 'vi' ? 'Loại phòng' : 'Room type',
-                    diaChi: language === 'vi' ? 'Địa chỉ' : 'Address',
-                    chieuDai: language === 'vi' ? 'Chiều dài' : 'Length',
-                    chieuRong: language === 'vi' ? 'Chiều rộng' : 'Width',
-                    vatDung: language === 'vi' ? 'Vật dụng' : 'Items',
-                    giaThueCoBan: language === 'vi' ? 'Giá thuê' : 'Base rent',
-                    trangThai: language === 'vi' ? 'Trạng thái' : 'Status'
-                };
-                return `${fieldNames[key] || key}: ${value}`;
-            });
+        if (!searchTerm && !statusFilter) return null;
+
+        const activeFilters = [];
+        if (searchTerm) {
+            activeFilters.push({ label: language === 'vi' ? 'Tìm kiếm' : 'Search', value: searchTerm });
+        }
+        if (statusFilter) {
+            const statusNames: { [key: string]: string } = {
+                phongTrong: language === 'vi' ? 'Phòng trống' : 'Available',
+                hoatDong: language === 'vi' ? 'Phòng có người ở' : 'Occupied',
+                baoTri: language === 'vi' ? 'Phòng đang bảo trì' : 'In Maintenance'
+            };
+            activeFilters.push({ label: language === 'vi' ? 'Trạng thái' : 'Status', value: statusNames[statusFilter] || statusFilter });
+        }
         
         return activeFilters.length > 0 ? activeFilters : null;
     };
@@ -307,7 +341,7 @@ export default function GridOfRoomCard({
                                 <div className="space-y-1">
                                     {searchSummary.map((filter, index) => (
                                         <p key={index} className="text-xs text-gray-500">
-                                            {filter}
+                                            {filter.label}: {filter.value}
                                         </p>
                                     ))}
                                 </div>
@@ -402,7 +436,7 @@ export default function GridOfRoomCard({
                                 <div className="space-y-1">
                                     {searchSummary.map((filter, index) => (
                                         <p key={index} className="text-sm text-blue-700">
-                                            {filter}
+                                            {filter.label}: {filter.value}
                                         </p>
                                     ))}
                                 </div>
