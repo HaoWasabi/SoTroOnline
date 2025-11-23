@@ -1,6 +1,9 @@
 package com.so_tro_online.quan_ly_hop_dong_phong.service;
 
 import com.deepoove.poi.XWPFTemplate;
+// OpenHTMLtoPDF imports for PDF generation
+import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
+import com.openhtmltopdf.outputdevice.helper.BaseRendererBuilder;
 import com.so_tro_online.quan_ly_hop_dong_phong.dto.HopDongPhongRequest;
 import com.so_tro_online.quan_ly_hop_dong_phong.dto.HopDongPhongResponse;
 
@@ -26,10 +29,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -396,6 +401,320 @@ public class HopDongPhongService implements IHopDongPhongService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void generateContractPDF(HttpServletResponse response, Integer id) {
+        // 1. Get contract data
+        HopDongPhong hopDong = hopDongPhongRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy hợp đồng"));
+
+        try {
+            // 2. Set response headers for PDF download
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", 
+                String.format("attachment; filename=\"contract_%d.pdf\"", id));
+
+            // 3. Generate HTML content for the contract
+            String htmlContent = generateContractHTML(hopDong);
+
+            // 4. Convert HTML to PDF using OpenHTMLtoPDF
+            try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+                PdfRendererBuilder builder = new PdfRendererBuilder();
+                builder.withHtmlContent(htmlContent, null);
+                builder.toStream(outputStream);
+                builder.run();
+
+                // 5. Write PDF to response
+                byte[] pdfBytes = outputStream.toByteArray();
+                response.getOutputStream().write(pdfBytes);
+                response.getOutputStream().flush();
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error generating PDF: " + e.getMessage());
+        }
+    }
+
+    private String generateContractHTML(HopDongPhong hopDong) {
+        // Safely extract contract data with explicit type conversion
+        String contractId = String.valueOf(hopDong.getMaHopDongPhong());
+        String managerName = hopDong.getTaiKhoan().getHoTen() != null ? hopDong.getTaiKhoan().getHoTen() : "N/A";
+        String managerPhone = hopDong.getTaiKhoan().getDienThoai() != null ? hopDong.getTaiKhoan().getDienThoai() : "N/A";
+        String managerAddress = hopDong.getTaiKhoan().getThuongTru() != null ? hopDong.getTaiKhoan().getThuongTru() : "N/A";
+        String roomName = hopDong.getPhong().getTenPhong() != null ? hopDong.getPhong().getTenPhong() : "N/A";
+        String roomAddress = hopDong.getPhong().getDiaChi() != null ? hopDong.getPhong().getDiaChi() : "N/A";
+        String roomArea = hopDong.getPhong().getChieuDai() != null && hopDong.getPhong().getChieuRong() != null ?
+            hopDong.getPhong().getChieuDai().multiply(hopDong.getPhong().getChieuRong()).toString() : "N/A";
+        
+        // Safely convert BigDecimal to formatted strings
+        String tienPhongFormatted = "0";
+        String tienCocFormatted = "0";
+        
+        try {
+            if (hopDong.getTienPhong() != null) {
+                long tienPhongLong = hopDong.getTienPhong().longValue();
+                tienPhongFormatted = String.format("%,d", tienPhongLong);
+            }
+        } catch (Exception e) {
+            System.err.println("Error formatting tienPhong: " + e.getMessage());
+            tienPhongFormatted = hopDong.getTienPhong() != null ? hopDong.getTienPhong().toString() : "0";
+        }
+        
+        try {
+            if (hopDong.getTienCoc() != null) {
+                long tienCocLong = hopDong.getTienCoc().longValue();
+                tienCocFormatted = String.format("%,d", tienCocLong);
+            }
+        } catch (Exception e) {
+            System.err.println("Error formatting tienCoc: " + e.getMessage());
+            tienCocFormatted = hopDong.getTienCoc() != null ? hopDong.getTienCoc().toString() : "0";
+        }
+        
+        // Safely format LocalDate to String
+        String ngayBatDauFormatted = "N/A";
+        String ngayKetThucFormatted = "N/A";
+        String ngayTaoFormatted = "N/A";
+        
+        try {
+            if (hopDong.getNgayBatDau() != null) {
+                ngayBatDauFormatted = hopDong.getNgayBatDau().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            }
+        } catch (Exception e) {
+            System.err.println("Error formatting ngayBatDau: " + e.getMessage());
+            ngayBatDauFormatted = hopDong.getNgayBatDau() != null ? hopDong.getNgayBatDau().toString() : "N/A";
+        }
+        
+        try {
+            if (hopDong.getNgayKetThuc() != null) {
+                ngayKetThucFormatted = hopDong.getNgayKetThuc().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            }
+        } catch (Exception e) {
+            System.err.println("Error formatting ngayKetThuc: " + e.getMessage());
+            ngayKetThucFormatted = hopDong.getNgayKetThuc() != null ? hopDong.getNgayKetThuc().toString() : "N/A";
+        }
+        
+        try {
+            if (hopDong.getNgayTao() != null) {
+                ngayTaoFormatted = hopDong.getNgayTao().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            }
+        } catch (Exception e) {
+            System.err.println("Error formatting ngayTao: " + e.getMessage());
+            ngayTaoFormatted = hopDong.getNgayTao() != null ? hopDong.getNgayTao().toString() : "N/A";
+        }
+
+        return String.format("""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8"></meta>
+                <title>Contract</title>
+                <style>
+                    @page {
+                        size: A4;
+                        margin: 2cm;
+                    }
+                    body {
+                        font-family: Arial, sans-serif;
+                        font-size: 12pt;
+                        line-height: 1.4;
+                        color: #333;
+                    }
+                    .header {
+                        text-align: center;
+                        font-size: 18pt;
+                        font-weight: bold;
+                        margin-bottom: 30px;
+                        text-transform: uppercase;
+                        color: #2c5aa0;
+                    }
+                    .contract-info {
+                        margin-bottom: 25px;
+                    }
+                    .info-row {
+                        display: flex;
+                        margin-bottom: 8px;
+                        padding: 5px 0;
+                        border-bottom: 1px dotted #ddd;
+                    }
+                    .info-label {
+                        font-weight: bold;
+                        width: 150px;
+                        flex-shrink: 0;
+                        color: #555;
+                    }
+                    .info-value {
+                        flex: 1;
+                    }
+                    .services-section {
+                        margin: 25px 0;
+                    }
+                    .services-title {
+                        font-weight: bold;
+                        font-size: 14pt;
+                        color: #2c5aa0;
+                        margin-bottom: 15px;
+                        border-bottom: 2px solid #2c5aa0;
+                        padding-bottom: 5px;
+                    }
+                    .services-grid {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        gap: 10px;
+                        margin-left: 20px;
+                    }
+                    .service-item {
+                        display: flex;
+                        align-items: center;
+                        padding: 5px 0;
+                    }
+                    .service-check {
+                        width: 12px;
+                        height: 12px;
+                        border: 1px solid #333;
+                        margin-right: 8px;
+                        display: inline-block;
+                        position: relative;
+                    }
+                    .service-check.checked {
+                        background-color: #2c5aa0;
+                    }
+                    .service-check.checked:after {
+                        content: '✓';
+                        color: white;
+                        font-size: 10px;
+                        position: absolute;
+                        top: -2px;
+                        left: 2px;
+                    }
+                    .signatures {
+                        margin-top: 50px;
+                        display: flex;
+                        justify-content: space-between;
+                    }
+                    .signature-box {
+                        text-align: center;
+                        width: 200px;
+                    }
+                    .signature-title {
+                        font-weight: bold;
+                        margin-bottom: 60px;
+                        color: #555;
+                    }
+                    .signature-line {
+                        border-top: 1px solid #333;
+                        margin-top: 10px;
+                        padding-top: 5px;
+                        font-size: 10pt;
+                        color: #666;
+                    }
+                    .amount {
+                        color: #d9534f;
+                        font-weight: bold;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class=\"header\">Hợp Đồng Thuê Phòng Trọ</div>
+                
+                <div class=\"contract-info\">
+                    <div class=\"info-row\">
+                        <span class=\"info-label\">Mã hợp đồng:</span>
+                        <span class=\"info-value\">%s</span>
+                    </div>
+                    <div class=\"info-row\">
+                        <span class=\"info-label\">Quản lý:</span>
+                        <span class=\"info-value\">%s</span>
+                    </div>
+                    <div class=\"info-row\">
+                        <span class=\"info-label\">Số điện thoại:</span>
+                        <span class=\"info-value\">%s</span>
+                    </div>
+                    <div class=\"info-row\">
+                        <span class=\"info-label\">Địa chỉ quản lý:</span>
+                        <span class=\"info-value\">%s</span>
+                    </div>
+                    <div class=\"info-row\">
+                        <span class=\"info-label\">Tên phòng:</span>
+                        <span class=\"info-value\">%s</span>
+                    </div>
+                    <div class=\"info-row\">
+                        <span class=\"info-label\">Địa chỉ phòng:</span>
+                        <span class=\"info-value\">%s</span>
+                    </div>
+                    <div class=\"info-row\">
+                        <span class=\"info-label\">Diện tích:</span>
+                        <span class=\"info-value\">%s m²</span>
+                    </div>
+                    <div class=\"info-row\">
+                        <span class=\"info-label\">Tiền phòng:</span>
+                        <span class=\"info-value amount\">%s VNĐ</span>
+                    </div>
+                    <div class=\"info-row\">
+                        <span class=\"info-label\">Tiền cọc:</span>
+                        <span class=\"info-value amount\">%s VNĐ</span>
+                    </div>
+                    <div class=\"info-row\">
+                        <span class=\"info-label\">Ngày bắt đầu:</span>
+                        <span class=\"info-value\">%s</span>
+                    </div>
+                    <div class=\"info-row\">
+                        <span class=\"info-label\">Ngày kết thúc:</span>
+                        <span class=\"info-value\">%s</span>
+                    </div>
+                    <div class=\"info-row\">
+                        <span class=\"info-label\">Ngày tạo:</span>
+                        <span class=\"info-value\">%s</span>
+                    </div>
+                </div>
+                
+                <div class=\"services-section\">
+                    <div class=\"services-title\">Dịch vụ bao gồm:</div>
+                    <div class=\"services-grid\">
+                        <div class=\"service-item\">
+                            <span class=\"service-check %s\"></span>
+                            <span>Dịch vụ rác</span>
+                        </div>
+                        <div class=\"service-item\">
+                            <span class=\"service-check %s\"></span>
+                            <span>Dịch vụ WiFi</span>
+                        </div>
+                        <div class=\"service-item\">
+                            <span class=\"service-check %s\"></span>
+                            <span>Dịch vụ cáp</span>
+                        </div>
+                        <div class=\"service-item\">
+                            <span class=\"service-check %s\"></span>
+                            <span>Dịch vụ khác</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class=\"signatures\">
+                    <div class=\"signature-box\">
+                        <div class=\"signature-title\">Bên A (Quản lý)</div>
+                        <div class=\"signature-line\">Ký và ghi rõ họ tên</div>
+                    </div>
+                    <div class=\"signature-box\">
+                        <div class=\"signature-title\">Bên B (Khách thuê)</div>
+                        <div class=\"signature-line\">Ký và ghi rõ họ tên</div>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """,
+            contractId, managerName, managerPhone, managerAddress,
+            roomName, roomAddress, roomArea,
+            tienPhongFormatted,
+            tienCocFormatted,
+            ngayBatDauFormatted,
+            ngayKetThucFormatted,
+            ngayTaoFormatted,
+            // Service checkboxes
+            hopDong.getDvRac() != null && hopDong.getDvRac() ? "checked" : "",
+            hopDong.getDvWifi() != null && hopDong.getDvWifi() ? "checked" : "",
+            hopDong.getDvCap() != null && hopDong.getDvCap() ? "checked" : "",
+            hopDong.getDvKhac() != null && hopDong.getDvKhac() ? "checked" : ""
+        );
     }
 
     @Override

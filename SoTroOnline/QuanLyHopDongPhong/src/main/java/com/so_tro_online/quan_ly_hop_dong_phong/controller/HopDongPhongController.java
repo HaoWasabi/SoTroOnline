@@ -277,6 +277,18 @@ public class HopDongPhongController {
     }
 
     /**
+     * Generate contract PDF document
+     */
+    @GetMapping("/{contractId}/pdf")
+    public void generateContractPDF(@PathVariable Integer contractId, HttpServletResponse response) {
+        try {
+            hopDongPhongService.generateContractPDF(response, contractId);
+        } catch (Exception e) {
+            throw new RuntimeException("Error generating PDF: " + e.getMessage());
+        }
+    }
+
+    /**
      * Get contracts without invoice for specific month/year
      */
     @GetMapping("/no-invoice")

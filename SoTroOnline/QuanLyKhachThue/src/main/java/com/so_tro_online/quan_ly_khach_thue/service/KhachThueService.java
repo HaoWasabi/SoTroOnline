@@ -179,12 +179,20 @@ public class KhachThueService {
 
     /**
      * Delete tenant "soft delete" - update status to 'daXoa'
+     * Only allow deletion if tenant has no active contracts
      */
     public void deleteKhachThue(int maKhach) {
         try {
             Optional<KhachThue> existingKhachThue = khachThueRepository.findById(maKhach);
             if (existingKhachThue.isEmpty()) {
                 throw new KhachThueNotFoundException(maKhach);
+            }
+
+            // Check if tenant has active contracts
+            // Use a direct query to check for active tenant-contract relationships
+            boolean hasActiveContracts = khachThueRepository.existsActiveContractsForTenant(maKhach);
+            if (hasActiveContracts) {
+                throw new RuntimeException("Không thể xóa khách thuê vì đang có hợp đồng hoạt động. Vui lòng kết thúc hợp đồng trước khi xóa.");
             }
 
             KhachThue khachThue = existingKhachThue.get();

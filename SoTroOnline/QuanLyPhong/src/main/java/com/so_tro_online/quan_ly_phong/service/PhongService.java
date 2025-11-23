@@ -169,6 +169,30 @@ public class PhongService implements IPhongService{
     public void deleteRoom(Integer id) {
         Phong phong = phongRepository.findById(id)
                 .orElseThrow(() -> new ReseourceNotFoundException("không tìm thấy phòng với id: " + id));
+        
+        // Log current room status for debugging
+        System.out.println("Attempting to delete room ID: " + id + " with status: " + phong.getTrangThai());
+        
+        // Only allow deletion of rooms that are vacant (phongTrong)
+        if (phong.getTrangThai() != TrangThai.phongTrong) {
+            String statusMessage = switch (phong.getTrangThai()) {
+                case hoatDong -> "đang được thuê";
+                case baoTri -> "đang trong tình trạng bảo trì";
+                case daXoa -> "đã bị xóa";
+                default -> "không ở trạng thái trống";
+            };
+            
+            // Enhanced error message with current status
+            String errorMessage = String.format(
+                "Không thể xóa phòng vì phòng %s (trạng thái hiện tại: %s). Chỉ có thể xóa phòng khi phòng ở trạng thái 'phongTrong'.",
+                statusMessage, phong.getTrangThai()
+            );
+            
+            System.out.println("Room deletion blocked: " + errorMessage);
+            throw new RuntimeException(errorMessage);
+        }
+        
+        System.out.println("Room deletion allowed - proceeding to delete room ID: " + id);
         phongRepository.delete(phong); // Permanently delete the record
     }
 

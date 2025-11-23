@@ -55,4 +55,11 @@ public interface KhachThueRepository extends JpaRepository<KhachThue, Integer> {
            "k.maCanCuoc LIKE CONCAT('%', :searchTerm, '%') OR " +
            "CONCAT('', k.maKhach) LIKE CONCAT('%', :searchTerm, '%'))")
     Page<KhachThue> findByManagerAndMultipleFields(Integer managerId, String searchTerm, TrangThai excludedStatus, Pageable pageable);
+
+    // Check if tenant has active contracts
+    @Query("SELECT CASE WHEN COUNT(hdkt) > 0 THEN true ELSE false END " +
+           "FROM HopDongKhachThue hdkt " +
+           "WHERE hdkt.khachThue.maKhach = :tenantId " +
+           "AND hdkt.trangThai = 'hoatDong'")
+    boolean existsActiveContractsForTenant(Integer tenantId);
 }
