@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { RefreshCw, AlertCircle, Search, Filter, Download, Upload } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hook/useToast";
+import { Toast } from "@/components/toast";
 
 interface GridOfRoomCardProps {
   searchTerm?: string;
@@ -37,7 +38,7 @@ export default function GridOfRoomCard({
     
     const { language } = useLanguageStore();
     const { taiKhoan } = useTaiKhoanStore();
-    const { showSuccess, showError } = useToast();
+    const { toast, showSuccess, showError, removeToast } = useToast();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const pageSize = 6;
 
@@ -477,6 +478,17 @@ export default function GridOfRoomCard({
                         hasPrevious={hasPrevious}
                     />
                 </div>
+            )}
+            
+            {/* Toast Component */}
+            {toast && (
+                <Toast
+                    key={toast.id}
+                    message={toast.message}
+                    type={toast.type}
+                    duration={toast.duration}
+                    onClose={removeToast}
+                />
             )}
         </div>
     );

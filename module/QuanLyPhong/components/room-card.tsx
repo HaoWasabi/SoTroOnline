@@ -12,6 +12,7 @@ import { useState } from "react";
 import { Room } from "../types/room-types";
 import { RoomFormAsDialog } from "./room-form-as-dialog";
 import { useToast } from "@/hook/useToast";
+import { Toast } from "@/components/toast";
 import { roomApi } from "../api/api-quan-ly-phong";
 
 
@@ -27,7 +28,7 @@ export default function RoomCardComponent({ room, onUpdate, onDelete }: RoomCard
     const [isDeleting, setIsDeleting] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [viewDialogOpen, setViewDialogOpen] = useState(false);
-    const { showSuccess, showError } = useToast();
+    const { toast, showSuccess, showError, removeToast } = useToast();
 
     // Helper function to get manager information
     const getManagerInfo = () => {
@@ -148,13 +149,15 @@ export default function RoomCardComponent({ room, onUpdate, onDelete }: RoomCard
 
     // Delete room function using actual API
     const deleteRoom = async (roomId: number) => {
-        try {
-            const response = await roomApi.deleteRoom(roomId);
-            return { success: response.message === "success" || true };
-        } catch (error) {
-            console.error('Error deleting room:', error);
-            throw error;
+        const response = await roomApi.deleteRoom(roomId);
+        
+        // Check if response contains an error
+        if ('error' in response) {
+            return { success: false, error: response.error };
         }
+        
+        // Success case
+        return { success: response.message === "success" || true };
     };
 
     return (
@@ -530,15 +533,57 @@ export default function RoomCardComponent({ room, onUpdate, onDelete }: RoomCard
                                         setDeleteDialogOpen(false);
                                         onDelete?.();
                                     } else {
-                                        showError(language === 'vi' ? 'Xóa thất bại' : 'Delete failed');
-                                    }
-                                } catch (error) {
-                                    console.error('Error deleting room:', error);
-                                    showError(
-                                        language === 'vi' 
+                                        // Handle API error response
+                                        const errorText = result.error || (language === 'vi' ? 'Xóa thất bại' : 'Delete failed');
+                                        
+                                        let errorMessage = language === 'vi' 
                                             ? 'Có lỗi xảy ra khi xóa phòng. Vui lòng thử lại.' 
-                                            : 'An error occurred while deleting the room. Please try again.'
-                                    );
+                                            : 'An error occurred while deleting the room. Please try again.';
+                                            
+                                        console.log('Error from API:', errorText);
+                                        
+                                        // Check for specific validation error messages from backend
+                                        if (errorText.includes("đang được thuê") || errorText.includes("hoatDong") || errorText.includes("trang thái hiện tại: hoatDong")) {
+                                            errorMessage = language === 'vi'
+                                                ? "Không thể xóa phòng vì phòng đang được thuê. Chỉ có thể xóa phòng khi phòng ở trạng thái 'Phòng trống'."
+                                                : "Cannot delete room because it's currently rented. Can only delete rooms when they are 'Available'.";
+                                        } else if (errorText.includes("bảo trì") || errorText.includes("baoTri")) {
+                                            errorMessage = language === 'vi'
+                                                ? "Không thể xóa phòng vì phòng đang trong tình trạng bảo trì."
+                                                : "Cannot delete room because it's under maintenance.";
+                                        } else if (errorText.includes("đã bị xóa") || errorText.includes("daXoa")) {
+                                            errorMessage = language === 'vi'
+                                                ? "Phòng này đã được xóa trước đó."
+                                                : "This room has already been deleted.";
+                                        } else if (errorText && errorText.trim() !== '' && errorText !== 'Failed to delete room') {
+                                            // Use the actual backend error message if it's meaningful and in Vietnamese
+                                            if (errorText.includes("Không thể xóa phòng")) {
+                                                errorMessage = errorText; // Use the exact backend message
+                                            } else {
+                                                errorMessage = errorText;
+                                            }
+                                        }
+                                        
+                                        console.log('Final error message to show:', errorMessage);
+                                        
+                                        // Force close the delete dialog first
+                                        setDeleteDialogOpen(false);
+                                        
+                                        // Show error toast with a slight delay to ensure dialog is closed
+                                        setTimeout(() => {
+                                            showError(errorMessage);
+                                            console.log('Error toast triggered');
+                                        }, 100);
+                                    }
+                                } catch (error: any) {
+                                    console.error('Unexpected error:', error);
+                                    // Fallback error handling for any unexpected errors
+                                    setDeleteDialogOpen(false);
+                                    setTimeout(() => {
+                                        showError(language === 'vi' 
+                                            ? 'Có lỗi không mong muốn xảy ra. Vui lòng thử lại.' 
+                                            : 'An unexpected error occurred. Please try again.');
+                                    }, 100);
                                 } finally {
                                     setIsDeleting(false);
                                 }
@@ -552,6 +597,17 @@ export default function RoomCardComponent({ room, onUpdate, onDelete }: RoomCard
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+            
+            {/* Toast Component */}
+            {toast && (
+                <Toast
+                    key={toast.id}
+                    message={toast.message}
+                    type={toast.type}
+                    duration={toast.duration}
+                    onClose={removeToast}
+                />
+            )}
         </>
     );
 }

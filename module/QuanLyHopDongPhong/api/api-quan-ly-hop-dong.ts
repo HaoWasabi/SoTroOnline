@@ -766,6 +766,42 @@ export async function printContract(id: number): Promise<void> {
     }
 }
 
+// Download contract as PDF
+export async function downloadContractPDF(id: number): Promise<{ status: string; message: string }> {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/hop-dong-phong/${id}/pdf`, {
+            headers: getAuthHeaders()
+        });
+        
+        if (!response.ok) {
+            return {
+                status: "error",
+                message: `Failed to download contract PDF: ${response.status} ${response.statusText}`
+            };
+        }
+        
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `contract_${id}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        
+        return {
+            status: "success",
+            message: "PDF downloaded successfully"
+        };
+    } catch (error) {
+        return {
+            status: "error",
+            message: error instanceof Error ? error.message : "Failed to download PDF"
+        };
+    }
+}
+
 
 export async function getContractsWithoutInvoice(thang: number, nam: number): Promise<{ status: string; message: string; data: Contract[] | null }> {
     try {

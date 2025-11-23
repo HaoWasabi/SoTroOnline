@@ -162,14 +162,37 @@ export const roomApi = {
     },
 
     // Delete room
-    deleteRoom: async (id: number): Promise<ApiResponse<null>> => {
-        const response = await authenticatedFetch(`${API_BASE_URL}/${id}`, {
-        method: 'DELETE',
-        });
-        if (!response.ok) {
-        throw new Error('Failed to delete room');
+    deleteRoom: async (id: number): Promise<ApiResponse<null> | { error: string }> => {
+        try {
+            const response = await authenticatedFetch(`${API_BASE_URL}/${id}`, {
+            method: 'DELETE',
+            });
+            if (!response.ok) {
+                // Try to get error message from response
+                let errorMessage = 'Failed to delete room';
+                try {
+                    const errorData = await response.json();
+                    // Check for different possible error response structures
+                    errorMessage = errorData.message || errorData.data || errorData.error || errorMessage;
+                } catch (e) {
+                    // If response is not JSON, try to get text
+                    try {
+                        const textResponse = await response.text();
+                        if (textResponse) {
+                            errorMessage = textResponse;
+                        } else {
+                            errorMessage = `${errorMessage}: ${response.status} ${response.statusText}`;
+                        }
+                    } catch (textError) {
+                        errorMessage = `${errorMessage}: ${response.status} ${response.statusText}`;
+                    }
+                }
+                return { error: errorMessage };
+            }
+            return response.json();
+        } catch (error) {
+            return { error: error instanceof Error ? error.message : 'Unknown error occurred' };
         }
-        return response.json();
     },
 
     // Search rooms (non-paginated) - SAAS enabled
@@ -272,42 +295,50 @@ export const roomApi = {
         return response.json();
     },
 
-    addTenantToRoom: async (roomId: number, tenantId: number, managerId: number): Promise<ApiResponse<any>> => {
-        const response = await authenticatedFetch(`${API_BASE_URL}/${roomId}/tenants/${tenantId}?managerId=${managerId}`, {
-            method: 'POST',
-            headers: getAuthHeaders(),
-        });
-        if (!response.ok) {
-            let errorMessage = 'Failed to add tenant to room';
-            try {
-                const errorData = await response.json();
-                errorMessage = errorData.data || errorData.message || errorMessage;
-            } catch (e) {
-                // If response is not JSON, use status text
-                errorMessage = `${errorMessage}: ${response.status} ${response.statusText}`;
+    addTenantToRoom: async (roomId: number, tenantId: number, managerId: number): Promise<ApiResponse<any> | { error: string }> => {
+        try {
+            const response = await authenticatedFetch(`${API_BASE_URL}/${roomId}/tenants/${tenantId}?managerId=${managerId}`, {
+                method: 'POST',
+                headers: getAuthHeaders(),
+            });
+            if (!response.ok) {
+                let errorMessage = 'Failed to add tenant to room';
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.data || errorData.message || errorMessage;
+                } catch (e) {
+                    // If response is not JSON, use status text
+                    errorMessage = `${errorMessage}: ${response.status} ${response.statusText}`;
+                }
+                return { error: errorMessage };
             }
-            throw new Error(errorMessage);
+            return response.json();
+        } catch (error) {
+            return { error: error instanceof Error ? error.message : 'Unknown error occurred' };
         }
-        return response.json();
     },
 
-    removeTenantFromRoom: async (roomId: number, tenantId: number): Promise<ApiResponse<string>> => {
-        const response = await authenticatedFetch(`${API_BASE_URL}/${roomId}/tenants/${tenantId}`, {
-            method: 'DELETE',
-            headers: getAuthHeaders(),
-        });
-        if (!response.ok) {
-            let errorMessage = 'Failed to remove tenant from room';
-            try {
-                const errorData = await response.json();
-                errorMessage = errorData.data || errorData.message || errorMessage;
-            } catch (e) {
-                // If response is not JSON, use status text
-                errorMessage = `${errorMessage}: ${response.status} ${response.statusText}`;
+    removeTenantFromRoom: async (roomId: number, tenantId: number): Promise<ApiResponse<string> | { error: string }> => {
+        try {
+            const response = await authenticatedFetch(`${API_BASE_URL}/${roomId}/tenants/${tenantId}`, {
+                method: 'DELETE',
+                headers: getAuthHeaders(),
+            });
+            if (!response.ok) {
+                let errorMessage = 'Failed to remove tenant from room';
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.data || errorData.message || errorMessage;
+                } catch (e) {
+                    // If response is not JSON, use status text
+                    errorMessage = `${errorMessage}: ${response.status} ${response.statusText}`;
+                }
+                return { error: errorMessage };
             }
-            throw new Error(errorMessage);
+            return response.json();
+        } catch (error) {
+            return { error: error instanceof Error ? error.message : 'Unknown error occurred' };
         }
-        return response.json();
     },
 };
 

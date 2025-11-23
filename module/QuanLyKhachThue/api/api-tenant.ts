@@ -278,7 +278,7 @@ export const updateTenant = async (id: number, tenantData: Partial<Tenant>): Pro
 };
 
 // Delete tenant
-export const deleteTenant = async (id: number): Promise<ApiResponse<null>> => {
+export const deleteTenant = async (id: number): Promise<ApiResponse<null> | { error: string }> => {
     try {
         
         const headers = getAuthHeaders();
@@ -288,11 +288,27 @@ export const deleteTenant = async (id: number): Promise<ApiResponse<null>> => {
             headers: headers,
         });
 
-
-
         if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`HTTP error! status: ${response.status}, response: ${errorText}`);
+            // Try to get error message from response
+            let errorMessage = 'Failed to delete tenant';
+            try {
+                const errorData = await response.json();
+                // Check for different possible error response structures
+                errorMessage = errorData.message || errorData.data || errorData.error || errorMessage;
+            } catch (e) {
+                // If response is not JSON, try to get text
+                try {
+                    const textResponse = await response.text();
+                    if (textResponse) {
+                        errorMessage = textResponse;
+                    } else {
+                        errorMessage = `${errorMessage}: ${response.status} ${response.statusText}`;
+                    }
+                } catch (textError) {
+                    errorMessage = `${errorMessage}: ${response.status} ${response.statusText}`;
+                }
+            }
+            return { error: errorMessage };
         }
 
         const data = await response.json();
@@ -309,7 +325,7 @@ export const deleteTenant = async (id: number): Promise<ApiResponse<null>> => {
             };
         }
     } catch (error) {
-        throw error;
+        return { error: error instanceof Error ? error.message : 'Unknown error occurred' };
     }
 };
 

@@ -255,7 +255,24 @@ export default function TenantComponent({ tenant, onUpdate, onDelete }: TenantCo
                                         const result = await deleteTenant(tenant.maKhach);
                                         console.log('Delete result:', result);
                                         
-                                        if (result.success || (result.status && result.status >= 200 && result.status < 300)) {
+                                        // Check if response contains an error
+                                        if ('error' in result) {
+                                            // Handle API error response
+                                            let errorMessage = language === 'vi' 
+                                                ? 'Có lỗi xảy ra khi xóa khách thuê. Vui lòng thử lại.' 
+                                                : 'An error occurred while deleting the tenant. Please try again.';
+                                                
+                                            // Check for specific validation error messages from backend
+                                            if (result.error.includes("đang có hợp đồng hoạt động") || result.error.includes("active contract")) {
+                                                errorMessage = language === 'vi'
+                                                    ? "Không thể xóa khách thuê vì đang có hợp đồng hoạt động. Vui lòng kết thúc hợp đồng trước khi xóa."
+                                                    : "Cannot delete tenant because they have active contracts. Please terminate the contract before deleting.";
+                                            } else if (result.error && result.error.trim() !== '' && result.error !== 'Failed to delete tenant') {
+                                                errorMessage = result.error;
+                                            }
+                                            
+                                            showError(errorMessage);
+                                        } else if (result.success || (result.status && result.status >= 200 && result.status < 300)) {
                                             showSuccess(
                                                 language === 'vi' 
                                                     ? 'Xóa khách thuê thành công!' 
@@ -266,13 +283,12 @@ export default function TenantComponent({ tenant, onUpdate, onDelete }: TenantCo
                                         } else {
                                             showError(result.message || (language === 'vi' ? 'Xóa thất bại' : 'Delete failed'));
                                         }
-                                    } catch (error) {
-                                        console.error('Error deleting tenant:', error);
-                                        showError(
-                                            language === 'vi' 
-                                                ? 'Có lỗi xảy ra khi xóa khách thuê. Vui lòng thử lại.' 
-                                                : 'An error occurred while deleting the tenant. Please try again.'
-                                        );
+                                    } catch (error: any) {
+                                        console.error('Unexpected error:', error);
+                                        // Fallback error handling for any unexpected errors
+                                        showError(language === 'vi' 
+                                            ? 'Có lỗi không mong muốn xảy ra. Vui lòng thử lại.' 
+                                            : 'An unexpected error occurred. Please try again.');
                                     } finally {
                                         setIsDeleting(false);
                                     }
