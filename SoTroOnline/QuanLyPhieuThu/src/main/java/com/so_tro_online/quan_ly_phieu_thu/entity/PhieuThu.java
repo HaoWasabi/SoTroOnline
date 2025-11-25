@@ -35,25 +35,14 @@ public class PhieuThu {
     @Column(name = "ghi_chu")
     private String ghiChu;
 
-    public BigDecimal getConNo() {
-        return conNo;
-    }
-
-    public void setConNo(BigDecimal conNo) {
-        this.conNo = conNo;
-    }
-
-    public String getNoiDungThu() {
-        return noiDungThu;
-    }
-
-    public void setNoiDungThu(String noiDungThu) {
-        this.noiDungThu = noiDungThu;
-    }
-
+    @Column(name = "ngay_thu")
     private LocalDate ngayThu;
+    
+    @Column(name = "cap_nhat_lan_cuoi")
     private LocalDate capNhatLanCuoi;
+    
     @Enumerated(EnumType.STRING)
+    @Column(name = "trang_thai")
     private TrangThai trangThai;
 
     public Integer getMaPhieuThu() {
@@ -91,6 +80,22 @@ public class PhieuThu {
     }
     public void setSoTienThu(BigDecimal soTienThu) {
         this.soTienThu = soTienThu;
+    }
+
+    public BigDecimal getConNo() {
+        return conNo;
+    }
+
+    public void setConNo(BigDecimal conNo) {
+        this.conNo = conNo;
+    }
+
+    public String getNoiDungThu() {
+        return noiDungThu;
+    }
+
+    public void setNoiDungThu(String noiDungThu) {
+        this.noiDungThu = noiDungThu;
     }
 
     public String getGhiChu() {

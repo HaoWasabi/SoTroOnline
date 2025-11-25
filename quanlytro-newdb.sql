@@ -285,10 +285,10 @@ CREATE TABLE `chi_tiet_hoa_don` (
   `ten_dich_vu` varchar(255) DEFAULT NULL,
   `thanh_tien` decimal(38,2) DEFAULT NULL,
   `tien_thuc_te` decimal(38,2) DEFAULT NULL,
-  `hoa_don_ma_hoa_don` int DEFAULT NULL,
+  `ma_hoa_don` int DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `FKo10sqf3qgeqp66e8w2i717d7o` (`hoa_don_ma_hoa_don`),
-  CONSTRAINT `FKo10sqf3qgeqp66e8w2i717d7o` FOREIGN KEY (`hoa_don_ma_hoa_don`) REFERENCES `hoa_don` (`ma_hoa_don`)
+  KEY `FKo10sqf3qgeqp66e8w2i717d7o` (`ma_hoa_don`),
+  CONSTRAINT `FKo10sqf3qgeqp66e8w2i717d7o` FOREIGN KEY (`ma_hoa_don`) REFERENCES `hoa_don` (`ma_hoa_don`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -443,17 +443,20 @@ DROP TABLE IF EXISTS `phieu_thu`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `phieu_thu` (
   `ma_phieu_thu` int NOT NULL AUTO_INCREMENT,
-  `cap_nhat_lan_cuoi` date DEFAULT NULL,
+  `ma_hoa_don` int DEFAULT NULL,
+  `ma_khach` int DEFAULT NULL,
+  `so_tien_thu` decimal(38,2) DEFAULT NULL,
   `con_no` decimal(38,2) DEFAULT NULL,
+  `noi_dung_thu` varchar(255) DEFAULT NULL,
   `ghi_chu` varchar(255) DEFAULT NULL,
   `ngay_thu` date DEFAULT NULL,
-  `noi_dung_thu` varchar(255) DEFAULT NULL,
-  `so_tien_thu` decimal(38,2) DEFAULT NULL,
-  `trang_thai` enum('daXoa','hoatDong') DEFAULT NULL,
-  `ma_hoa_don` int DEFAULT NULL,
+  `cap_nhat_lan_cuoi` date DEFAULT NULL,
+  `trang_thai` enum('hoatDong','daXoa') DEFAULT 'hoatDong',
   PRIMARY KEY (`ma_phieu_thu`),
-  KEY `FKc3fw50fg7r94dhgq7te26t6jl` (`ma_hoa_don`),
-  CONSTRAINT `FKc3fw50fg7r94dhgq7te26t6jl` FOREIGN KEY (`ma_hoa_don`) REFERENCES `hoa_don` (`ma_hoa_don`),
+  KEY `FK_phieu_thu_hoa_don` (`ma_hoa_don`),
+  KEY `FK_phieu_thu_khach_thue` (`ma_khach`),
+  CONSTRAINT `FK_phieu_thu_hoa_don` FOREIGN KEY (`ma_hoa_don`) REFERENCES `hoa_don` (`ma_hoa_don`),
+  CONSTRAINT `FK_phieu_thu_khach_thue` FOREIGN KEY (`ma_khach`) REFERENCES `khach_thue` (`ma_khach`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

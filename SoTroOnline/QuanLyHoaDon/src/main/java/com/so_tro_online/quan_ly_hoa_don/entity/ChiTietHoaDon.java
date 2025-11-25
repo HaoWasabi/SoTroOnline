@@ -1,5 +1,6 @@
 package com.so_tro_online.quan_ly_hoa_don.entity;
 
+
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -13,6 +14,7 @@ public class ChiTietHoaDon {
     private Integer id;
 
     @ManyToOne
+    @JoinColumn(name = "ma_hoa_don", nullable = false)
     private HoaDon hoaDon;
 
     @Column(name = "ten_dich_vu")

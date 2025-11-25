@@ -1,10 +1,6 @@
 package com.so_tro_online.quan_ly_hoa_don.service;
 
 
-import com.deepoove.poi.XWPFTemplate;
-import com.deepoove.poi.data.RowRenderData;
-import com.deepoove.poi.data.Rows;
-import com.deepoove.poi.data.TableRenderData;
 import com.so_tro_online.quan_ly_dich_vu_phong.entity.DichVu;
 import com.so_tro_online.quan_ly_dich_vu_phong.repository.DichVuRepository;
 import com.so_tro_online.quan_ly_hoa_don.dto.ChiTietHoaDonResponse;
@@ -13,6 +9,7 @@ import com.so_tro_online.quan_ly_hoa_don.dto.HoaDonResponse;
 import com.so_tro_online.quan_ly_hoa_don.entity.ChiTietHoaDon;
 import com.so_tro_online.quan_ly_hoa_don.entity.HoaDon;
 import com.so_tro_online.quan_ly_hoa_don.repository.HoaDonRepository;
+import com.so_tro_online.quan_ly_hoa_don.util.HoaDonExporter;
 import com.so_tro_online.quan_ly_hop_dong_dich_vu.entity.SuDungDichVu;
 import com.so_tro_online.quan_ly_hop_dong_dich_vu.repository.SuDungDichVuRepository;
 
@@ -23,19 +20,15 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.nio.file.Files;
+
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
+
 
 import static com.so_tro_online.quan_ly_hop_dong_dich_vu.entity.TrangThai.hoatDong;
 
@@ -90,85 +83,85 @@ public class HoaDonService implements IHoaDonService{
                 .toList();
     }
 
-    @Override
-    public void printHoaDonByThangAndNam(HttpServletResponse response, Integer thang, Integer nam) throws IOException {
-        List<HoaDon> hoaDons = hoaDonRepository.findByMonthAndYear(thang, nam);
-        if (hoaDons.isEmpty()) {
-            throw new RuntimeException("Không có hóa đơn nào trong tháng " + thang + "/" + nam);
-        }
-
-        // Thư mục tạm để lưu file Word
-        File tempDir = Files.createTempDirectory("hoadon_tmp").toFile();
-
-        for (HoaDon hoaDon : hoaDons) {
-            Map<String, Object> data = new HashMap<>();
-            data.put("maHoaDon", hoaDon.getMaHoaDon());
-//data.put("tenKhach", hoaDon.getHopDongPhong().getKhachThue().getHoTen());
-            data.put("tenPhong", hoaDon.getHopDongPhong().getPhong().getTenPhong());
-            data.put("ngayLap", hoaDon.getNgayTao());
-            data.put("tienPhong", hoaDon.getTienPhong());
-            data.put("tienDichVu", hoaDon.getTienDichVu());
-            data.put("tongTien", hoaDon.getTongTien());
-            data.put("tienConNo", hoaDon.getTienConNo());
-            // Chi tiết hóa đơn
-            RowRenderData header = Rows.of("Tên dịch vụ", "Số lượng", "Đơn giá","Tiền thực tế","Hệ số","Thành tiền")
-                    .center().textBold().create();
-
-            List<RowRenderData> rows = hoaDon.getChiTietHoaDons().stream()
-                    .map(ct -> Rows.create(
-                            ct.getTenDichVu(),
-                            String.valueOf(ct.getSoLuong()),
-                            String.valueOf(ct.getDonGia()),
-                            String.valueOf(ct.getTienThucTe()),
-                            String.valueOf(ct.getHeSo()),
-                            String.valueOf(ct.getThanhTien())
-                    ))
-                    .toList();
-
-
-            TableRenderData table = new TableRenderData();
-            table.addRow(header);
-            for (RowRenderData row : rows) {
-                table.addRow(row);
-            }
-            data.put("chiTietHoaDons", table);
-            try (XWPFTemplate template = XWPFTemplate.compile(
-                            this.getClass().getResourceAsStream("/templates/hoadon_template.docx"))
-                    .render(data)) {
-
-                File outFile = new File(tempDir, "hoadon_" + hoaDon.getMaHoaDon() + ".docx");
-                try (FileOutputStream out = new FileOutputStream(outFile)) {
-                    template.write(out);
-                }
-            }
-        }
-
-        // Nén tất cả file thành zip
-        File zipFile = new File(tempDir.getParent(), "hoadon_" + thang + "_" + nam + ".zip");
-        try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile))) {
-            for (File file : Objects.requireNonNull(tempDir.listFiles())) {
-                try (FileInputStream fis = new FileInputStream(file)) {
-                    ZipEntry entry = new ZipEntry(file.getName());
-                    zos.putNextEntry(entry);
-                    fis.transferTo(zos);
-                    zos.closeEntry();
-                }
-            }
-        }
-
-        byte[] zipBytes = Files.readAllBytes(zipFile.toPath());
-
-        // Xóa file tạm
-        for (File f : Objects.requireNonNull(tempDir.listFiles())) f.delete();
-        tempDir.delete();
-        zipFile.deleteOnExit();
-        response.setContentType("application/zip");
-        response.setHeader("Content-Disposition", "attachment; filename=hoadon_" + thang + "_" + nam + ".zip");
-        response.getOutputStream().write(zipBytes);
-        response.getOutputStream().flush();
-
-
-    }
+//    @Override
+//    public void printHoaDonByThangAndNam(HttpServletResponse response, Integer thang, Integer nam) throws IOException {
+//        List<HoaDon> hoaDons = hoaDonRepository.findByMonthAndYear(thang, nam);
+//        if (hoaDons.isEmpty()) {
+//            throw new RuntimeException("Không có hóa đơn nào trong tháng " + thang + "/" + nam);
+//        }
+//
+//        // Thư mục tạm để lưu file Word
+//        File tempDir = Files.createTempDirectory("hoadon_tmp").toFile();
+//
+//        for (HoaDon hoaDon : hoaDons) {
+//            Map<String, Object> data = new HashMap<>();
+//            data.put("maHoaDon", hoaDon.getMaHoaDon());
+//            data.put("tenKhach", hoaDon.getHopDongPhong().getKhachThue().getHoTen());
+//            data.put("tenPhong", hoaDon.getHopDongPhong().getPhong().getTenPhong());
+//            data.put("ngayLap", hoaDon.getNgayTao());
+//            data.put("tienPhong", hoaDon.getTienPhong());
+//            data.put("tienDichVu", hoaDon.getTienDichVu());
+//            data.put("tongTien", hoaDon.getTongTien());
+//            data.put("tienConNo", hoaDon.getTienConNo());
+//            // Chi tiết hóa đơn
+//            RowRenderData header = Rows.of("Tên dịch vụ", "Số lượng", "Đơn giá","Tiền thực tế","Hệ số","Thành tiền")
+//                    .center().textBold().create();
+//
+//            List<RowRenderData> rows = hoaDon.getChiTietHoaDons().stream()
+//                    .map(ct -> Rows.create(
+//                            ct.getTenDichVu(),
+//                            String.valueOf(ct.getSoLuong()),
+//                            String.valueOf(ct.getDonGia()),
+//                            String.valueOf(ct.getTienThucTe()),
+//                            String.valueOf(ct.getHeSo()),
+//                            String.valueOf(ct.getThanhTien())
+//                    ))
+//                    .toList();
+//
+//
+//            TableRenderData table = new TableRenderData();
+//            table.addRow(header);
+//            for (RowRenderData row : rows) {
+//                table.addRow(row);
+//            }
+//            data.put("chiTietHoaDons", table);
+//            try (XWPFTemplate template = XWPFTemplate.compile(
+//                            this.getClass().getResourceAsStream("/templates/hoadon_template.docx"))
+//                    .render(data)) {
+//
+//                File outFile = new File(tempDir, "hoadon_" + hoaDon.getMaHoaDon() + ".docx");
+//                try (FileOutputStream out = new FileOutputStream(outFile)) {
+//                    template.write(out);
+//                }
+//            }
+//        }
+//
+//        // Nén tất cả file thành zip
+//        File zipFile = new File(tempDir.getParent(), "hoadon_" + thang + "_" + nam + ".zip");
+//        try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile))) {
+//            for (File file : Objects.requireNonNull(tempDir.listFiles())) {
+//                try (FileInputStream fis = new FileInputStream(file)) {
+//                    ZipEntry entry = new ZipEntry(file.getName());
+//                    zos.putNextEntry(entry);
+//                    fis.transferTo(zos);
+//                    zos.closeEntry();
+//                }
+//            }
+//        }
+//
+//        byte[] zipBytes = Files.readAllBytes(zipFile.toPath());
+//
+//        // Xóa file tạm
+//        for (File f : Objects.requireNonNull(tempDir.listFiles())) f.delete();
+//        tempDir.delete();
+//        zipFile.deleteOnExit();
+//        response.setContentType("application/zip");
+//        response.setHeader("Content-Disposition", "attachment; filename=hoadon_" + thang + "_" + nam + ".zip");
+//        response.getOutputStream().write(zipBytes);
+//        response.getOutputStream().flush();
+//
+//
+//    }
 
     @Override
     public HoaDonResponse createHoaDon(HoaDonRequest request) {
@@ -238,18 +231,30 @@ public class HoaDonService implements IHoaDonService{
         DichVu dichVu = dichVuRepository.findById(1)
                 .orElseThrow(() -> new RuntimeException("Dich vu not found"));
 
-        SuDungDichVu suDung = suDungRepo.findByPhongAndThangNam(
+        // Tìm chỉ số điện nước, nếu không có thì sử dụng giá trị mặc định
+        Optional<SuDungDichVu> suDungOptional = suDungRepo.findByPhongAndThangNam(
                 hopDong.getPhong().getMaPhong(),
                 request.getThang(),
                 request.getNam(),
                 hoatDong
-        ).orElseThrow(() -> new ReseourceNotFoundException(
-                String.format("Không tìm thấy chỉ số điện nước của phòng %d tháng %d năm %d",
-                        hopDong.getPhong().getMaPhong(), request.getThang(), request.getNam())
-        ));
+        );
+
+        // Sử dụng giá trị mặc định nếu không tìm thấy chỉ số điện nước
+        Integer soNuocDung = 0;
+        Integer soDienDung = 0;
+        
+        if (suDungOptional.isPresent()) {
+            SuDungDichVu suDung = suDungOptional.get();
+            soNuocDung = suDung.getChiSoNuocMoi() - suDung.getChiSoNuocCu();
+            soDienDung = suDung.getChiSoDienMoi() - suDung.getChiSoDienCu();
+        } else {
+            // Log warning và sử dụng giá trị mặc định
+            System.out.println("Warning: Không tìm thấy chỉ số điện nước của phòng " + 
+                hopDong.getPhong().getMaPhong() + " tháng " + request.getThang() + 
+                " năm " + request.getNam() + ". Sử dụng giá trị mặc định 0.");
+        }
 
         // Chi tiết tiền nước
-        Integer soNuocDung = suDung.getChiSoNuocMoi() - suDung.getChiSoNuocCu();
         ChiTietHoaDon ctNuoc = new ChiTietHoaDon();
         ctNuoc.setHoaDon(hoaDon);
         ctNuoc.setTenDichVu("Tiền nước");
@@ -261,7 +266,6 @@ public class HoaDonService implements IHoaDonService{
         chiTietList.add(ctNuoc);
 
         // Chi tiết tiền điện
-        Integer soDienDung = suDung.getChiSoDienMoi() - suDung.getChiSoDienCu();
         ChiTietHoaDon ctDien = new ChiTietHoaDon();
         ctDien.setHoaDon(hoaDon);
         ctDien.setTenDichVu("Tiền điện");
@@ -320,9 +324,9 @@ public class HoaDonService implements IHoaDonService{
         tongDichVu = ctDien.getThanhTien()
                 .add(ctNuoc.getThanhTien())
                 .add(ctRac.getThanhTien());
-                //.add(ctWifi.getThanhTien())
-                //.add(ctCap.getThanhTien())
-                //.add(ctKhac.getThanhTien());
+        //.add(ctWifi.getThanhTien())
+        //.add(ctCap.getThanhTien())
+        //.add(ctKhac.getThanhTien());
 
         // Hoàn thiện hóa đơn
         hoaDon.setChiTietHoaDons(chiTietList);
@@ -379,5 +383,35 @@ public class HoaDonService implements IHoaDonService{
                     response.setTienThucTe(chiTietHoaDon.getTienThucTe());
                     return response;
                 }).toList();
+    }
+
+    @Override
+    public void printHoaDon(Integer id, HttpServletResponse response) {
+        HoaDon hoaDon = hoaDonRepository.findById(id)
+                .orElseThrow(() -> new ReseourceNotFoundException("không tìm thấy hoá đơn với id: " + id));
+        try {
+            java.nio.file.Path temp = java.nio.file.Files.createTempFile("HoaDon_" + id + "_", ".docx");
+            // Export to temporary file using existing exporter
+            HoaDonExporter.exportHoaDon(temp.toAbsolutePath().toString(), id);
+
+            // Set response headers for download
+            response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+            response.setHeader("Content-Disposition", "attachment; filename=\"HoaDon_" + id + ".docx\"");
+
+            // Stream file to response
+            try (java.io.InputStream in = java.nio.file.Files.newInputStream(temp);
+                 java.io.OutputStream out = response.getOutputStream()) {
+                byte[] buffer = new byte[8192];
+                int len;
+                while ((len = in.read(buffer)) != -1) {
+                    out.write(buffer, 0, len);
+                }
+                out.flush();
+            }
+
+            java.nio.file.Files.deleteIfExists(temp);
+        } catch (IOException e) {
+            throw new RuntimeException("Lỗi khi xuất hóa đơn", e);
+        }
     }
 }

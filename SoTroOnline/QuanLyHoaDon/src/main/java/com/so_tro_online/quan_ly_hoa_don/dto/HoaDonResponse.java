@@ -1,6 +1,7 @@
 package com.so_tro_online.quan_ly_hoa_don.dto;
 
 
+
 import com.so_tro_online.quan_ly_hoa_don.entity.TrangThai;
 import jakarta.persistence.*;
 
@@ -123,6 +124,20 @@ public class HoaDonResponse {
     public List<ChiTietHoaDonResponse> getChiTietHoaDons() {
         return chiTietHoaDons;
     }
+
+    public BigDecimal tinhTongTienChiTiet() {
+        List<ChiTietHoaDonResponse> ds = getChiTietHoaDons(); // dùng getter
+
+        if (ds == null || ds.isEmpty()) {
+            return BigDecimal.ZERO;
+        }
+
+        return ds.stream()
+                .map(ChiTietHoaDonResponse::getThanhTien)
+                .filter(t -> t != null)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
 
     public Integer getThang() {
         return thang;

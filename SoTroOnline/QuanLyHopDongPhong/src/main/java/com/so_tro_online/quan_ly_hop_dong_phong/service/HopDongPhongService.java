@@ -84,12 +84,42 @@ public class HopDongPhongService implements IHopDongPhongService {
     }
 
     private HopDongPhongResponse mapToHopDongPhongResponse(HopDongPhong hopDongPhong) {
-        // Note: khachThue fields are now null since tenant relationship is managed separately
+        // Get main tenant for this contract
+        Integer maKhachDaiDien = null;
+        String tenKhachDaiDien = null;
+        
+        try {
+            // Fetch tenant-contract relationships for this contract
+            List<Map<String, Object>> tenants = hopDongKhachThueService.getContractTenants(hopDongPhong.getMaHopDongPhong());
+            
+            // Find the main tenant (representative)
+            if (tenants != null && !tenants.isEmpty()) {
+                for (Map<String, Object> tenant : tenants) {
+                    Boolean isMainTenant = (Boolean) tenant.get("is_main_tenant");
+                    if (isMainTenant != null && isMainTenant) {
+                        maKhachDaiDien = (Integer) tenant.get("ma_khach");
+                        tenKhachDaiDien = (String) tenant.get("ho_ten");
+                        break;
+                    }
+                }
+                
+                // If no main tenant found, use the first tenant
+                if (maKhachDaiDien == null && !tenants.isEmpty()) {
+                    Map<String, Object> firstTenant = tenants.get(0);
+                    maKhachDaiDien = (Integer) firstTenant.get("ma_khach");
+                    tenKhachDaiDien = (String) firstTenant.get("ho_ten");
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Warning: Could not fetch tenant data for contract " + hopDongPhong.getMaHopDongPhong() + ": " + e.getMessage());
+            // Continue with null tenant data
+        }
+        
         return new HopDongPhongResponse(hopDongPhong.getMaHopDongPhong(),
                 hopDongPhong.getTaiKhoan().getMaTaiKhoan(),
                 hopDongPhong.getTaiKhoan().getHoTen(),
-                null, // maKhachThue - now managed in HopDongKhachThue
-                null, // tenKhachThue - now managed in HopDongKhachThue
+                maKhachDaiDien, // maKhachThue from HopDongKhachThue
+                tenKhachDaiDien, // tenKhachThue from HopDongKhachThue
                 hopDongPhong.getPhong().getMaPhong(),
                 hopDongPhong.getPhong().getTenPhong(),
                 hopDongPhong.getTienPhong(),

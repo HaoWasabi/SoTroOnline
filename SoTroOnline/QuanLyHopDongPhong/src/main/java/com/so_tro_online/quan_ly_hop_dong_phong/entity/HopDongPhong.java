@@ -62,8 +62,16 @@ public class HopDongPhong {
         return taiKhoan;
     }
 
+    public Integer getMaTaiKhoan() {
+        return taiKhoan != null ? taiKhoan.getMaTaiKhoan() : null;
+    }
+
     public Phong getPhong() {
         return phong;
+    }
+
+    public Integer getMaPhong() {
+        return phong != null ? phong.getMaPhong() : null;
     }
 
     public BigDecimal getTienPhong() {

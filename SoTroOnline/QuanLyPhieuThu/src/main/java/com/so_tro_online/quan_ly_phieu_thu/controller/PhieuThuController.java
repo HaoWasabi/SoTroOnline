@@ -1,10 +1,12 @@
 package com.so_tro_online.quan_ly_phieu_thu.controller;
 
 
+
 import com.so_tro_online.dung_chung.dto.ApiResponseV2;
 import com.so_tro_online.quan_ly_phieu_thu.dto.PhieuThuRequest;
 import com.so_tro_online.quan_ly_phieu_thu.dto.ThuNoRequest;
 import com.so_tro_online.quan_ly_phieu_thu.service.IPhieuThuService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,7 +42,7 @@ public class PhieuThuController {
     public ResponseEntity<ApiResponseV2>updatePhieuThu(@PathVariable Integer id, @RequestBody PhieuThuRequest request) {
         return ResponseEntity.ok(new ApiResponseV2("success", phieuThuService.updatePhieuThu(id,request)));
     }
-   @GetMapping("/invoice/{id}")
+    @GetMapping("/invoice/{id}")
     public ResponseEntity<ApiResponseV2> getPhieuThuByHoaDon(@PathVariable Integer id) {
         return ResponseEntity.ok(new ApiResponseV2("success", phieuThuService.getPhieuThuByHoaDon(id)));
     }
@@ -51,5 +53,11 @@ public class PhieuThuController {
     @PostMapping("/debt-collection")
     public ResponseEntity<ApiResponseV2> thuNo(@RequestBody ThuNoRequest request) {
         return ResponseEntity.status(201).body(new ApiResponseV2("success", phieuThuService.thuTienTuDong(request.getMaHopDongPhong(),request.getSoTienThu())));
+    }
+    
+    // Endpoint to print/download a receipt as a .docx file
+    @GetMapping("/print/{id}")
+    public void printPhieuThu(@PathVariable Integer id, HttpServletResponse response) {
+        phieuThuService.printPhieuThu(id, response);
     }
 }

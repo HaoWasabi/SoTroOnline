@@ -179,11 +179,24 @@ public class HopDongPhongController {
     public ResponseEntity<Map<String, Object>> getAllActiveContracts() {
         Map<String, Object> response = new HashMap<>();
         try {
+            System.out.println("DEBUG: getAllActiveContracts() called");
             List<HopDongPhongResponse> contracts = hopDongPhongService.getAllHopDongPhongActive();
+            System.out.println("DEBUG: Found " + contracts.size() + " active contracts");
+            
+            // Log first contract for debugging
+            if (!contracts.isEmpty()) {
+                HopDongPhongResponse firstContract = contracts.get(0);
+                System.out.println("DEBUG: First contract - ID: " + firstContract.getMaHopDongPhong() + 
+                                 ", Tenant ID: " + firstContract.getMaKhachThue() + 
+                                 ", Tenant Name: " + firstContract.getTenKhachThue());
+            }
+            
             response.put("message", "success");
             response.put("data", contracts);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
+            System.err.println("ERROR in getAllActiveContracts: " + e.getMessage());
+            e.printStackTrace();
             response.put("message", "error");
             response.put("data", e.getMessage());
             return ResponseEntity.badRequest().body(response);

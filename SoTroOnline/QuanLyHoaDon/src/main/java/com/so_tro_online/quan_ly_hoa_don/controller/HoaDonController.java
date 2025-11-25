@@ -1,7 +1,6 @@
 package com.so_tro_online.quan_ly_hoa_don.controller;
 
 
-
 import com.so_tro_online.dung_chung.dto.ApiResponseV2;
 import com.so_tro_online.quan_ly_hoa_don.dto.HoaDonRequest;
 import com.so_tro_online.quan_ly_hoa_don.service.IHoaDonService;
@@ -47,10 +46,10 @@ public class HoaDonController {
     public ResponseEntity<ApiResponseV2>getHoaDonByDate(@RequestParam Integer thang,@RequestParam Integer nam) {
         return ResponseEntity.ok(new ApiResponseV2("success",hoaDonService.getHoaDonByDate(thang, nam)));
     }
-    @GetMapping("/print")
+    /*@GetMapping("/print")
     public void printHoaDonByDate(@RequestParam Integer thang,@RequestParam Integer nam, HttpServletResponse res) throws IOException {
         hoaDonService.printHoaDonByThangAndNam(res,thang,nam);
-    }
+    }*/
     @PostMapping
     public ResponseEntity<ApiResponseV2> createHoaDon(@RequestBody HoaDonRequest request) {
         return ResponseEntity.ok(new ApiResponseV2("success",hoaDonService.createHoaDon(request)));
@@ -59,5 +58,11 @@ public class HoaDonController {
     public ResponseEntity<ApiResponseV2>deleteHoaDon(@PathVariable Integer id) {
         hoaDonService.deleteHoaDon(id);
         return ResponseEntity.ok(new ApiResponseV2("success", null));
+    }
+
+    // Endpoint to print/download an invoice as a .docx file
+    @GetMapping("/{id}/print")
+    public void printHoaDon(@PathVariable Integer id, HttpServletResponse response) {
+        hoaDonService.printHoaDon(id, response);
     }
 }

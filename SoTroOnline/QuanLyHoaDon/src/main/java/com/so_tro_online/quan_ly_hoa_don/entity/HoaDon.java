@@ -63,6 +63,10 @@ public class HoaDon {
         return hopDongPhong;
     }
 
+    public Integer getMaHopDongPhong() {
+        return hopDongPhong != null ? hopDongPhong.getMaHopDongPhong() : null;
+    }
+
     public void setHopDongPhong(HopDongPhong hopDongPhong) {
         this.hopDongPhong = hopDongPhong;
     }

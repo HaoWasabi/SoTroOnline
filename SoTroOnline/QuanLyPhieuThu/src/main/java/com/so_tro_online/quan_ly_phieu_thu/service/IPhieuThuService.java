@@ -4,6 +4,7 @@ import com.so_tro_online.quan_ly_hop_dong_dich_vu.dto.MyHopDongDichVuRequest;
 import com.so_tro_online.quan_ly_hop_dong_dich_vu.dto.MyHopDongDichVuResponse;
 import com.so_tro_online.quan_ly_phieu_thu.dto.PhieuThuRequest;
 import com.so_tro_online.quan_ly_phieu_thu.dto.PhieuThuResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -18,4 +19,5 @@ public interface IPhieuThuService {
     public List<PhieuThuResponse> getPhieuThuByHoaDon(Integer maHoaDon);
     public List<PhieuThuResponse> getPhieuThuByKhachThue(Integer maKhachThue);
     public List<PhieuThuResponse> thuTienTuDong(Integer maHopDongPhong, BigDecimal soTienThu);
+    public void printPhieuThu(Integer id, HttpServletResponse response);
 }
