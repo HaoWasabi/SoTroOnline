@@ -290,14 +290,14 @@ public class HopDongPhongController {
     }
 
     /**
-     * Generate contract PDF document
+     * Generate professional contract DOCX document using HopDongExporter
      */
-    @GetMapping("/{contractId}/pdf")
-    public void generateContractPDF(@PathVariable Integer contractId, HttpServletResponse response) {
+    @GetMapping("/{contractId}/professional-docx")
+    public void generateProfessionalContract(@PathVariable Integer contractId, HttpServletResponse response) {
         try {
-            hopDongPhongService.generateContractPDF(response, contractId);
+            hopDongPhongService.generateProfessionalContract(response, contractId);
         } catch (Exception e) {
-            throw new RuntimeException("Error generating PDF: " + e.getMessage());
+            throw new RuntimeException("Failed to generate professional contract: " + e.getMessage(), e);
         }
     }
 

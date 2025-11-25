@@ -119,11 +119,6 @@ public class PhieuThuService implements IPhieuThuService{
     }
 
     @Override
-    public void deletePhieuThu(Integer id) {
-
-    }
-
-    @Override
     public PhieuThuResponse getPhieuThuById(Integer id) {
         return phieuThuRepository.findById(id)
                 .map(this::toResponse)

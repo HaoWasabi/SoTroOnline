@@ -14,7 +14,6 @@ public interface IPhieuThuService {
     public List<PhieuThuResponse> getAllActivePhieuThu();
     public PhieuThuResponse createPhieuThu(PhieuThuRequest req);
     public PhieuThuResponse updatePhieuThu(Integer id, PhieuThuRequest req);
-    public void deletePhieuThu(Integer id);
     public PhieuThuResponse getPhieuThuById(Integer id);
     public List<PhieuThuResponse> getPhieuThuByHoaDon(Integer maHoaDon);
     public List<PhieuThuResponse> getPhieuThuByKhachThue(Integer maKhachThue);
