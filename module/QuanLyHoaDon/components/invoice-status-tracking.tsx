@@ -74,7 +74,7 @@ export default function InvoiceStatusTracking() {
     const [isLoading, setIsLoading] = useState(false)
     const [searchTerm, setSearchTerm] = useState("")
     const [statusFilter, setStatusFilter] = useState<string>("all")
-    const [selectedMonth, setSelectedMonth] = useState<string>("")
+    const [selectedMonth, setSelectedMonth] = useState<string>("all-months")
     const [activeTab, setActiveTab] = useState("overview")
 
     const calculateStats = (invoiceList: Invoice[]): InvoiceStats => {
@@ -244,7 +244,7 @@ export default function InvoiceStatusTracking() {
         }
 
         // Apply month filter
-        if (selectedMonth) {
+        if (selectedMonth && selectedMonth !== "all-months") {
             const [year, month] = selectedMonth.split("-")
             filtered = filtered.filter(invoice => 
                 invoice.nam.toString() === year && invoice.thang.toString().padStart(2, '0') === month
@@ -325,10 +325,13 @@ export default function InvoiceStatusTracking() {
                 </Button>
             </DialogTrigger>
 
-            <DialogContent className="min-w-7xl max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                    <DialogTitle className="text-xl font-bold flex items-center gap-2">
-                        <TrendingUp className="h-5 w-5" />
+            <DialogContent className="min-w-7xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-white via-slate-50 to-blue-50/30 backdrop-blur-sm border-0 rounded-2xl shadow-2xl">
+                <DialogHeader className="pb-6">
+                    <DialogTitle className="text-2xl font-bold flex items-center gap-3 text-gray-900">
+                        <div className="relative h-12 w-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                            <TrendingUp className="h-6 w-6 text-white" />
+                            <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-blue-400/20 to-transparent"></div>
+                        </div>
                         {language === "vi" ? "Theo dõi trạng thái hóa đơn" : "Invoice Status Tracking"}
                     </DialogTitle>
                 </DialogHeader>
@@ -352,82 +355,122 @@ export default function InvoiceStatusTracking() {
 
                         <TabsContent value="overview" className="space-y-6">
                             {/* Summary Cards */}
-                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
-                                <Card className="bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200">
-                                    <CardContent className="p-4 text-center">
-                                        <BarChart3 className="h-8 w-8 text-gray-600 mx-auto mb-2" />
-                                        <p className="text-2xl font-bold text-gray-700">{stats.total}</p>
-                                        <p className="text-xs text-gray-600">{language === "vi" ? "Tổng cộng" : "Total"}</p>
+                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-6">
+                                <Card className="hover:shadow-lg hover:scale-[1.02] transition-all duration-300 border-0 rounded-2xl bg-gradient-to-br from-white via-gray-50 to-slate-50/30 backdrop-blur-sm shadow-md shadow-gray-100/50">
+                                    <CardContent className="p-6 text-center">
+                                        <div className="relative h-12 w-12 bg-gradient-to-br from-gray-500 to-slate-600 rounded-xl flex items-center justify-center shadow-lg mx-auto mb-3">
+                                            <BarChart3 className="h-6 w-6 text-white" />
+                                            <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-gray-400/20 to-transparent"></div>
+                                        </div>
+                                        <p className="text-2xl font-bold text-gray-800 mb-1">{stats.total}</p>
+                                        <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider">{language === "vi" ? "Tổng cộng" : "Total"}</p>
                                     </CardContent>
                                 </Card>
 
-                                <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-                                    <CardContent className="p-4 text-center">
-                                        <CheckCircle className="h-8 w-8 text-green-600 mx-auto mb-2" />
-                                        <p className="text-2xl font-bold text-green-700">{stats.paid}</p>
-                                        <p className="text-xs text-green-600">{language === "vi" ? "Đã TT" : "Paid"}</p>
+                                <Card className="hover:shadow-lg hover:scale-[1.02] transition-all duration-300 border-0 rounded-2xl bg-gradient-to-br from-white via-green-50 to-emerald-50/30 backdrop-blur-sm shadow-md shadow-green-100/50">
+                                    <CardContent className="p-6 text-center">
+                                        <div className="relative h-12 w-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg mx-auto mb-3">
+                                            <CheckCircle className="h-6 w-6 text-white" />
+                                            <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-green-400/20 to-transparent"></div>
+                                        </div>
+                                        <p className="text-2xl font-bold text-green-700 mb-1">{stats.paid}</p>
+                                        <p className="text-xs font-semibold text-green-600 uppercase tracking-wider">{language === "vi" ? "Đã TT" : "Paid"}</p>
                                     </CardContent>
                                 </Card>
 
-                                <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
-                                    <CardContent className="p-4 text-center">
-                                        <Clock className="h-8 w-8 text-yellow-600 mx-auto mb-2" />
-                                        <p className="text-2xl font-bold text-yellow-700">{stats.pending}</p>
-                                        <p className="text-xs text-yellow-600">{language === "vi" ? "Chờ TT" : "Pending"}</p>
+                                <Card className="hover:shadow-lg hover:scale-[1.02] transition-all duration-300 border-0 rounded-2xl bg-gradient-to-br from-white via-yellow-50 to-amber-50/30 backdrop-blur-sm shadow-md shadow-yellow-100/50">
+                                    <CardContent className="p-6 text-center">
+                                        <div className="relative h-12 w-12 bg-gradient-to-br from-yellow-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg mx-auto mb-3">
+                                            <Clock className="h-6 w-6 text-white" />
+                                            <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-yellow-400/20 to-transparent"></div>
+                                        </div>
+                                        <p className="text-2xl font-bold text-yellow-700 mb-1">{stats.pending}</p>
+                                        <p className="text-xs font-semibold text-yellow-600 uppercase tracking-wider">{language === "vi" ? "Chờ TT" : "Pending"}</p>
                                     </CardContent>
                                 </Card>
 
-                                <Card className="bg-gradient-to-br from-red-50 to-red-100 border-red-200">
-                                    <CardContent className="p-4 text-center">
-                                        <AlertTriangle className="h-8 w-8 text-red-600 mx-auto mb-2" />
-                                        <p className="text-2xl font-bold text-red-700">{stats.overdue}</p>
-                                        <p className="text-xs text-red-600">{language === "vi" ? "Quá hạn" : "Overdue"}</p>
+                                <Card className="hover:shadow-lg hover:scale-[1.02] transition-all duration-300 border-0 rounded-2xl bg-gradient-to-br from-white via-red-50 to-rose-50/30 backdrop-blur-sm shadow-md shadow-red-100/50">
+                                    <CardContent className="p-6 text-center">
+                                        <div className="relative h-12 w-12 bg-gradient-to-br from-red-500 to-rose-600 rounded-xl flex items-center justify-center shadow-lg mx-auto mb-3">
+                                            <AlertTriangle className="h-6 w-6 text-white" />
+                                            <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-red-400/20 to-transparent"></div>
+                                        </div>
+                                        <p className="text-2xl font-bold text-red-700 mb-1">{stats.overdue}</p>
+                                        <p className="text-xs font-semibold text-red-600 uppercase tracking-wider">{language === "vi" ? "Quá hạn" : "Overdue"}</p>
                                     </CardContent>
                                 </Card>
 
-                                <Card className="bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200">
-                                    <CardContent className="p-4 text-center">
-                                        <XCircle className="h-8 w-8 text-slate-600 mx-auto mb-2" />
-                                        <p className="text-2xl font-bold text-slate-700">{stats.deleted}</p>
-                                        <p className="text-xs text-slate-600">{language === "vi" ? "Đã xóa" : "Deleted"}</p>
+                                <Card className="hover:shadow-lg hover:scale-[1.02] transition-all duration-300 border-0 rounded-2xl bg-gradient-to-br from-white via-slate-50 to-gray-50/30 backdrop-blur-sm shadow-md shadow-slate-100/50">
+                                    <CardContent className="p-6 text-center">
+                                        <div className="relative h-12 w-12 bg-gradient-to-br from-slate-500 to-gray-600 rounded-xl flex items-center justify-center shadow-lg mx-auto mb-3">
+                                            <XCircle className="h-6 w-6 text-white" />
+                                            <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-slate-400/20 to-transparent"></div>
+                                        </div>
+                                        <p className="text-2xl font-bold text-slate-700 mb-1">{stats.deleted}</p>
+                                        <p className="text-xs font-semibold text-slate-600 uppercase tracking-wider">{language === "vi" ? "Đã xóa" : "Deleted"}</p>
                                     </CardContent>
                                 </Card>
 
-                                <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200">
-                                    <CardContent className="p-4 text-center">
-                                        <TrendingUp className="h-8 w-8 text-emerald-600 mx-auto mb-2" />
-                                        <p className="text-lg font-bold text-emerald-700">{stats.totalRevenue.toLocaleString("vi-VN")}₫</p>
-                                        <p className="text-xs text-emerald-600">{language === "vi" ? "Doanh thu" : "Revenue"}</p>
+                                <Card className="hover:shadow-lg hover:scale-[1.02] transition-all duration-300 border-0 rounded-2xl bg-gradient-to-br from-white via-emerald-50 to-green-50/30 backdrop-blur-sm shadow-md shadow-emerald-100/50">
+                                    <CardContent className="p-6 text-center">
+                                        <div className="relative h-12 w-12 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg mx-auto mb-3">
+                                            <TrendingUp className="h-6 w-6 text-white" />
+                                            <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-emerald-400/20 to-transparent"></div>
+                                        </div>
+                                        <p className="text-lg font-bold text-emerald-700 mb-1">{stats.totalRevenue.toLocaleString("vi-VN")}₫</p>
+                                        <p className="text-xs font-semibold text-emerald-600 uppercase tracking-wider">{language === "vi" ? "Doanh thu" : "Revenue"}</p>
                                     </CardContent>
                                 </Card>
 
-                                <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
-                                    <CardContent className="p-4 text-center">
-                                        <AlertTriangle className="h-8 w-8 text-orange-600 mx-auto mb-2" />
-                                        <p className="text-lg font-bold text-orange-700">{stats.totalDebt.toLocaleString("vi-VN")}₫</p>
-                                        <p className="text-xs text-orange-600">{language === "vi" ? "Công nợ" : "Debt"}</p>
+                                <Card className="hover:shadow-lg hover:scale-[1.02] transition-all duration-300 border-0 rounded-2xl bg-gradient-to-br from-white via-orange-50 to-amber-50/30 backdrop-blur-sm shadow-md shadow-orange-100/50">
+                                    <CardContent className="p-6 text-center">
+                                        <div className="relative h-12 w-12 bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg mx-auto mb-3">
+                                            <AlertTriangle className="h-6 w-6 text-white" />
+                                            <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-orange-400/20 to-transparent"></div>
+                                        </div>
+                                        <p className="text-lg font-bold text-orange-700 mb-1">{stats.totalDebt.toLocaleString("vi-VN")}₫</p>
+                                        <p className="text-xs font-semibold text-orange-600 uppercase tracking-wider">{language === "vi" ? "Công nợ" : "Debt"}</p>
                                     </CardContent>
                                 </Card>
                             </div>
 
                             {/* Monthly Trend */}
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                        <Calendar className="h-5 w-5" />
+                            <Card className="hover:shadow-xl hover:scale-[1.01] transition-all duration-300 border-0 rounded-2xl bg-gradient-to-br from-white via-slate-50 to-blue-50/30 backdrop-blur-sm shadow-lg shadow-blue-100/20">
+                                <CardHeader className="pb-4">
+                                    <CardTitle className="flex items-center gap-3 text-lg font-bold text-gray-900">
+                                        <div className="relative h-10 w-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                                            <Calendar className="h-5 w-5 text-white" />
+                                            <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-blue-400/20 to-transparent"></div>
+                                        </div>
                                         {language === "vi" ? "Xu hướng 12 tháng gần đây" : "12-Month Trend"}
                                     </CardTitle>
                                 </CardHeader>
-                                <CardContent>
-                                    <div className="space-y-3">
+                                <CardContent className="pt-0">
+                                    <div className="space-y-4">
                                         {monthlyData.map((data, index) => (
-                                            <div key={data.month} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                                                <div className="font-medium">{data.month}</div>
-                                                <div className="flex items-center gap-4 text-sm">
-                                                    <span className="text-green-600">{language === "vi" ? "TT:" : "Paid:"} {data.paid}</span>
-                                                    <span className="text-yellow-600">{language === "vi" ? "Chờ:" : "Pending:"} {data.pending}</span>
-                                                    <span className="text-red-600">{language === "vi" ? "QH:" : "Overdue:"} {data.overdue}</span>
-                                                    <span className="text-blue-600 font-medium">{data.revenue.toLocaleString("vi-VN")}₫</span>
+                                            <div key={data.month} className="bg-gradient-to-r from-gray-50 to-slate-50 rounded-xl p-4 border border-gray-100 hover:shadow-md hover:scale-[1.01] transition-all duration-200">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500"></div>
+                                                        <div className="font-semibold text-gray-800">{data.month}</div>
+                                                    </div>
+                                                    <div className="flex items-center gap-6 text-sm">
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                                                            <span className="text-green-600 font-medium">{language === "vi" ? "TT:" : "Paid:"} {data.paid}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+                                                            <span className="text-yellow-600 font-medium">{language === "vi" ? "Chờ:" : "Pending:"} {data.pending}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                                                            <span className="text-red-600 font-medium">{language === "vi" ? "QH:" : "Overdue:"} {data.overdue}</span>
+                                                        </div>
+                                                        <div className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-3 py-1 rounded-lg font-bold text-sm shadow-md">
+                                                            {data.revenue.toLocaleString("vi-VN")}₫
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         ))}
@@ -438,22 +481,22 @@ export default function InvoiceStatusTracking() {
 
                         <TabsContent value="details" className="space-y-6">
                             {/* Search and Filters */}
-                            <div className="flex gap-4 items-center">
+                            <div className="flex gap-4 items-center p-6 bg-gradient-to-r from-slate-50 to-gray-50 rounded-2xl border border-gray-100 shadow-sm">
                                 <div className="flex-1 relative">
-                                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                                     <Input
                                         placeholder={language === "vi" ? "Tìm kiếm hóa đơn..." : "Search invoices..."}
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="pl-10"
+                                        className="pl-12 h-12 border-0 bg-white rounded-xl shadow-sm focus:shadow-md transition-all duration-200 font-medium"
                                     />
                                 </div>
                                 <Select value={statusFilter} onValueChange={setStatusFilter}>
-                                    <SelectTrigger className="w-40">
+                                    <SelectTrigger className="w-48 h-12 border-0 bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 font-medium">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="all">{language === "vi" ? "Tất cả" : "All Status"}</SelectItem>
+                                        <SelectItem value="all">{language === "vi" ? "Tất cả trạng thái" : "All Status"}</SelectItem>
                                         <SelectItem value="paid">{language === "vi" ? "Đã thanh toán" : "Paid"}</SelectItem>
                                         <SelectItem value="pending">{language === "vi" ? "Chờ thanh toán" : "Pending"}</SelectItem>
                                         <SelectItem value="overdue">{language === "vi" ? "Quá hạn" : "Overdue"}</SelectItem>
@@ -461,11 +504,11 @@ export default function InvoiceStatusTracking() {
                                     </SelectContent>
                                 </Select>
                                 <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-                                    <SelectTrigger className="w-40">
+                                    <SelectTrigger className="w-48 h-12 border-0 bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 font-medium">
                                         <SelectValue placeholder={language === "vi" ? "Tất cả tháng" : "All months"} />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="">{language === "vi" ? "Tất cả tháng" : "All months"}</SelectItem>
+                                        <SelectItem value="all-months">{language === "vi" ? "Tất cả tháng" : "All months"}</SelectItem>
                                         {monthOptions.map(option => (
                                             <SelectItem key={option.value} value={option.value}>
                                                 {option.label}
@@ -473,40 +516,48 @@ export default function InvoiceStatusTracking() {
                                         ))}
                                     </SelectContent>
                                 </Select>
-                                <Button onClick={loadInvoiceData} variant="outline" size="sm">
-                                    <RefreshCw className="h-4 w-4" />
+                                <Button 
+                                    onClick={loadInvoiceData} 
+                                    className="h-12 px-6 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 border-0 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 font-medium"
+                                >
+                                    <RefreshCw className="h-5 w-5" />
                                 </Button>
                             </div>
 
                             {/* Invoice List */}
-                            <div className="space-y-2 max-h-96 overflow-y-auto">
+                            <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
                                 {filteredInvoices.map((invoice) => (
-                                    <Card key={invoice.maHoaDon} className="hover:shadow-md transition-shadow">
-                                        <CardContent className="p-4">
+                                    <Card key={invoice.maHoaDon} className="hover:shadow-xl hover:scale-[1.01] transition-all duration-300 border-0 rounded-2xl bg-gradient-to-br from-white via-slate-50 to-gray-50/30 backdrop-blur-sm shadow-md shadow-gray-100/50">
+                                        <CardContent className="p-6">
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center gap-4">
-                                                    {getStatusIcon(invoice.trangThai)}
+                                                    <div className="relative h-12 w-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                                                        {getStatusIcon(invoice.trangThai)}
+                                                        <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-blue-400/20 to-transparent"></div>
+                                                    </div>
                                                     <div>
-                                                        <p className="font-semibold">
+                                                        <p className="font-bold text-lg text-gray-900 mb-1">
                                                             {language === "vi" ? "Hóa đơn" : "Invoice"} #{invoice.maHoaDon}
                                                         </p>
-                                                        <p className="text-sm text-gray-600">
+                                                        <p className="text-sm text-gray-600 flex items-center gap-2">
+                                                            <Calendar className="h-4 w-4" />
                                                             {invoice.thang}/{invoice.nam} • {invoice.tenPhong || `Contract #${invoice.maHopDongPhong}`}
                                                         </p>
                                                     </div>
                                                 </div>
                                                 <div className="flex items-center gap-4">
                                                     <div className="text-right">
-                                                        <p className="font-bold text-lg">
+                                                        <p className="font-bold text-xl text-gray-900 mb-1">
                                                             {invoice.tongTien.toLocaleString("vi-VN")}₫
                                                         </p>
                                                         {invoice.tienConNo > 0 && (
-                                                            <p className="text-sm text-red-600">
+                                                            <p className="text-sm font-medium text-red-600 bg-red-50 px-2 py-1 rounded-lg">
                                                                 {language === "vi" ? "Nợ:" : "Debt:"} {invoice.tienConNo.toLocaleString("vi-VN")}₫
                                                             </p>
                                                         )}
                                                     </div>
-                                                    <Badge className={getStatusColor(invoice.trangThai)}>
+                                                    <Badge className={`text-xs font-semibold border-0 px-3 py-2 rounded-xl flex items-center gap-1 shadow-md ${getStatusColor(invoice.trangThai)}`}>
+                                                        <div className="w-2 h-2 rounded-full bg-current opacity-80"></div>
                                                         {invoice.trangThai}
                                                     </Badge>
                                                 </div>
@@ -516,9 +567,15 @@ export default function InvoiceStatusTracking() {
                                 ))}
                                 
                                 {filteredInvoices.length === 0 && (
-                                    <Card className="bg-gray-50">
-                                        <CardContent className="p-8 text-center text-gray-600">
-                                            {language === "vi" ? "Không tìm thấy hóa đơn nào" : "No invoices found"}
+                                    <Card className="border-0 rounded-2xl bg-gradient-to-br from-gray-50 to-slate-50 shadow-md">
+                                        <CardContent className="p-12 text-center">
+                                            <div className="relative h-16 w-16 bg-gradient-to-br from-gray-400 to-slate-500 rounded-2xl flex items-center justify-center shadow-lg mx-auto mb-4">
+                                                <Search className="h-8 w-8 text-white" />
+                                                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-gray-300/20 to-transparent"></div>
+                                            </div>
+                                            <p className="text-gray-600 font-medium">
+                                                {language === "vi" ? "Không tìm thấy hóa đơn nào" : "No invoices found"}
+                                            </p>
                                         </CardContent>
                                     </Card>
                                 )}
@@ -526,43 +583,56 @@ export default function InvoiceStatusTracking() {
                         </TabsContent>
 
                         <TabsContent value="alerts" className="space-y-6">
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2 text-red-600">
-                                        <Bell className="h-5 w-5" />
+                            <Card className="hover:shadow-xl hover:scale-[1.01] transition-all duration-300 border-0 rounded-2xl bg-gradient-to-br from-white via-red-50 to-rose-50/30 backdrop-blur-sm shadow-lg shadow-red-100/20">
+                                <CardHeader className="pb-4">
+                                    <CardTitle className="flex items-center gap-3 text-lg font-bold text-red-700">
+                                        <div className="relative h-10 w-10 bg-gradient-to-br from-red-500 to-rose-600 rounded-xl flex items-center justify-center shadow-lg">
+                                            <Bell className="h-5 w-5 text-white" />
+                                            <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-red-400/20 to-transparent"></div>
+                                        </div>
                                         {language === "vi" ? "Hóa đơn cần chú ý" : "Invoices Requiring Attention"}
                                     </CardTitle>
                                 </CardHeader>
-                                <CardContent>
+                                <CardContent className="pt-0">
                                     {overdueInvoices.length === 0 ? (
-                                        <div className="text-center text-green-600 py-8">
-                                            <CheckCircle className="h-12 w-12 mx-auto mb-4" />
-                                            <p>{language === "vi" ? "Tất cả hóa đơn đều được thanh toán đúng hạn!" : "All invoices are paid on time!"}</p>
+                                        <div className="text-center py-12">
+                                            <div className="relative h-16 w-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg mx-auto mb-4">
+                                                <CheckCircle className="h-8 w-8 text-white" />
+                                                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-green-400/20 to-transparent"></div>
+                                            </div>
+                                            <p className="text-green-600 font-semibold text-lg">
+                                                {language === "vi" ? "Tất cả hóa đơn đều được thanh toán đúng hạn!" : "All invoices are paid on time!"}
+                                            </p>
                                         </div>
                                     ) : (
-                                        <div className="space-y-3">
+                                        <div className="space-y-4">
                                             {overdueInvoices.map((invoice) => (
-                                                <Card key={invoice.maHoaDon} className={`border-l-4 ${getUrgencyColor(invoice.urgencyLevel)}`}>
-                                                    <CardContent className="p-4">
+                                                <Card key={invoice.maHoaDon} className={`border-l-4 hover:shadow-md hover:scale-[1.01] transition-all duration-200 rounded-xl ${getUrgencyColor(invoice.urgencyLevel)}`}>
+                                                    <CardContent className="p-6">
                                                         <div className="flex items-center justify-between">
                                                             <div>
-                                                                <p className="font-semibold">
+                                                                <p className="font-bold text-lg text-gray-900 mb-1">
                                                                     {language === "vi" ? "Hóa đơn" : "Invoice"} #{invoice.maHoaDon}
                                                                 </p>
-                                                                <p className="text-sm text-gray-600">
+                                                                <p className="text-sm text-gray-600 mb-2">
                                                                     {invoice.tenPhong || `Contract #${invoice.maHopDongPhong}`} • {invoice.tenKhachThue}
                                                                 </p>
-                                                                <p className="text-sm">
-                                                                    {language === "vi" ? "Kỳ:" : "Period:"} {invoice.thang}/{invoice.nam}
-                                                                </p>
+                                                                <div className="flex items-center gap-2">
+                                                                    <Badge className={`text-xs font-semibold border px-2 py-1 rounded-lg ${getUrgencyColor(invoice.urgencyLevel)}`}>
+                                                                        {invoice.monthsOverdue} {language === "vi" ? "tháng" : "months"}
+                                                                    </Badge>
+                                                                    <span className="text-sm text-gray-500">
+                                                                        {language === "vi" ? "Kỳ:" : "Period:"} {invoice.thang}/{invoice.nam}
+                                                                    </span>
+                                                                </div>
                                                             </div>
                                                             <div className="text-right">
-                                                                <p className="font-bold text-red-600 text-lg">
+                                                                <p className="font-bold text-xl text-gray-900 mb-1">
                                                                     {invoice.tienConNo.toLocaleString("vi-VN")}₫
                                                                 </p>
-                                                                <Badge className={getUrgencyColor(invoice.urgencyLevel)}>
-                                                                    {invoice.monthsOverdue} {language === "vi" ? "tháng" : "months"}
-                                                                </Badge>
+                                                                <p className="text-sm font-medium text-red-600 bg-red-50 px-2 py-1 rounded-lg">
+                                                                    {language === "vi" ? "Quá hạn" : "Overdue"}
+                                                                </p>
                                                             </div>
                                                         </div>
                                                     </CardContent>
@@ -576,8 +646,11 @@ export default function InvoiceStatusTracking() {
                     </Tabs>
                 )}
 
-                <div className="flex justify-end pt-4 border-t">
-                    <Button onClick={() => setIsOpen(false)}>
+                <div className="flex justify-end pt-6 border-t border-gray-100">
+                    <Button 
+                        onClick={() => setIsOpen(false)}
+                        className="bg-gradient-to-r from-gray-500 to-slate-600 hover:from-gray-600 hover:to-slate-700 text-white border-0 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 font-medium px-8"
+                    >
                         {language === "vi" ? "Đóng" : "Close"}
                     </Button>
                 </div>

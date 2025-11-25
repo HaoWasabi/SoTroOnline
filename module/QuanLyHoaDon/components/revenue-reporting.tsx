@@ -290,36 +290,48 @@ export default function RevenueReporting() {
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white border-0 shadow-lg shadow-green-200 font-medium transition-all duration-200 rounded-xl">
+                <Button className="border-0 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl hover:scale-105 font-medium transition-all duration-300 rounded-2xl px-6">
                     <BarChart3 className="h-4 w-4 mr-2" />
                     {language === "vi" ? "Báo cáo doanh thu" : "Revenue Report"}
                 </Button>
             </DialogTrigger>
 
-            <DialogContent className="min-w-7xl max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                    <DialogTitle className="text-xl font-bold flex items-center gap-2">
-                        <TrendingUp className="h-5 w-5" />
+            <DialogContent className="min-w-7xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-white via-slate-50 to-green-50/30 backdrop-blur-sm border-0 rounded-3xl shadow-2xl">
+                <DialogHeader className="pb-6">
+                    <DialogTitle className="text-2xl font-bold flex items-center gap-4 text-gray-900">
+                        <div className="relative h-12 w-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg">
+                            <TrendingUp className="h-6 w-6 text-white" />
+                            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-green-400/20 to-transparent"></div>
+                        </div>
                         {language === "vi" ? "Báo cáo doanh thu" : "Revenue Report"}
                     </DialogTitle>
                 </DialogHeader>
 
                 {isLoading ? (
-                    <div className="flex items-center justify-center py-12">
+                    <div className="flex items-center justify-center py-16">
                         <div className="text-center">
-                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto mb-4"></div>
-                            <p className="text-gray-600">
+                            <div className="relative h-16 w-16 mx-auto mb-6">
+                                <div className="animate-spin rounded-full h-16 w-16 border-4 border-green-100"></div>
+                                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-green-500 absolute inset-0"></div>
+                            </div>
+                            <p className="text-gray-700 font-medium text-lg">
                                 {language === "vi" ? "Đang tải dữ liệu doanh thu..." : "Loading revenue data..."}
+                            </p>
+                            <p className="text-gray-500 text-sm mt-2">
+                                {language === "vi" ? "Vui lòng chờ trong giây lát" : "Please wait a moment"}
                             </p>
                         </div>
                     </div>
                 ) : (
                     <div className="space-y-6">
                         {/* Filters */}
-                        <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2 text-blue-800">
-                                    <Filter className="h-5 w-5" />
+                        <Card className="border-0 rounded-2xl bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 shadow-lg">
+                            <CardHeader className="pb-4">
+                                <CardTitle className="flex items-center gap-3 text-xl font-bold text-gray-900">
+                                    <div className="relative h-10 w-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md">
+                                        <Filter className="h-5 w-5 text-white" />
+                                        <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-blue-400/20 to-transparent"></div>
+                                    </div>
                                     {language === "vi" ? "Bộ lọc" : "Filters"}
                                 </CardTitle>
                             </CardHeader>
@@ -382,12 +394,18 @@ export default function RevenueReporting() {
                                             </SelectContent>
                                         </Select>
                                     </div>
-                                    <div className="flex items-end gap-2">
-                                        <Button onClick={loadRevenueData} size="sm">
+                                    <div className="flex items-end gap-3">
+                                        <Button 
+                                            onClick={loadRevenueData} 
+                                            className="bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 border-0 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 font-semibold"
+                                        >
                                             <RefreshCw className="h-4 w-4 mr-2" />
                                             {language === "vi" ? "Làm mới" : "Refresh"}
                                         </Button>
-                                        <Button onClick={exportReport} variant="outline" size="sm">
+                                        <Button 
+                                            onClick={exportReport} 
+                                            className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 border-0 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 font-semibold"
+                                        >
                                             <Download className="h-4 w-4 mr-2" />
                                             {language === "vi" ? "Xuất" : "Export"}
                                         </Button>
@@ -397,59 +415,77 @@ export default function RevenueReporting() {
                         </Card>
 
                         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                            <TabsList className="grid w-full grid-cols-4">
-                                <TabsTrigger value="overview">{language === "vi" ? "Tổng quan" : "Overview"}</TabsTrigger>
-                                <TabsTrigger value="trends">{language === "vi" ? "Xu hướng" : "Trends"}</TabsTrigger>
-                                <TabsTrigger value="rooms">{language === "vi" ? "Theo phòng" : "By Room"}</TabsTrigger>
-                                <TabsTrigger value="analysis">{language === "vi" ? "Phân tích" : "Analysis"}</TabsTrigger>
+                            <TabsList className="grid w-full grid-cols-4 bg-gradient-to-r from-slate-100 to-gray-100 border-0 rounded-2xl p-2 shadow-inner">
+                                <TabsTrigger value="overview" className="rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300">{language === "vi" ? "Tổng quan" : "Overview"}</TabsTrigger>
+                                <TabsTrigger value="trends" className="rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300">{language === "vi" ? "Xu hướng" : "Trends"}</TabsTrigger>
+                                <TabsTrigger value="rooms" className="rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300">{language === "vi" ? "Theo phòng" : "By Room"}</TabsTrigger>
+                                <TabsTrigger value="analysis" className="rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300">{language === "vi" ? "Phân tích" : "Analysis"}</TabsTrigger>
                             </TabsList>
 
                             <TabsContent value="overview" className="space-y-6">
                                 {/* Key Metrics */}
-                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                                    <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-                                        <CardContent className="p-4 text-center">
-                                            <DollarSign className="h-8 w-8 text-green-600 mx-auto mb-2" />
+                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                                    <Card className="border-0 rounded-2xl bg-gradient-to-br from-green-50 via-emerald-50 to-green-100 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
+                                        <CardContent className="p-6 text-center">
+                                            <div className="relative h-12 w-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                                                <DollarSign className="h-6 w-6 text-white" />
+                                                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-green-400/20 to-transparent"></div>
+                                            </div>
                                             <p className="text-xl font-bold text-green-700">{formatCurrency(metrics.totalRevenue)}</p>
                                             <p className="text-xs text-green-600">{language === "vi" ? "Tổng doanh thu" : "Total Revenue"}</p>
                                         </CardContent>
                                     </Card>
 
-                                    <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-                                        <CardContent className="p-4 text-center">
-                                            <TrendingUp className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+                                    <Card className="border-0 rounded-2xl bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-100 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
+                                        <CardContent className="p-6 text-center">
+                                            <div className="relative h-12 w-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                                                <TrendingUp className="h-6 w-6 text-white" />
+                                                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-400/20 to-transparent"></div>
+                                            </div>
                                             <p className="text-xl font-bold text-blue-700">{formatPercentage(metrics.monthlyGrowth)}</p>
                                             <p className="text-xs text-blue-600">{language === "vi" ? "Tăng trưởng" : "Growth"}</p>
                                         </CardContent>
                                     </Card>
 
-                                    <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
-                                        <CardContent className="p-4 text-center">
-                                            <Target className="h-8 w-8 text-purple-600 mx-auto mb-2" />
+                                    <Card className="border-0 rounded-2xl bg-gradient-to-br from-purple-50 via-violet-50 to-purple-100 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
+                                        <CardContent className="p-6 text-center">
+                                            <div className="relative h-12 w-12 bg-gradient-to-br from-purple-500 to-violet-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                                                <Target className="h-6 w-6 text-white" />
+                                                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-purple-400/20 to-transparent"></div>
+                                            </div>
                                             <p className="text-xl font-bold text-purple-700">{metrics.collectionRate.toFixed(1)}%</p>
                                             <p className="text-xs text-purple-600">{language === "vi" ? "Tỷ lệ thu" : "Collection Rate"}</p>
                                         </CardContent>
                                     </Card>
 
-                                    <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
-                                        <CardContent className="p-4 text-center">
-                                            <AlertCircle className="h-8 w-8 text-orange-600 mx-auto mb-2" />
+                                    <Card className="border-0 rounded-2xl bg-gradient-to-br from-orange-50 via-amber-50 to-orange-100 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
+                                        <CardContent className="p-6 text-center">
+                                            <div className="relative h-12 w-12 bg-gradient-to-br from-orange-500 to-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                                                <AlertCircle className="h-6 w-6 text-white" />
+                                                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-orange-400/20 to-transparent"></div>
+                                            </div>
                                             <p className="text-xl font-bold text-orange-700">{formatCurrency(metrics.totalOutstanding)}</p>
                                             <p className="text-xs text-orange-600">{language === "vi" ? "Công nợ" : "Outstanding"}</p>
                                         </CardContent>
                                     </Card>
 
-                                    <Card className="bg-gradient-to-br from-teal-50 to-teal-100 border-teal-200">
-                                        <CardContent className="p-4 text-center">
-                                            <Clock className="h-8 w-8 text-teal-600 mx-auto mb-2" />
+                                    <Card className="border-0 rounded-2xl bg-gradient-to-br from-teal-50 via-cyan-50 to-teal-100 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
+                                        <CardContent className="p-6 text-center">
+                                            <div className="relative h-12 w-12 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                                                <Clock className="h-6 w-6 text-white" />
+                                                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-teal-400/20 to-transparent"></div>
+                                            </div>
                                             <p className="text-xl font-bold text-teal-700">{metrics.avgDaysToPayment}</p>
                                             <p className="text-xs text-teal-600">{language === "vi" ? "Ngày TB" : "Avg Days"}</p>
                                         </CardContent>
                                     </Card>
 
-                                    <Card className="bg-gradient-to-br from-indigo-50 to-indigo-100 border-indigo-200">
-                                        <CardContent className="p-4 text-center">
-                                            <CalendarLucide className="h-8 w-8 text-indigo-600 mx-auto mb-2" />
+                                    <Card className="border-0 rounded-2xl bg-gradient-to-br from-indigo-50 via-purple-50 to-indigo-100 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
+                                        <CardContent className="p-6 text-center">
+                                            <div className="relative h-12 w-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                                                <CalendarLucide className="h-6 w-6 text-white" />
+                                                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-indigo-400/20 to-transparent"></div>
+                                            </div>
                                             <p className="text-lg font-bold text-indigo-700">{metrics.topPerformingMonth}</p>
                                             <p className="text-xs text-indigo-600">{language === "vi" ? "Tháng tốt nhất" : "Best Month"}</p>
                                         </CardContent>
@@ -457,11 +493,14 @@ export default function RevenueReporting() {
                                 </div>
 
                                 {/* Recent Performance */}
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle className="flex items-center gap-2">
-                                            <BarChart3 className="h-5 w-5" />
-                                            {language === "vi" ? "Hiệu suất gần đây" : "Recent Performance"}
+                                <Card className="border-0 rounded-2xl bg-gradient-to-br from-white via-slate-50 to-blue-50/30 shadow-lg hover:shadow-xl transition-all duration-300">
+                                    <CardHeader className="pb-4">
+                                        <CardTitle className="flex items-center gap-3">
+                                            <div className="relative h-10 w-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md">
+                                                <BarChart3 className="h-5 w-5 text-white" />
+                                                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-blue-400/20 to-transparent"></div>
+                                            </div>
+                                            <span className="font-bold text-gray-900">{language === "vi" ? "Hiệu suất gần đây" : "Recent Performance"}</span>
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent>
@@ -484,11 +523,14 @@ export default function RevenueReporting() {
                             </TabsContent>
 
                             <TabsContent value="trends" className="space-y-6">
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle className="flex items-center gap-2">
-                                            <TrendingUp className="h-5 w-5" />
-                                            {language === "vi" ? "Xu hướng doanh thu theo tháng" : "Monthly Revenue Trends"}
+                                <Card className="border-0 rounded-2xl bg-gradient-to-br from-white via-slate-50 to-green-50/30 shadow-lg hover:shadow-xl transition-all duration-300">
+                                    <CardHeader className="pb-4">
+                                        <CardTitle className="flex items-center gap-3">
+                                            <div className="relative h-10 w-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-md">
+                                                <TrendingUp className="h-5 w-5 text-white" />
+                                                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-green-400/20 to-transparent"></div>
+                                            </div>
+                                            <span className="font-bold text-gray-900">{language === "vi" ? "Xu hướng doanh thu theo tháng" : "Monthly Revenue Trends"}</span>
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent>
@@ -523,11 +565,14 @@ export default function RevenueReporting() {
                             </TabsContent>
 
                             <TabsContent value="rooms" className="space-y-6">
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle className="flex items-center gap-2">
-                                            <PieChart className="h-5 w-5" />
-                                            {language === "vi" ? "Doanh thu theo phòng" : "Revenue by Room"}
+                                <Card className="border-0 rounded-2xl bg-gradient-to-br from-white via-slate-50 to-purple-50/30 shadow-lg hover:shadow-xl transition-all duration-300">
+                                    <CardHeader className="pb-4">
+                                        <CardTitle className="flex items-center gap-3">
+                                            <div className="relative h-10 w-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center shadow-md">
+                                                <PieChart className="h-5 w-5 text-white" />
+                                                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-purple-400/20 to-transparent"></div>
+                                            </div>
+                                            <span className="font-bold text-gray-900">{language === "vi" ? "Doanh thu theo phòng" : "Revenue by Room"}</span>
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent>
@@ -560,10 +605,13 @@ export default function RevenueReporting() {
 
                             <TabsContent value="analysis" className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <Card className="bg-blue-50 border-blue-200">
-                                        <CardHeader>
-                                            <CardTitle className="text-blue-800 flex items-center gap-2">
-                                                <CheckCircle className="h-5 w-5" />
+                                    <Card className="border-0 rounded-2xl bg-gradient-to-br from-blue-50 via-cyan-50 to-blue-100 shadow-lg hover:shadow-xl transition-all duration-300">
+                                        <CardHeader className="pb-4">
+                                            <CardTitle className="flex items-center gap-3 text-xl font-bold text-gray-900">
+                                                <div className="relative h-10 w-10 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center shadow-md">
+                                                    <CheckCircle className="h-5 w-5 text-white" />
+                                                    <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-blue-400/20 to-transparent"></div>
+                                                </div>
                                                 {language === "vi" ? "Điểm mạnh" : "Strengths"}
                                             </CardTitle>
                                         </CardHeader>
@@ -595,10 +643,13 @@ export default function RevenueReporting() {
                                         </CardContent>
                                     </Card>
 
-                                    <Card className="bg-orange-50 border-orange-200">
-                                        <CardHeader>
-                                            <CardTitle className="text-orange-800 flex items-center gap-2">
-                                                <AlertCircle className="h-5 w-5" />
+                                    <Card className="border-0 rounded-2xl bg-gradient-to-br from-orange-50 via-red-50 to-orange-100 shadow-lg hover:shadow-xl transition-all duration-300">
+                                        <CardHeader className="pb-4">
+                                            <CardTitle className="flex items-center gap-3 text-xl font-bold text-gray-900">
+                                                <div className="relative h-10 w-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center shadow-md">
+                                                    <AlertCircle className="h-5 w-5 text-white" />
+                                                    <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-orange-400/20 to-transparent"></div>
+                                                </div>
                                                 {language === "vi" ? "Cần chú ý" : "Areas for Attention"}
                                             </CardTitle>
                                         </CardHeader>
@@ -632,10 +683,13 @@ export default function RevenueReporting() {
                                 </div>
 
                                 {/* Recommendations */}
-                                <Card className="bg-green-50 border-green-200">
-                                    <CardHeader>
-                                        <CardTitle className="text-green-800 flex items-center gap-2">
-                                            <Target className="h-5 w-5" />
+                                <Card className="border-0 rounded-2xl bg-gradient-to-br from-green-50 via-emerald-50 to-green-100 shadow-lg hover:shadow-xl transition-all duration-300">
+                                    <CardHeader className="pb-4">
+                                        <CardTitle className="flex items-center gap-3 text-xl font-bold text-gray-900">
+                                            <div className="relative h-10 w-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-md">
+                                                <Target className="h-5 w-5 text-white" />
+                                                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-green-400/20 to-transparent"></div>
+                                            </div>
                                             {language === "vi" ? "Khuyến nghị" : "Recommendations"}
                                         </CardTitle>
                                     </CardHeader>
@@ -669,8 +723,11 @@ export default function RevenueReporting() {
                     </div>
                 )}
 
-                <div className="flex justify-end pt-4 border-t">
-                    <Button onClick={() => setIsOpen(false)}>
+                <div className="flex justify-end pt-6 border-t border-gray-200">
+                    <Button 
+                        onClick={() => setIsOpen(false)}
+                        className="bg-gradient-to-r from-gray-500 to-slate-600 hover:from-gray-600 hover:to-slate-700 border-0 rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 px-8 font-semibold"
+                    >
                         {language === "vi" ? "Đóng" : "Close"}
                     </Button>
                 </div>

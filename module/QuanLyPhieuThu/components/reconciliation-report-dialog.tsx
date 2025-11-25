@@ -102,7 +102,7 @@ export default function ReconciliationReportDialog({
 
     return (
         <Dialog open={open} onOpenChange={handleClose}>
-            <DialogContent className="max-w-3xl bg-gradient-to-br from-white via-slate-50/30 to-purple-50/20 backdrop-blur-sm border-0 shadow-2xl">
+            <DialogContent className="min-w-3xl bg-gradient-to-br from-white via-slate-50/30 to-purple-50/20 backdrop-blur-sm border-0 shadow-2xl">
                 <DialogHeader className="pb-6">
                     <DialogTitle className="text-2xl font-bold flex items-center gap-3 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                         <div className="h-10 w-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg">
@@ -159,7 +159,7 @@ export default function ReconciliationReportDialog({
 
                     {/* Report Results */}
                     {report && (
-                        <div className="space-y-6">
+                        <div className="space-y-4">
                             {/* Status Badge */}
                             <div className="text-center">
                                 {(() => {
@@ -175,9 +175,9 @@ export default function ReconciliationReportDialog({
                             </div>
 
                             {/* Financial Overview */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
-                                    <CardContent className="p-6">
+                                    <CardContent className="p-2">
                                         <div className="text-center">
                                             <div className="h-12 w-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-3">
                                                 <FileText className="h-6 w-6 text-white" />
@@ -193,7 +193,7 @@ export default function ReconciliationReportDialog({
                                 </Card>
 
                                 <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
-                                    <CardContent className="p-6">
+                                    <CardContent className="p-2">
                                         <div className="text-center">
                                             <div className="h-12 w-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-3">
                                                 <FileText className="h-6 w-6 text-white" />
@@ -209,7 +209,7 @@ export default function ReconciliationReportDialog({
                                 </Card>
 
                                 <Card className={`border-2 ${report.difference === 0 ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-200' : report.difference > 0 ? 'bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200' : 'bg-gradient-to-br from-red-50 to-rose-50 border-red-200'}`}>
-                                    <CardContent className="p-6">
+                                    <CardContent className="p-2">
                                         <div className="text-center">
                                             <div className={`h-12 w-12 rounded-xl flex items-center justify-center mx-auto mb-3 ${
                                                 report.difference === 0 

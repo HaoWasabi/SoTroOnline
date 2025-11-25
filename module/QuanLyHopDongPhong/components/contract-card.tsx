@@ -19,7 +19,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { deleteContract, downloadContractPDF } from "../api/api-quan-ly-hop-dong"
+import { deleteContract, downloadContractDOCX } from "../api/api-quan-ly-hop-dong"
 import { useLanguageStore } from "@/zustand/language-tranlator"
 import { Calendar, DollarSign, Download, Edit, FileText, MoreHorizontal, Trash2, Users, CalendarDays } from "lucide-react"
 import { useCallback, useState } from "react"
@@ -87,7 +87,7 @@ export default function ContractCardComponent({ contract, onUpdate, onDelete }: 
         }
     }
 
-    const handleDownloadPDF = async () => {
+    const handleDownloadDOCX = async () => {
         if (!contract.maHopDongPhong) {
             showError(language === "vi" ? "Không thể tải: Thiếu ID hợp đồng" : "Cannot download: missing contract ID")
             return
@@ -96,16 +96,16 @@ export default function ContractCardComponent({ contract, onUpdate, onDelete }: 
         try {
             setIsDownloading(true)
             const id = typeof contract.maHopDongPhong === "number" ? contract.maHopDongPhong : parseInt(String(contract.maHopDongPhong))
-            const result = await downloadContractPDF(Number(id))
+            const result = await downloadContractDOCX(Number(id))
             
             if (result.status === "success") {
-                showSuccess(language === "vi" ? "Tải file PDF thành công" : "PDF downloaded successfully")
+                showSuccess(language === "vi" ? "Tải file DOCX thành công" : "DOCX downloaded successfully")
             } else {
                 showError(result.message || (language === "vi" ? "Tải file thất bại" : "Download failed"))
             }
         } catch (err) {
-            console.error("Error downloading PDF:", err)
-            showError(language === "vi" ? "Có lỗi khi tải file PDF" : "Error downloading PDF")
+            console.error("Error downloading DOCX:", err)
+            showError(language === "vi" ? "Có lỗi khi tải file DOCX" : "Error downloading DOCX")
         } finally {
             setIsDownloading(false)
         }
@@ -209,13 +209,13 @@ export default function ContractCardComponent({ contract, onUpdate, onDelete }: 
                                             {language === "vi" ? "Quản lý khách thuê" : "Manage Tenants"}
                                         </DropdownMenuItem>
                                         <DropdownMenuItem 
-                                            onClick={handleDownloadPDF}
+                                            onClick={handleDownloadDOCX}
                                             disabled={isDownloading}
                                         >
                                             <Download className="h-4 w-4 mr-2" />
                                             {isDownloading 
                                                 ? (language === "vi" ? "Đang tải..." : "Downloading...") 
-                                                : (language === "vi" ? "Tải file PDF" : "Download PDF")
+                                                : (language === "vi" ? "Tải file DOCX" : "Download DOCX")
                                             }
                                         </DropdownMenuItem>
                                         <DropdownMenuItem 

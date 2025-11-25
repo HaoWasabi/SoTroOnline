@@ -268,32 +268,35 @@ export default function NotificationSystem() {
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button variant="outline" className="border-blue-300 text-blue-700 hover:bg-blue-50 hover:border-blue-400 font-medium transition-all duration-200 rounded-xl">
+                <Button variant="outline" className="border-0 bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:from-blue-600 hover:to-indigo-700 font-medium transition-all duration-300 rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 px-6">
                     <Bell className="h-4 w-4 mr-2" />
                     {language === "vi" ? "Gửi thông báo" : "Send Notifications"}
                 </Button>
             </DialogTrigger>
 
-            <DialogContent className="min-w-6xl max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                    <DialogTitle className="text-xl font-bold flex items-center gap-2">
-                        <Bell className="h-5 w-5" />
+            <DialogContent className="min-w-6xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-white via-slate-50 to-blue-50/30 backdrop-blur-sm border-0 rounded-3xl shadow-2xl">
+                <DialogHeader className="pb-6">
+                    <DialogTitle className="text-2xl font-bold flex items-center gap-4 text-gray-900">
+                        <div className="relative h-12 w-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+                            <Bell className="h-6 w-6 text-white" />
+                            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-400/20 to-transparent"></div>
+                        </div>
                         {language === "vi" ? "Hệ thống thông báo" : "Notification System"}
                     </DialogTitle>
                 </DialogHeader>
 
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                    <TabsList className="grid w-full grid-cols-3">
-                        <TabsTrigger value="send">{language === "vi" ? "Gửi thông báo" : "Send Notifications"}</TabsTrigger>
-                        <TabsTrigger value="templates">{language === "vi" ? "Quản lý mẫu" : "Manage Templates"}</TabsTrigger>
-                        <TabsTrigger value="history">{language === "vi" ? "Lịch sử" : "History"}</TabsTrigger>
+                    <TabsList className="grid w-full grid-cols-3 bg-gradient-to-r from-slate-100 to-gray-100 border-0 rounded-2xl p-2 shadow-inner">
+                        <TabsTrigger value="send" className="rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300">{language === "vi" ? "Gửi thông báo" : "Send Notifications"}</TabsTrigger>
+                        <TabsTrigger value="templates" className="rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300">{language === "vi" ? "Quản lý mẫu" : "Manage Templates"}</TabsTrigger>
+                        <TabsTrigger value="history" className="rounded-xl font-semibold data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300">{language === "vi" ? "Lịch sử" : "History"}</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="send" className="space-y-6">
                         {/* Notification Type Selection */}
-                        <div className="flex items-center gap-4">
-                            <Label className="font-semibold">{language === "vi" ? "Loại thông báo:" : "Notification Type:"}</Label>
-                            <div className="flex gap-2">
+                        <div className="bg-gradient-to-r from-slate-50 to-gray-50 rounded-2xl p-6 border border-gray-100 shadow-sm">
+                            <Label className="font-bold text-gray-700 text-sm uppercase tracking-wider mb-4 block">{language === "vi" ? "Loại thông báo" : "Notification Type"}</Label>
+                            <div className="flex gap-3">
                                 {[
                                     { value: 'email', label: 'Email', icon: Mail },
                                     { value: 'sms', label: 'SMS', icon: MessageSquare },
@@ -301,10 +304,14 @@ export default function NotificationSystem() {
                                 ].map(type => (
                                     <Button
                                         key={type.value}
-                                        variant={notificationType === type.value ? "default" : "outline"}
+                                        variant="outline"
                                         size="sm"
                                         onClick={() => setNotificationType(type.value as any)}
-                                        className="flex items-center gap-2"
+                                        className={`flex items-center gap-2 rounded-xl border-0 font-semibold transition-all duration-300 hover:scale-105 hover:shadow-md ${
+                                            notificationType === type.value 
+                                                ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg" 
+                                                : "bg-white/60 text-gray-700 hover:bg-white/80"
+                                        }`}
                                     >
                                         <type.icon className="h-4 w-4" />
                                         {type.label}
@@ -315,14 +322,17 @@ export default function NotificationSystem() {
 
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             {/* Recipients Selection */}
-                            <Card>
-                                <CardHeader>
+                            <Card className="border-0 rounded-2xl bg-gradient-to-br from-white via-slate-50 to-blue-50/30 shadow-lg hover:shadow-xl transition-all duration-300">
+                                <CardHeader className="pb-4">
                                     <CardTitle className="flex items-center justify-between">
-                                        <span className="flex items-center gap-2">
-                                            <User className="h-5 w-5" />
-                                            {language === "vi" ? "Người nhận" : "Recipients"}
+                                        <span className="flex items-center gap-3">
+                                            <div className="relative h-10 w-10 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-md">
+                                                <User className="h-5 w-5 text-white" />
+                                                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-emerald-400/20 to-transparent"></div>
+                                            </div>
+                                            <span className="font-bold text-gray-900">{language === "vi" ? "Người nhận" : "Recipients"}</span>
                                         </span>
-                                        <Badge variant="secondary">
+                                        <Badge className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white border-0 px-3 py-1 rounded-xl shadow-md">
                                             {recipients.filter(r => r.selected).length}/{recipients.length}
                                         </Badge>
                                     </CardTitle>
@@ -376,11 +386,14 @@ export default function NotificationSystem() {
                             </Card>
 
                             {/* Message Content */}
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                        <MessageSquare className="h-5 w-5" />
-                                        {language === "vi" ? "Nội dung tin nhắn" : "Message Content"}
+                            <Card className="border-0 rounded-2xl bg-gradient-to-br from-white via-slate-50 to-purple-50/30 shadow-lg hover:shadow-xl transition-all duration-300">
+                                <CardHeader className="pb-4">
+                                    <CardTitle className="flex items-center gap-3">
+                                        <div className="relative h-10 w-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center shadow-md">
+                                            <MessageSquare className="h-5 w-5 text-white" />
+                                            <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-purple-400/20 to-transparent"></div>
+                                        </div>
+                                        <span className="font-bold text-gray-900">{language === "vi" ? "Nội dung tin nhắn" : "Message Content"}</span>
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
@@ -415,11 +428,11 @@ export default function NotificationSystem() {
                                     </div>
 
                                     {selectedTemplate && (
-                                        <div className="p-3 bg-gray-50 rounded border">
-                                            <p className="text-sm font-medium mb-2">
-                                                {language === "vi" ? "Xem trước:" : "Preview:"}
+                                        <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100 shadow-sm">
+                                            <p className="text-sm font-bold text-blue-700 mb-3 uppercase tracking-wider">
+                                                {language === "vi" ? "Xem trước" : "Preview"}
                                             </p>
-                                            <p className="text-sm text-gray-700">
+                                            <p className="text-sm text-gray-700 leading-relaxed">
                                                 {templates.find(t => t.id === selectedTemplate)?.content}
                                             </p>
                                         </div>
@@ -429,20 +442,20 @@ export default function NotificationSystem() {
                         </div>
 
                         {/* Send Button */}
-                        <div className="flex justify-end">
+                        <div className="flex justify-end pt-6">
                             <Button 
                                 onClick={handleSendNotifications}
                                 disabled={isSending || recipients.filter(r => r.selected).length === 0}
-                                className="bg-blue-600 hover:bg-blue-700"
+                                className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 border-0 rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 px-8 py-3 font-bold"
                             >
                                 {isSending ? (
                                     <>
-                                        <Clock className="h-4 w-4 mr-2 animate-spin" />
+                                        <Clock className="h-5 w-5 mr-3 animate-spin" />
                                         {language === "vi" ? "Đang gửi..." : "Sending..."}
                                     </>
                                 ) : (
                                     <>
-                                        <Send className="h-4 w-4 mr-2" />
+                                        <Send className="h-5 w-5 mr-3" />
                                         {language === "vi" ? "Gửi thông báo" : "Send Notifications"}
                                     </>
                                 )}
@@ -459,9 +472,15 @@ export default function NotificationSystem() {
                         </div>
 
                         {isCreatingTemplate && (
-                            <Card className="bg-blue-50 border-blue-200">
+                            <Card className="border-0 rounded-2xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 shadow-lg">
                                 <CardHeader>
-                                    <CardTitle>{language === "vi" ? "Tạo mẫu tin nhắn mới" : "Create New Template"}</CardTitle>
+                                    <CardTitle className="flex items-center gap-3 text-xl font-bold text-gray-900">
+                                        <div className="relative h-10 w-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md">
+                                            <MessageSquare className="h-5 w-5 text-white" />
+                                            <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-blue-400/20 to-transparent"></div>
+                                        </div>
+                                        {language === "vi" ? "Tạo mẫu tin nhắn mới" : "Create New Template"}
+                                    </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <div className="grid grid-cols-2 gap-4">
@@ -509,11 +528,18 @@ export default function NotificationSystem() {
                                         />
                                     </div>
                                     
-                                    <div className="flex gap-2">
-                                        <Button onClick={handleCreateTemplate}>
+                                    <div className="flex gap-3 pt-2">
+                                        <Button 
+                                            onClick={handleCreateTemplate}
+                                            className="bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 border-0 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 font-semibold"
+                                        >
                                             {language === "vi" ? "Lưu mẫu" : "Save Template"}
                                         </Button>
-                                        <Button variant="outline" onClick={() => setIsCreatingTemplate(false)}>
+                                        <Button 
+                                            variant="outline" 
+                                            onClick={() => setIsCreatingTemplate(false)}
+                                            className="border-gray-200 text-gray-700 hover:bg-gray-50 rounded-xl font-semibold transition-all duration-200"
+                                        >
                                             {language === "vi" ? "Hủy" : "Cancel"}
                                         </Button>
                                     </div>
@@ -521,10 +547,10 @@ export default function NotificationSystem() {
                             </Card>
                         )}
 
-                        <div className="space-y-3">
+                        <div className="space-y-4">
                             {templates.map((template) => (
-                                <Card key={template.id}>
-                                    <CardContent className="p-4">
+                                <Card key={template.id} className="border-0 rounded-2xl bg-gradient-to-br from-white via-slate-50 to-gray-50 shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300">
+                                    <CardContent className="p-6">
                                         <div className="flex items-start justify-between">
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-2 mb-2">
@@ -549,18 +575,22 @@ export default function NotificationSystem() {
                     <TabsContent value="history" className="space-y-4">
                         <h3 className="text-lg font-semibold">{language === "vi" ? "Lịch sử gửi thông báo" : "Notification History"}</h3>
                         
-                        <div className="space-y-3">
+                        <div className="space-y-4">
                             {notificationHistory.length === 0 ? (
-                                <Card className="bg-gray-50">
-                                    <CardContent className="p-8 text-center text-gray-600">
-                                        <History className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                                        <p>{language === "vi" ? "Chưa có lịch sử gửi thông báo" : "No notification history yet"}</p>
+                                <Card className="border-0 rounded-2xl bg-gradient-to-br from-slate-50 to-gray-100 shadow-lg">
+                                    <CardContent className="p-12 text-center">
+                                        <div className="relative h-16 w-16 bg-gradient-to-br from-gray-400 to-slate-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                                            <History className="h-8 w-8 text-white" />
+                                            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-gray-300/20 to-transparent"></div>
+                                        </div>
+                                        <p className="text-gray-600 font-medium text-lg">{language === "vi" ? "Chưa có lịch sử gửi thông báo" : "No notification history yet"}</p>
+                                        <p className="text-gray-500 text-sm mt-2">{language === "vi" ? "Các thông báo đã gửi sẽ xuất hiện tại đây" : "Sent notifications will appear here"}</p>
                                     </CardContent>
                                 </Card>
                             ) : (
                                 notificationHistory.map((item) => (
-                                    <Card key={item.id}>
-                                        <CardContent className="p-4">
+                                    <Card key={item.id} className="border-0 rounded-2xl bg-gradient-to-br from-white via-slate-50 to-blue-50/30 shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300">
+                                        <CardContent className="p-6">
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center gap-3">
                                                     {getNotificationIcon(item.type)}
@@ -589,8 +619,11 @@ export default function NotificationSystem() {
                     </TabsContent>
                 </Tabs>
 
-                <div className="flex justify-end pt-4 border-t">
-                    <Button onClick={() => setIsOpen(false)}>
+                <div className="flex justify-end pt-6 border-t border-gray-200">
+                    <Button 
+                        onClick={() => setIsOpen(false)}
+                        className="bg-gradient-to-r from-gray-500 to-slate-600 hover:from-gray-600 hover:to-slate-700 border-0 rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 px-8 font-semibold"
+                    >
                         {language === "vi" ? "Đóng" : "Close"}
                     </Button>
                 </div>

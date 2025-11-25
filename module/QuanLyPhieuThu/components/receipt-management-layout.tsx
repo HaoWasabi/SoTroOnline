@@ -189,11 +189,6 @@ export default function ReceiptManagementLayout() {
         showSuccess(language === "vi" ? "Cập nhật phiếu thu thành công" : "Receipt updated successfully")
     }
 
-    const handleReceiptDeleted = () => {
-        loadReceipts()
-        showSuccess(language === "vi" ? "Xóa phiếu thu thành công" : "Receipt deleted successfully")
-    }
-
     if (isLoading) {
         return (
             <div className="p-6">
@@ -477,7 +472,6 @@ export default function ReceiptManagementLayout() {
                                 key={receipt.maPhieuThu}
                                 receipt={receipt}
                                 onUpdate={handleReceiptUpdated}
-                                onDelete={handleReceiptDeleted}
                                 animationDelay={index * 100}
                             />
                         ))}

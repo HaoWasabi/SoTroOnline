@@ -210,31 +210,7 @@ export async function updateReceipt(id: number, receiptData: Partial<ReceiptRequ
     }
 }
 
-// Delete receipt (soft delete)
-export async function deleteReceipt(id: number): Promise<ApiResponse<void>> {
-    try {
-        const response = await fetch(`${BASE_URL}/${id}`, {
-            method: "DELETE",
-            headers: getAuthHeaders(),
-        });
 
-        if (!response.ok) {
-            const errorData = await response.text();
-            throw new Error(errorData || `HTTP error! status: ${response.status}`);
-        }
-
-        return {
-            status: "success",
-            message: "Receipt deleted successfully"
-        };
-    } catch (error) {
-        console.error("Error deleting receipt:", error);
-        return {
-            status: "error",
-            message: error instanceof Error ? error.message : "Failed to delete receipt"
-        };
-    }
-}
 
 // Get receipts by invoice ID
 export async function getReceiptsByInvoice(invoiceId: number): Promise<ApiResponse<Receipt[]>> {

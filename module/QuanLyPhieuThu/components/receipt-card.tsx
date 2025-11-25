@@ -7,7 +7,6 @@ import {
     User, 
     Calendar, 
     Edit, 
-    Trash2, 
     Download, 
     Eye,
     AlertTriangle,
@@ -20,14 +19,12 @@ import {
     Dialog, 
     DialogContent, 
     DialogHeader, 
-    DialogTitle, 
-    DialogDescription, 
-    DialogFooter 
+    DialogTitle 
 } from '@/components/ui/dialog'
 import { useLanguageStore } from '@/zustand/language-tranlator'
 import { useToast } from '@/hook/useToast'
 
-import { deleteReceipt, printReceipt } from '@/module/QuanLyPhieuThu/api/receipt-api'
+import { printReceipt } from '@/module/QuanLyPhieuThu/api/receipt-api'
 import EditReceiptDialog from './edit-receipt-dialog'
 import ReceiptDetailDialog from './receipt-detail-dialog'
 import { Receipt } from '../types/Receipt'
@@ -35,22 +32,18 @@ import { Receipt } from '../types/Receipt'
 interface ReceiptCardProps {
     receipt: Receipt
     onUpdate?: () => void
-    onDelete?: () => void
     animationDelay?: number
 }
 
 export default function ReceiptCard({ 
     receipt, 
     onUpdate, 
-    onDelete, 
     animationDelay = 0 
 }: ReceiptCardProps) {
     const { language } = useLanguageStore()
     const { showSuccess, showError } = useToast()
     
-    const [isDeleting, setIsDeleting] = useState(false)
     const [isDownloading, setIsDownloading] = useState(false)
-    const [showDeleteDialog, setShowDeleteDialog] = useState(false)
     const [showEditDialog, setShowEditDialog] = useState(false)
     const [showDetailDialog, setShowDetailDialog] = useState(false)
 
@@ -81,26 +74,7 @@ export default function ReceiptCard({
 
     const statusInfo = getStatusInfo(receipt.trangThai)
 
-    // Handle delete
-    const handleDelete = async () => {
-        try {
-            setIsDeleting(true)
-            const result = await deleteReceipt(receipt.maPhieuThu)
-            
-            if (result.status === "success") {
-                showSuccess(language === "vi" ? "Xóa phiếu thu thành công" : "Receipt deleted successfully")
-                onDelete?.()
-                setShowDeleteDialog(false)
-            } else {
-                showError(result.message || (language === "vi" ? "Xóa thất bại" : "Delete failed"))
-            }
-        } catch (error) {
-            console.error("Error deleting receipt:", error)
-            showError(language === "vi" ? "Có lỗi khi xóa phiếu thu" : "Error deleting receipt")
-        } finally {
-            setIsDeleting(false)
-        }
-    }
+
 
     // Handle download
     const handleDownload = async () => {
@@ -245,15 +219,6 @@ export default function ReceiptCard({
                                     >
                                         <Edit className="h-4 w-4" />
                                     </Button>
-                                    
-                                    <Button
-                                        size="sm"
-                                        variant="outline"
-                                        onClick={() => setShowDeleteDialog(true)}
-                                        className="hover:bg-red-50 hover:border-red-300 text-red-600"
-                                    >
-                                        <Trash2 className="h-4 w-4" />
-                                    </Button>
                                 </>
                             )}
                         </div>
@@ -261,42 +226,7 @@ export default function ReceiptCard({
                 </CardContent>
             </Card>
 
-            {/* Delete Confirmation Dialog */}
-            <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-                <DialogContent className="max-w-md">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2 text-red-600">
-                            <AlertTriangle className="h-5 w-5" />
-                            {language === "vi" ? "Xác nhận xóa" : "Confirm Delete"}
-                        </DialogTitle>
-                        <DialogDescription>
-                            {language === "vi" 
-                                ? `Bạn có chắc muốn xóa phiếu thu #${receipt.maPhieuThu}? Hành động này không thể hoàn tác.`
-                                : `Are you sure you want to delete receipt #${receipt.maPhieuThu}? This action cannot be undone.`
-                            }
-                        </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter>
-                        <Button 
-                            variant="outline" 
-                            onClick={() => setShowDeleteDialog(false)}
-                            disabled={isDeleting}
-                        >
-                            {language === "vi" ? "Hủy" : "Cancel"}
-                        </Button>
-                        <Button 
-                            variant="destructive" 
-                            onClick={handleDelete}
-                            disabled={isDeleting}
-                        >
-                            {isDeleting 
-                                ? (language === "vi" ? "Đang xóa..." : "Deleting...")
-                                : (language === "vi" ? "Xóa" : "Delete")
-                            }
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+
 
             {/* Edit Dialog */}
             <EditReceiptDialog
