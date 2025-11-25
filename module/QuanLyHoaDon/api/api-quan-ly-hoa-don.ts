@@ -1,5 +1,6 @@
 import type { Invoice, InvoiceDetails } from "../types/invoice";
 import { Receipt } from "../types/receipt";
+import { getAuthHeaders } from "../../../utils/auth-api";
 
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
@@ -12,7 +13,9 @@ interface ApiResponse<T = any> {
 }
 export async function getAllInvoices(): Promise<{ status: string; message: string; data: Invoice[] | null }> {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/invoice/all`);
+        const response = await fetch(`${API_BASE_URL}/api/invoice/all`, {
+            headers: getAuthHeaders()
+        });
         const payload = await response.json();
 
         // Trường hợp backend trả về mảng trực tiếp
@@ -98,7 +101,9 @@ export async function getAllInvoices(): Promise<{ status: string; message: strin
 
 export async function getAllActiveInvoices(): Promise<{ status: string; message: string; data: Invoice[] | null }> {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/invoice/active`);
+        const response = await fetch(`${API_BASE_URL}/api/invoice/active`, {
+            headers: getAuthHeaders()
+        });
         const payload = await response.json();
 
         // Trường hợp backend trả về mảng trực tiếp
@@ -184,7 +189,9 @@ export async function getAllActiveInvoices(): Promise<{ status: string; message:
 
 export async function getActiveInvoice(maHoaDon: number): Promise<{ status: string; message: string; data: Invoice | null }> {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/invoice/active/${maHoaDon}`);
+        const response = await fetch(`${API_BASE_URL}/api/invoice/active/${maHoaDon}`, {
+            headers: getAuthHeaders()
+        });
         const payload = await response.json();
 
         // Trường hợp backend trả về object trực tiếp
@@ -251,13 +258,24 @@ export async function createInvoice(contractData: Partial<Invoice>): Promise<{ s
     try {
         const response = await fetch(`${API_BASE_URL}/api/invoice`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: getAuthHeaders(),
             body: JSON.stringify(contractData)
         });
         const data = await response.json();
+        
+        // Check for multiple success indicators like other functions in this file
+        const isSuccess = 
+            response.ok && (
+                data.status === "success" || 
+                data.message === "success" || 
+                data.message === "ok" || 
+                data.message === "OK" ||
+                response.status === 200
+            );
+        
         return {
-            status: data.status === "success" ? "success" : "error",
-            message: data.message || "Invoice created successfully",
+            status: isSuccess ? "success" : "error",
+            message: data.message || (isSuccess ? "Invoice created successfully" : "Failed to create invoice"),
             data: data.data || null
         };
     } catch (error) {
@@ -272,12 +290,24 @@ export async function createInvoice(contractData: Partial<Invoice>): Promise<{ s
 export async function deleteInvoice(id: number): Promise<{ status: string; message: string }> {
     try {
         const response = await fetch(`${API_BASE_URL}/api/invoice/${id}`, {
-            method: "DELETE"
+            method: "DELETE",
+            headers: getAuthHeaders()
         });
         const data = await response.json();
+        
+        // Check for multiple success indicators like other functions in this file
+        const isSuccess = 
+            response.ok && (
+                data.status === "success" || 
+                data.message === "success" || 
+                data.message === "ok" || 
+                data.message === "OK" ||
+                response.status === 200
+            );
+        
         return {
-            status: data.status === "success" ? "success" : "error",
-            message: data.message || "Contract deleted successfully"
+            status: isSuccess ? "success" : "error",
+            message: data.message || (isSuccess ? "Invoice deleted successfully" : "Failed to delete invoice")
         };
     } catch (error) {
         return {
@@ -290,7 +320,9 @@ export async function deleteInvoice(id: number): Promise<{ status: string; messa
 
 export async function printInvoice(id: number): Promise<void> {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/invoice/print/${id}`);
+        const response = await fetch(`${API_BASE_URL}/api/invoice/print/${id}`, {
+            headers: getAuthHeaders()
+        });
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement("a");
@@ -306,7 +338,9 @@ export async function printInvoice(id: number): Promise<void> {
 
 export async function getAllActiveReceipts(): Promise<{ status: string; message: string; data: Receipt[] | null }> {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/receipt/active`);
+        const response = await fetch(`${API_BASE_URL}/api/receipt/active`, {
+            headers: getAuthHeaders()
+        });
         const payload = await response.json();
 
         // Trường hợp backend trả về mảng trực tiếp
@@ -376,7 +410,7 @@ export async function createReceipt(payload: { maHoaDon: number; soTienThu: numb
     try {
         const response = await fetch(`${API_BASE_URL}/api/receipt`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: getAuthHeaders(),
             body: JSON.stringify(payload),
         })
         const data = await response.json()
@@ -397,6 +431,7 @@ export async function deleteReceipt(id: number): Promise<{ status: string; messa
     try {
         const response = await fetch(`${API_BASE_URL}/api/receipt/${id}`, {
             method: 'DELETE',
+            headers: getAuthHeaders()
         })
         const data = await response.json()
         return {

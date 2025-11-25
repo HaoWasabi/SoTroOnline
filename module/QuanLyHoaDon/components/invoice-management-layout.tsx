@@ -8,9 +8,14 @@ import { Input } from "@/components/ui/input";
 import FilterComponent from "@/components/filter-component";
 import { InvoiceFormAsDialog } from "./invoice-form-adding";
 import InvoiceCardComponent from "./invoice-card";
+import PeriodicInvoiceGeneration from "./periodic-invoice-generation";
+import DebtTracking from "./debt-tracking";
+import InvoiceStatusTracking from "./invoice-status-tracking";
+import NotificationSystem from "./notification-system";
+import RevenueReporting from "./revenue-reporting";
 import { getAllActiveInvoices } from "../api/api-quan-ly-hoa-don";
 import type { Invoice } from "../types/invoice";
-import TypeOfInvoiceStatus from "./type-of-invoice-status";
+
 
 const menu = [
     { vietnamItem: "Đã thanh toán", englishItem: "Paid" },
@@ -61,18 +66,7 @@ export default function InvoiceManagementLayout() {
         };
     }, [fetchInvoices]);
 
-    // Thống kê trạng thái hóa đơn
-    const paidCount = invoices.filter(
-        (inv) => inv.trangThai === "DA_THANH_TOAN"
-    ).length;
-    const owingCount = invoices.filter(
-        (inv) => inv.trangThai === "CON_NO"
-    ).length;
-    const deletedCount = invoices.filter(
-        (inv) => inv.trangThai === "DA_XOA"
-    ).length;
-
-    return (
+        return (
         <main className="pt-8 px-4 lg:pl-70 flex flex-col gap-5">
             {/* Header */}
             <div className="flex justify-between items-center">
@@ -88,16 +82,28 @@ export default function InvoiceManagementLayout() {
                             : "Track rent payments and billing"}
                     </p>
                 </div>
-                <InvoiceFormAsDialog onSuccess={fetchInvoices} />
+                <div className="flex gap-2">
+                    <InvoiceFormAsDialog onSuccess={fetchInvoices} />
+                </div>
             </div>
 
-            {/* Thống kê hóa đơn */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <TypeOfInvoiceStatus contractStatus="All" quantity={invoices.length} />
-                <TypeOfInvoiceStatus contractStatus="Paid" quantity={paidCount} />
-                <TypeOfInvoiceStatus contractStatus="Owing" quantity={owingCount} />
-                <TypeOfInvoiceStatus contractStatus="Deleted" quantity={deletedCount} />
-            </div>
+            {/* Management Tools */}
+            <Card className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 border-blue-100">
+                <CardContent className="p-6">
+                    <div className="flex flex-col gap-4">
+                        <h2 className="text-lg font-semibold text-gray-900 mb-2">
+                            {language === "vi" ? "Công cụ quản lý" : "Management Tools"}
+                        </h2>
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                            <PeriodicInvoiceGeneration onSuccess={fetchInvoices} />
+                            <DebtTracking />
+                            <InvoiceStatusTracking />
+                            <NotificationSystem />
+                            <RevenueReporting />
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
 
             {/* Search / Filter */}
             <Card>

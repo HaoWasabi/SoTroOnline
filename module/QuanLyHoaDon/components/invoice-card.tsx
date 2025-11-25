@@ -3,21 +3,24 @@
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { deleteInvoice } from "../api/api-quan-ly-hoa-don"
+import { deleteInvoice, printInvoice } from "../api/api-quan-ly-hoa-don"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
-import { Calendar, DollarSign, Download, Eye, Trash2, FileText} from "lucide-react"
+import { Calendar, DollarSign, Download, Eye, Trash2, FileText, Ban, MoreHorizontal} from "lucide-react"
 import { useCallback, useState } from "react"
 import { useLanguageStore } from "@/zustand/language-tranlator"
 import type { Invoice } from "../types/invoice"
 import { useToast } from "@/hook/useToast"
 import { Toast } from "@/components/toast"
 import { useRouter } from "next/navigation"
+import InvoiceDetailDialog from "./invoice-detail-dialog"
+import InvoiceCancellationDialog from "./invoice-cancellation-dialog"
 
 interface InvoiceCardProps {
   invoice: Invoice
@@ -122,125 +125,223 @@ export default function InvoiceCardComponent({ invoice, onDelete }: InvoiceCardP
     }
   }
 
+  const handlePrintPDF = async () => {
+    if (!invoice.maHoaDon) {
+      showError(language === "vi" 
+        ? "Không thể tải: Thiếu ID hóa đơn" : 
+        "Cannot download: missing invoice ID")
+      return
+    }
+
+    try {
+      await printInvoice(Number(invoice.maHoaDon))
+      showSuccess(language === "vi" ? "Tải file PDF thành công" : "PDF downloaded successfully")
+    } catch (err) {
+      console.error("Error downloading PDF:", err)
+      showError(language === "vi" ? "Có lỗi khi tải file PDF" : "Error downloading PDF")
+    }
+  }
+
   return (
     <>
-      <Card className="w-full hover:shadow-lg transition-all duration-200 border-l-4 border-l-blue-500">
-        <CardContent className="p-6">
-          <div className="flex-1">
-            <div className="flex items-start justify-between mb-4">
-              {/* --- Left side --- */}
-              <div className="flex items-center gap-4">
-                <div className="h-12 w-12 bg-blue-50 rounded-lg flex items-center justify-center">
-                  <FileText className="h-6 w-6 text-blue-600" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    {language === "vi" ? "Hóa đơn #" : "Invoice #"} {invoice.maHoaDon}
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    {language === "vi" ? "Tháng" : "Month"} {invoice.thang}/{invoice.nam}
-                  </p>
-                </div>
+      <Card className="w-full hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 border-0 rounded-2xl bg-gradient-to-br from-white via-slate-50 to-blue-50/30 backdrop-blur-sm">
+        <CardContent className="p-6 space-y-6">
+          {/* Header Section */}
+          <div className="flex items-start justify-between">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
+                <FileText className="h-6 w-6 text-white" />
               </div>
+              <div className="space-y-1">
+                <h3 className="text-xl font-bold text-gray-900 tracking-tight">
+                  {language === "vi" ? "Hóa đơn #" : "Invoice #"} {invoice.maHoaDon}
+                </h3>
+                <p className="text-sm text-gray-600 font-medium">
+                  {language === "vi" ? "Tháng" : "Month"} {invoice.thang}/{invoice.nam}
+                </p>
+              </div>
+            </div>
 
-              {/* --- Badge trạng thái --- */}
-              <Badge variant={getStatusColor(invoice.trangThai)}>
-                {getStatusLabel(invoice.trangThai)}
+            {/* Status Badge */}
+            <div className="flex items-center">
+              <Badge 
+                variant={getStatusColor(invoice.trangThai)}
+                className={`px-3 py-1 text-xs font-semibold shadow-lg ${
+                  invoice.trangThai === "DA_THANH_TOAN" || invoice.trangThai === "daThanhToan" || invoice.trangThai === "hoatDong"
+                    ? "bg-gradient-to-r from-emerald-500 to-green-500 text-white border-0 shadow-green-200"
+                    : invoice.trangThai === "CON_NO" || invoice.trangThai === "choThanhToan"
+                    ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0 shadow-amber-200"
+                    : invoice.trangThai === "quaHan" || invoice.trangThai === "DA_XOA" || invoice.trangThai === "daXoa"
+                    ? "bg-gradient-to-r from-red-500 to-rose-500 text-white border-0 shadow-red-200"
+                    : "bg-gradient-to-r from-gray-400 to-slate-500 text-white border-0"
+                }`}
+              >
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 rounded-full bg-white/80"></div>
+                  {getStatusLabel(invoice.trangThai)}
+                </div>
               </Badge>
             </div>
+          </div>
 
-            {/* --- Grid thông tin hóa đơn --- */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm mb-4">
-              <div>
-                <span className="text-gray-500">{language === "vi" ? "Tiền phòng" : "Room Fee"}</span>
-                <div className="flex items-center gap-1 mt-1">
-                  <DollarSign className="h-4 w-4 text-gray-400" />
-                  <span className="font-medium text-green-600">
-                    {invoice.tienPhong.toLocaleString("vi-VN")} ₫
+          {/* Financial Summary */}
+          <div className="bg-white rounded-xl p-5 border border-blue-100 shadow-sm">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500"></div>
+              <h4 className="font-bold text-lg text-gray-900">
+                {language === "vi" ? "Thông tin tài chính" : "Financial Summary"}
+              </h4>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-lg p-4 border border-emerald-100">
+                <div className="flex items-center gap-2 text-sm mb-2">
+                  <DollarSign className="h-4 w-4 text-emerald-600" />
+                  <span className="text-emerald-600 font-medium">
+                    {language === "vi" ? "Tiền phòng" : "Room Fee"}
                   </span>
                 </div>
-              </div>
-              <div>
-                <span className="text-gray-500">{language === "vi" ? "Tiền dịch vụ" : "Service Fee"}</span>
-                <div className="flex items-center gap-1 mt-1">
-                  <DollarSign className="h-4 w-4 text-gray-400" />
-                  <span className="font-medium text-green-600">
-                    {invoice.tienDichVu.toLocaleString("vi-VN")} ₫
-                  </span>
+                <div className="text-lg font-bold text-emerald-800">
+                  {invoice.tienPhong.toLocaleString("vi-VN")} ₫
                 </div>
               </div>
-              <div>
-                <span className="text-gray-500">{language === "vi" ? "Tổng tiền" : "Total Amount"}</span>
-                <div className="flex items-center gap-1 mt-1">
-                  <DollarSign className="h-4 w-4 text-gray-400" />
-                  <span className="font-bold text-blue-600">
-                    {invoice.tongTien.toLocaleString("vi-VN")} ₫
+              
+              <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-4 border border-purple-100">
+                <div className="flex items-center gap-2 text-sm mb-2">
+                  <DollarSign className="h-4 w-4 text-purple-600" />
+                  <span className="text-purple-600 font-medium">
+                    {language === "vi" ? "Tiền dịch vụ" : "Service Fee"}
                   </span>
+                </div>
+                <div className="text-lg font-bold text-purple-800">
+                  {invoice.tienDichVu.toLocaleString("vi-VN")} ₫
+                </div>
+              </div>
+              
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-100">
+                <div className="flex items-center gap-2 text-sm mb-2">
+                  <DollarSign className="h-4 w-4 text-blue-600" />
+                  <span className="text-blue-600 font-medium">
+                    {language === "vi" ? "Tổng tiền" : "Total Amount"}
+                  </span>
+                </div>
+                <div className="text-lg font-bold text-blue-800">
+                  {invoice.tongTien.toLocaleString("vi-VN")} ₫
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* --- Ngày tạo & cập nhật --- */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mb-4">
-              <div>
-                <span className="text-gray-500">{language === "vi" ? "Ngày tạo" : "Created At"}</span>
-                <div className="flex items-center gap-1 mt-1">
-                  <Calendar className="h-4 w-4 text-gray-400" />
-                  <span className="font-medium">{invoice.ngayTao}</span>
+          {/* Date Information */}
+          <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-3 h-3 rounded-full bg-gradient-to-r from-gray-500 to-slate-500"></div>
+              <h4 className="font-bold text-lg text-gray-900">
+                {language === "vi" ? "Thông tin thời gian" : "Date Information"}
+              </h4>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-lg p-4 border border-amber-100">
+                <div className="flex items-center gap-2 text-sm mb-2">
+                  <Calendar className="h-4 w-4 text-amber-600" />
+                  <span className="text-amber-600 font-medium">
+                    {language === "vi" ? "Ngày tạo" : "Created At"}
+                  </span>
+                </div>
+                <div className="text-sm font-semibold text-amber-800">
+                  {invoice.ngayTao}
                 </div>
               </div>
-              <div>
-                <span className="text-gray-500">{language === "vi" ? "Cập nhật lần cuối" : "Last Updated"}</span>
-                <div className="flex items-center gap-1 mt-1">
-                  <Calendar className="h-4 w-4 text-gray-400" />
-                  <span className="font-medium">{invoice.capNhatLanCuoi}</span>
+              
+              <div className="bg-gradient-to-br from-teal-50 to-cyan-50 rounded-lg p-4 border border-teal-100">
+                <div className="flex items-center gap-2 text-sm mb-2">
+                  <Calendar className="h-4 w-4 text-teal-600" />
+                  <span className="text-teal-600 font-medium">
+                    {language === "vi" ? "Cập nhật lần cuối" : "Last Updated"}
+                  </span>
+                </div>
+                <div className="text-sm font-semibold text-teal-800">
+                  {invoice.capNhatLanCuoi}
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* --- Hành động --- */}
-            <div className="flex gap-2 pt-2 border-t border-gray-100">
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex-1 bg-transparent"
-                onClick={() => router.push(`/invoices/${invoice.maHoaDon}`)}
-              >
-                <Eye className="h-4 w-4 mr-2" />
-                {language === "vi" ? "Xem chi tiết" : "View Details"}
-              </Button>
-
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" className="flex-1 bg-transparent">
-                    <Download className="h-4 w-4 mr-2" />
-                    {language === "vi" ? "Tải xuống" : "Download"}
+          {/* Action Buttons */}
+          <div className="bg-gradient-to-r from-slate-50 to-gray-50 rounded-xl p-5 border border-gray-100">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-gradient-to-r from-gray-500 to-slate-500"></div>
+                <span className="text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                  {language === "vi" ? "Hành động" : "Actions"}
+                </span>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                {/* View Details */}
+                <InvoiceDetailDialog invoiceId={invoice.maHoaDon}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-lg border-2 border-emerald-200 hover:border-emerald-300 hover:bg-emerald-50 text-emerald-700 font-medium transition-all duration-200"
+                  >
+                    <Eye className="h-4 w-4 mr-2" />
+                    {language === "vi" ? "Xem chi tiết" : "View Details"}
                   </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>{language === "vi" ? "Tùy chọn" : "Options"}</DropdownMenuLabel>
-                  <DropdownMenuItem>
-                    <Download className="h-4 w-4 mr-2" />
-                    {language === "vi" ? "Tải file PDF" : "Download PDF"}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                </InvoiceDetailDialog>
 
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={handleDelete}
-                disabled={isDeleting}
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                {isDeleting
-                  ? language === "vi"
-                    ? "Đang xóa..."
-                    : "Deleting..."
-                  : language === "vi"
-                    ? "Xóa"
-                    : "Delete"}
-              </Button>
+                {/* Actions Dropdown */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="rounded-lg border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-gray-700 font-medium transition-all duration-200"
+                    >
+                      <MoreHorizontal className="h-4 w-4 mr-2" />
+                      {language === "vi" ? "Hành động" : "Actions"}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56 rounded-xl shadow-xl border-0 bg-white/95 backdrop-blur-sm">
+                    <DropdownMenuLabel className="text-gray-600 font-semibold">
+                      {language === "vi" ? "Tùy chọn" : "Options"}
+                    </DropdownMenuLabel>
+                    
+                    <DropdownMenuItem 
+                      onClick={handlePrintPDF}
+                      className="rounded-lg hover:bg-blue-50 text-blue-700 font-medium"
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      {language === "vi" ? "Tải file PDF" : "Download PDF"}
+                    </DropdownMenuItem>
+                    
+                    <DropdownMenuSeparator />
+                    
+                    {/* Invoice Cancellation */}
+                    {(invoice.trangThai !== "DA_XOA" && invoice.trangThai !== "daXoa") && (
+                      <InvoiceCancellationDialog invoice={invoice} onSuccess={onDelete}>
+                        <DropdownMenuItem 
+                          onSelect={(e) => e.preventDefault()}
+                          className="rounded-lg hover:bg-red-50 text-red-700 font-medium"
+                        >
+                          <Ban className="h-4 w-4 mr-2" />
+                          {language === "vi" ? "Hủy hóa đơn" : "Cancel Invoice"}
+                        </DropdownMenuItem>
+                      </InvoiceCancellationDialog>
+                    )}
+                    
+                    <DropdownMenuItem 
+                      onClick={handleDelete}
+                      className="rounded-lg hover:bg-red-50 text-red-700 font-medium"
+                      disabled={isDeleting}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      {isDeleting 
+                        ? (language === "vi" ? "Đang xóa..." : "Deleting...")
+                        : (language === "vi" ? "Xóa vĩnh viễn" : "Delete Permanently")}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
           </div>
         </CardContent>

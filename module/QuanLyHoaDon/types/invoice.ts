@@ -12,6 +12,9 @@ export interface Invoice {
     nam: number,
     noiDung: string,
     trangThai: string,
+    // Optional extended properties
+    tenKhachThue?: string,
+    tenPhong?: string,
 }
 
 export interface InvoiceDetails {

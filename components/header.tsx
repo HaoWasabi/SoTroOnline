@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
-import { Building, Building2, FileText, Home, Menu, Receipt, Search, Settings, User, Users, Wrench } from 'lucide-react';
+import { Building, Building2, FileText, Home, Menu, Receipt, Search, Settings, User, Users, Wrench, DollarSign } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { usePathname } from 'next/navigation';
@@ -20,6 +20,7 @@ const navigation = [
     { vietnam_name: 'Phòng', english_name: 'Rooms', href: '/rooms', icon: Building },
     { vietnam_name: 'Hợp đồng', english_name: 'Contracts', href: '/contracts', icon: FileText },
     { vietnam_name: 'Hóa đơn', english_name: 'Invoices', href: '/invoices', icon: Receipt },
+    { vietnam_name: 'Phiếu thu', english_name: 'Receipts', href: '/receipt', icon: DollarSign },
     { vietnam_name: 'Dịch vụ phòng', english_name: 'Room Services', href: '/room-services', icon: Wrench },
     { vietnam_name: 'Quản lý thông tin cá nhân', english_name: 'Profile', href: '/user-profile', icon: User },
     { vietnam_name: 'Cài đặt', english_name: 'Settings', href: '/settings', icon: Settings },

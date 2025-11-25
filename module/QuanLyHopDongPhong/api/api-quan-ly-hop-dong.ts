@@ -14,7 +14,7 @@ interface ApiResponse<T = any> {
 
 export async function getAllContracts(): Promise<{ status: string; message: string; data: Contract[] | null }> {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/hop-dong-phong/all`, {
+        const response = await fetch(`${API_BASE_URL}/api/hop-dong-phong/all-active`, {
             headers: getAuthHeaders()
         });
         const payload = await response.json();
