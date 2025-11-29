@@ -33,6 +33,7 @@ export interface RoomResponse {
   chieuRong: number;
   vatDung: string;
   giaThueCoBan: number;
+  soLuongKhachToiDa: number;
   trangThai: string;
 }
 
@@ -61,6 +62,7 @@ export interface RoomRequest {
   chieuRong: number;
   vatDung: string;
   giaThueCoBan: number;
+  soLuongKhachToiDa: number;
   trangThai: string // Use union type for better type safety
   maQuanLy: number;
 }

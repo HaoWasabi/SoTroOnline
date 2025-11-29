@@ -78,6 +78,14 @@ export function TenantForm({ onSuccess }: TenantFormProps) {
                     return language === 'vi' ? 'Ngày sinh không hợp lệ' : 'Invalid date of birth';
                 }
                 break;
+            case 'email':
+                if (value && value.trim()) {
+                    const emailPattern = /^[A-Za-z0-9+_.-]+@(.+)$/;
+                    if (!emailPattern.test(value.trim())) {
+                        return language === 'vi' ? 'Định dạng email không hợp lệ' : 'Invalid email format';
+                    }
+                }
+                break;
         }
         return null;
     };
@@ -108,6 +116,7 @@ export function TenantForm({ onSuccess }: TenantFormProps) {
             ngayTao: new Date().toISOString(), // Current date
             trangThai: 'hoatDong', // Default status
             dienThoai: formData.get('dienThoai') as string,
+            email: formData.get('email') as string,
             maNguoiQuanLy: currentManagerId || undefined, // Add manager ID for SAAS support
         };
 
@@ -299,6 +308,31 @@ export function TenantForm({ onSuccess }: TenantFormProps) {
                                     )}
                                 </div>
 
+                                <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-5 border border-blue-100 space-y-3">
+                                    <Label htmlFor="email" className="text-base font-semibold text-blue-700 flex items-center gap-2">
+                                        <span className="text-sm">📧</span>
+                                        {language === 'vi' ? 'Email' : 'Email'}
+                                    </Label>
+                                    <Input
+                                        id="email"
+                                        name="email"
+                                        type="email"
+                                        placeholder={language === 'vi' ? 'example@email.com' : 'example@email.com'}
+                                        onChange={handleInputChange}
+                                        className={`rounded-xl border-2 font-semibold transition-all duration-200 ${
+                                            validationErrors.email 
+                                                ? 'border-red-300 focus:border-red-500 bg-red-50' 
+                                                : 'border-blue-200 focus:border-blue-400 bg-blue-50/30'
+                                        }`}
+                                    />
+                                    {validationErrors.email && (
+                                        <p className="text-sm text-red-500 bg-red-50 p-3 rounded-xl">{validationErrors.email}</p>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 gap-6 mt-6">
+
                                 <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-5 border border-amber-100 space-y-3">
                                     <Label htmlFor="thuongTru" className="text-base font-semibold text-amber-700 flex items-center gap-2">
                                         <span className="text-sm">🏠</span>
@@ -323,8 +357,8 @@ export function TenantForm({ onSuccess }: TenantFormProps) {
                                 </div>
                             </div>
                         </div>
-
-                        {/* Birth Date Section */}
+    
+                            {/* Birth Date Section */}
                         <div className="bg-white rounded-2xl p-6 border border-indigo-100 shadow-sm">
                             <div className="flex items-center gap-3 mb-6">
                                 <div className="w-3 h-3 rounded-full bg-gradient-to-r from-indigo-500 to-blue-500"></div>

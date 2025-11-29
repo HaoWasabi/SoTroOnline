@@ -143,10 +143,11 @@ export function ContractFormAsDialog({ onSuccess }: ContractFormAsDialogProps) {
     if (formData.selectedTenantIds.length === 0)
       newErrors.tenants = language === "vi" ? "Vui lòng chọn ít nhất một khách thuê" : "Please select at least one tenant";
 
-    if (formData.maximumTenants && formData.selectedTenantIds.length > formData.maximumTenants)
+    const maxTenants = formData.selectedRoom ? (formData.selectedRoom.soLuongKhachToiDa || 4) : 4;
+    if (formData.selectedTenantIds.length > maxTenants)
       newErrors.tenants = language === "vi" 
-        ? `Số lượng khách thuê đã chọn (${formData.selectedTenantIds.length}) vượt quá giới hạn tối đa (${formData.maximumTenants}). Vui lòng giảm số lượng hoặc tăng giới hạn.`
-        : `Selected tenant count (${formData.selectedTenantIds.length}) exceeds maximum limit (${formData.maximumTenants}). Please reduce count or increase limit.`;
+        ? `Số lượng khách thuê đã chọn (${formData.selectedTenantIds.length}) vượt quá giới hạn tối đa của phòng (${maxTenants}). Vui lòng giảm số lượng hoặc chọn phòng khác.`
+        : `Selected tenant count (${formData.selectedTenantIds.length}) exceeds room maximum limit (${maxTenants}). Please reduce count or select different room.`;
 
     if (formData.selectedTenantIds.length > 1 && !formData.mainTenantId)
       newErrors.mainTenant = language === "vi" ? "Vui lòng chỉ định khách thuê đại diện" : "Please designate a main tenant";
@@ -162,7 +163,7 @@ export function ContractFormAsDialog({ onSuccess }: ContractFormAsDialogProps) {
       newErrors.ngayKetThuc = language === "vi" ? "Vui lòng nhập thời hạn hợp đồng" : "Please enter contract duration";
 
     if (!formData.tienPhong)
-      newErrors.tienPhong = language === "vi" ? "Vui lòng nhập giá thuê" : "Please enter rent price";
+      newErrors.tienPhong = language === "vi" ? "Vui lòng chọn phòng để tự động lấy giá thuê" : "Please select a room to auto-populate rent price";
 
     if (!formData.tienCoc)
       newErrors.tienCoc = language === "vi" ? "Vui lòng nhập tiền cọc" : "Please enter deposit";
@@ -198,11 +199,16 @@ export function ContractFormAsDialog({ onSuccess }: ContractFormAsDialogProps) {
         computedEnd = formatYMD(formData.ngayKetThuc);
       }
 
-      // Xây dựng payload trực tiếp từ state (tránh sai lệch FormData)
+      // Xây dựng payload với tất cả thông tin về tenants
+      const mainTenantId = formData.mainTenantId || formData.selectedTenantIds[0];
+      const additionalTenants = formData.selectedTenantIds.filter(id => id !== mainTenantId);
+      const roomMaxTenants = formData.selectedRoom ? (formData.selectedRoom.soLuongKhachToiDa || 4) : 4;
+      
       const payload = {
         maTaiKhoan: 1, // ID người quản lý (tạm cứng) - backend expects maTaiKhoan, not maQuanLy
-        maKhachThue: formData.mainTenantId || formData.selectedTenantIds[0], // Send as maKhachThue to match backend DTO
-        maKhachDaiDien: formData.mainTenantId || formData.selectedTenantIds[0], // Keep for backward compatibility
+        maKhachThue: mainTenantId, // Main tenant (representative)
+        additionalTenantIds: additionalTenants, // Other tenants
+        maximumTenants: roomMaxTenants, // Use room's maximum tenant limit
         maPhong: formData.selectedRoom?.maPhong,
         ngayBatDau: formatYMD(formData.ngayBatDau),
         ngayKetThuc: computedEnd,
@@ -212,16 +218,16 @@ export function ContractFormAsDialog({ onSuccess }: ContractFormAsDialogProps) {
         dvWifi: !!formData.dvWifi,
         dvCap: !!formData.dvCap,
         dvKhac: !!formData.dvKhac,
-        trangThai: "hoatDong",
-        maximumTenants: formData.maximumTenants || 4, // Pass the maximum tenant configuration
-        // Include additional tenants (excluding main tenant to avoid duplication)
-        additionalTenantIds: formData.selectedTenantIds.filter(id => id !== (formData.mainTenantId || formData.selectedTenantIds[0]))
+        trangThai: "hoatDong"
       };
 
-      console.debug("createContract payload:", payload);
+      console.debug("=== CONTRACT CREATION PAYLOAD ===");
+      console.debug("Main tenant ID:", mainTenantId);
+      console.debug("Additional tenants:", additionalTenants);
+      console.debug("Total tenants:", formData.selectedTenantIds.length);
+      console.debug("Room maximum tenants:", roomMaxTenants);
       console.debug("Selected room:", formData.selectedRoom);
-      console.debug("Main tenant ID:", formData.mainTenantId);
-      console.debug("Selected tenant IDs:", formData.selectedTenantIds);
+      console.debug("Full payload:", payload);
 
       const result = await createContract(payload);
 
@@ -274,11 +280,14 @@ export function ContractFormAsDialog({ onSuccess }: ContractFormAsDialogProps) {
   }
 
   const handleTenantsChange = (tenantIds: number[]) => {
+    // Get maximum tenants from selected room or default to 4
+    const maxTenants = formData.selectedRoom ? (formData.selectedRoom.soLuongKhachToiDa || 4) : 4
+    
     // Check maximum tenant limit - only prevent if exceeding, allow equal
-    if (formData.maximumTenants && tenantIds.length > formData.maximumTenants) {
+    if (tenantIds.length > maxTenants) {
       showError(language === "vi" 
-        ? `Không thể chọn quá ${formData.maximumTenants} khách thuê. Hiện đã chọn ${tenantIds.length}.`
-        : `Cannot select more than ${formData.maximumTenants} tenants. Currently selected ${tenantIds.length}.`)
+        ? `Không thể chọn quá ${maxTenants} khách thuê. Hiện đã chọn ${tenantIds.length}.`
+        : `Cannot select more than ${maxTenants} tenants. Currently selected ${tenantIds.length}.`)
       return
     }
     
@@ -378,37 +387,38 @@ export function ContractFormAsDialog({ onSuccess }: ContractFormAsDialogProps) {
               
               {/* Tenant Selection Section */}
               <div className="space-y-6 bg-white rounded-lg p-4 border border-blue-100">
-                {/* Maximum Tenant Configuration */}
+                {/* Maximum Tenant Display (Auto from Room) */}
                 <div className="space-y-3">
-                  <Label htmlFor="maximumTenants" className="text-sm font-semibold text-blue-700">{language === "vi" ? "Số lượng khách thuê tối đa" : "Maximum Tenants"}</Label>
+                  <Label className="text-sm font-semibold text-blue-700">{language === "vi" ? "Số lượng khách thuê tối đa" : "Maximum Tenants"}</Label>
                   <div className="flex items-center gap-6">
-                    <Input
-                      id="maximumTenants"
-                      type="number"
-                      min="1"
-                      max="10"
-                      value={formData.maximumTenants || 4}
-                      onChange={(e) => {
-                        const newMax = Math.max(1, Math.min(10, parseInt(e.target.value) || 1))
-                        setFormData(prev => ({ ...prev, maximumTenants: newMax }))
-                        // Clear tenant selection errors when limit changes
-                        setErrors(prev => ({ ...prev, tenants: "" }))
-                      }}
-                      className="w-24 font-medium border-blue-200 focus:ring-blue-500 focus:border-blue-500"
-                    />
+                    <div className="bg-blue-50 border border-blue-200 rounded-md px-4 py-2 min-w-24">
+                      <span className="text-blue-800 font-bold text-lg">
+                        {formData.selectedRoom ? (formData.selectedRoom.soLuongKhachToiDa || 4) : 4}
+                      </span>
+                    </div>
                     <span className="text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-md border border-blue-200">
                       {language === "vi" 
-                        ? `Đã chọn: ${formData.selectedTenantIds.length}/${formData.maximumTenants || 4}`
-                        : `Selected: ${formData.selectedTenantIds.length}/${formData.maximumTenants || 4}`
+                        ? `Đã chọn: ${formData.selectedTenantIds.length}/${formData.selectedRoom ? (formData.selectedRoom.soLuongKhachToiDa || 4) : 4}`
+                        : `Selected: ${formData.selectedTenantIds.length}/${formData.selectedRoom ? (formData.selectedRoom.soLuongKhachToiDa || 4) : 4}`
                       }
                     </span>
-                    {formData.selectedTenantIds.length >= (formData.maximumTenants || 4) && (
+                    {formData.selectedRoom ? (
+                      <span className="text-sm text-green-600 font-medium bg-green-50 px-2 py-1 rounded">
+                        {language === "vi" ? "Tự động từ phòng" : "Auto from room"}
+                      </span>
+                    ) : (
+                      <span className="text-sm text-orange-600 font-medium bg-orange-50 px-2 py-1 rounded">
+                        {language === "vi" ? "Chọn phòng trước" : "Select room first"}
+                      </span>
+                    )}
+                    {formData.selectedTenantIds.length >= (formData.selectedRoom ? (formData.selectedRoom.soLuongKhachToiDa || 4) : 4) && (
                       <span className="text-sm text-orange-600 font-medium bg-orange-50 px-2 py-1 rounded">
                         {language === "vi" ? "Đã đạt giới hạn" : "Limit reached"}
                       </span>
                     )}
                   </div>
-                </div>
+                
+              
                 
                 <div className="space-y-3">
                   <Label className="text-sm font-semibold text-blue-700">{language === "vi" ? "Khách thuê" : "Tenants"} <span className="text-red-500">*</span></Label>
@@ -418,7 +428,7 @@ export function ContractFormAsDialog({ onSuccess }: ContractFormAsDialogProps) {
                       selectedTenants={formData.selectedTenantIds}
                       onTenantsChange={handleTenantsChange}
                       loading={loadingTenants}
-                      maxSelection={formData.maximumTenants || 4}
+                      maxSelection={formData.selectedRoom ? (formData.selectedRoom.soLuongKhachToiDa || 4) : 4}
                       showMainTenant={formData.selectedTenantIds.length > 1}
                       mainTenantId={formData.mainTenantId || undefined}
                       onMainTenantChange={handleMainTenantChange}
@@ -448,8 +458,13 @@ export function ContractFormAsDialog({ onSuccess }: ContractFormAsDialogProps) {
                       availableRooms={availableRooms}
                       selectedRoom={formData.selectedRoom}
                       onRoomSelect={(room) => {
-                        setFormData(prev => ({ ...prev, selectedRoom: room }))
-                        setErrors(prev => ({ ...prev, selectedRoom: "" }))
+                        setFormData(prev => ({ 
+                          ...prev, 
+                          selectedRoom: room,
+                          tienPhong: room?.giaThueCoBan?.toString() || "", // Auto-populate room cost
+                          maximumTenants: room?.soLuongKhachToiDa || 4 // Auto-populate max tenants from room
+                        }))
+                        setErrors(prev => ({ ...prev, selectedRoom: "", tienPhong: "" }))
                       }}
                       loading={loadingRooms}
                       disabled={loadingRooms}
@@ -524,7 +539,8 @@ export function ContractFormAsDialog({ onSuccess }: ContractFormAsDialogProps) {
               </div>
             </div>
 
-              <div className="space-y-6 p-6 bg-gray-50 rounded-lg">
+            {/* Financial Information Section */}
+            <div className="space-y-6 p-6 bg-gray-50 rounded-lg">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-3">
                     <Label htmlFor="ngayKetThuc" className="text-sm font-semibold">{language === "vi" ? "Ngày kết thúc" : "End Date"}</Label>
@@ -541,15 +557,27 @@ export function ContractFormAsDialog({ onSuccess }: ContractFormAsDialogProps) {
 
                   <div className="space-y-3">
                     <Label htmlFor="tienPhong" className="text-sm font-semibold text-amber-700">{language === "vi" ? "Tiền phòng (VND)" : "Room Fee (VND)"} <span className="text-red-500">*</span></Label>
-                    <Input
-                      id="tienPhong"
-                      name="tienPhong"
-                      type="number"
-                      placeholder={language === "vi" ? "5000000" : "5000000"}
-                      value={formData.tienPhong as any}
-                      onChange={(e) => { setFormData(prev => ({ ...prev, tienPhong: e.target.value })); setErrors(prev => ({ ...prev, tienPhong: "" })) }}
-                      className="font-medium border-amber-200 focus:ring-amber-500 focus:border-amber-500"
-                    />
+                    <div className="relative">
+                      <Input
+                        id="tienPhong"
+                        name="tienPhong"
+                        type="number"
+                        placeholder={language === "vi" ? "Chọn phòng để hiển thị giá" : "Select room to display price"}
+                        value={formData.tienPhong as any}
+                        readOnly
+                        className="font-medium border-amber-200 bg-amber-50 cursor-not-allowed text-amber-800"
+                      />
+                      {formData.selectedRoom && (
+                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-amber-600 bg-amber-100 px-2 py-1 rounded">
+                          {language === "vi" ? "Tự động" : "Auto"}
+                        </div>
+                      )}
+                    </div>
+                    {!formData.selectedRoom && (
+                      <p className="text-sm text-amber-600 mt-1">
+                        {language === "vi" ? "Giá phòng sẽ tự động hiển thị khi bạn chọn phòng" : "Room price will be automatically displayed when you select a room"}
+                      </p>
+                    )}
                     {errors.tienPhong && <p className="text-sm text-red-500 mt-1">{errors.tienPhong}</p>}
                   </div>
                 </div>
@@ -594,6 +622,7 @@ export function ContractFormAsDialog({ onSuccess }: ContractFormAsDialogProps) {
               </div>
             </div>
           </div>
+        </div>
         </form>
         
         <DialogFooter className="border-t border-gray-100 pt-6 mt-6 backdrop-blur-sm">

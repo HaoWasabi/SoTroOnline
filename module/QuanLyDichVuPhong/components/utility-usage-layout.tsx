@@ -9,7 +9,7 @@ import { Toast } from "@/components/toast";
 import { useToast } from "@/hook/useToast";
 import { Search, Filter, Plus, Building2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { getAllUtilityUsage} from "../api/api-utility-usage";
+import { getAllUtilityUsage, getUtilityUsageForCurrentManager} from "../api/api-utility-usage";
 import { currentManagerRoomApi } from "@/module/QuanLyPhong/api/api-quan-ly-phong";
 import { UtilityUsageResponse } from "../types/utility-usage-types";
 import UtilityUsageCard from "./utility-usage-card";
@@ -45,8 +45,9 @@ export default function UtilityUsageLayout() {
         setLoading(true);
         try {
             // Fetch utility usage data and rooms concurrently
+            // Use manager-specific endpoint for SAAS multi-tenant filtering
             const [utilityResult, roomsResult] = await Promise.all([
-                getAllUtilityUsage(),
+                getUtilityUsageForCurrentManager(), // Only get data for current manager
                 currentManagerRoomApi.getAllRoomsActivePaged(0, 1000) // Get all active rooms
             ]);
 
@@ -75,7 +76,7 @@ export default function UtilityUsageLayout() {
 
     const handleRefresh = () => {
         fetchInitialData();
-        showSuccess(language === 'vi' ? 'Dữ liệu đã được làm mới' : 'Data refreshed');
+        showSuccess(language === 'vi' ? 'Dữ liệu của bạn đã được làm mới' : 'Your data refreshed');
     };
 
     const filterData = () => {
@@ -146,7 +147,7 @@ export default function UtilityUsageLayout() {
                                 {language === 'vi' ? 'Quản lý chỉ số điện nước' : 'Utility Usage Management'}
                             </h1>
                             <p className="text-gray-600 text-lg">
-                                {language === 'vi' ? 'Theo dõi và quản lý chỉ số điện, nước của các phòng' : 'Track and manage electricity and water meter readings'}
+                                {language === 'vi' ? 'Theo dõi và quản lý chỉ số điện, nước của các phòng bạn quản lý' : 'Track and manage electricity and water readings for your managed rooms'}
                             </p>
                         </div>
                     </div>

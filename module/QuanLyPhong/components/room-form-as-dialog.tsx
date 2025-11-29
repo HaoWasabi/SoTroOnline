@@ -105,6 +105,7 @@ export function RoomFormAsDialog({ children, room, onUpdate }: RoomFormAsDialogP
                 chieuDai: parseFloat(formData.get('length') as string),
                 chieuRong: parseFloat(formData.get('width') as string),
                 giaThueCoBan: parseFloat(formData.get('rent_price') as string),
+                soLuongKhachToiDa: parseInt(formData.get('max_tenants') as string) || 4,
                 trangThai: roomStatus, // Send as string - backend should handle enum conversion
                 vatDung: roomItemsString,
                 maQuanLy: taikhoan.taiKhoan?.maTaiKhoan as number // TODO: Get from current user context
@@ -406,6 +407,39 @@ export function RoomFormAsDialog({ children, room, onUpdate }: RoomFormAsDialogP
                                 {validationErrors.rent_price && (
                                     <p className="text-xs text-red-500 bg-red-50 p-2 rounded-lg">{validationErrors.rent_price}</p>
                                 )}
+                            </div>
+                        </div>
+
+                        {/* Maximum Tenants Section */}
+                        <div className="bg-white rounded-xl p-4 border border-blue-100 shadow-sm">
+                            <div className="flex items-center gap-2 mb-4">
+                                <div className="w-2 h-2 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500"></div>
+                                <h4 className="font-bold text-base text-gray-900">
+                                    {language === 'vi' ? 'Số lượng khách thuê tối đa' : 'Maximum Tenants'}
+                                </h4>
+                            </div>
+                            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-100 space-y-2 max-w-md">
+                                <Label htmlFor="max_tenants" className="text-sm font-semibold text-blue-700 flex items-center gap-2">
+                                    <span className="text-xs">👥</span>
+                                    {language === 'vi' ? 'Số người tối đa' : 'Maximum People'} <span className="text-red-500">*</span>
+                                </Label>
+                                <Input
+                                    id="max_tenants"
+                                    name="max_tenants"
+                                    type="number"
+                                    min="1"
+                                    max="10"
+                                    defaultValue={room?.maxTenants?.toString() || "4"}
+                                    placeholder={language === 'vi' ? 'Số người tối đa có thể ở' : 'Maximum number of people'}
+                                    required
+                                    className={`rounded-lg border-2 font-medium transition-all duration-200 text-sm border-blue-200 focus:border-blue-400 bg-blue-50/30`}
+                                />
+                                <p className="text-xs text-blue-600 bg-blue-50 p-2 rounded-lg">
+                                    {language === 'vi' 
+                                        ? 'Số lượng khách thuê tối đa có thể ở trong phòng này (1-10 người)'
+                                        : 'Maximum number of tenants allowed in this room (1-10 people)'
+                                    }
+                                </p>
                             </div>
                         </div>
 

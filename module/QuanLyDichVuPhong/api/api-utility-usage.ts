@@ -22,6 +22,25 @@ export async function getAllUtilityUsage(): Promise<ApiResponseV2<UtilityUsageRe
     }
 }
 
+// Get utility usage records for current manager (SAAS filtering)
+export async function getUtilityUsageForCurrentManager(): Promise<ApiResponseV2<UtilityUsageResponse[]>> {
+    try {
+        const response = await authenticatedFetch(`${API_BASE_URL}/api/service-using/active`, {
+            method: 'GET',
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: Failed to retrieve utility usage for current manager`);
+        }
+
+        const result: ApiResponseV2<UtilityUsageResponse[]> = await response.json();
+        return result;
+    } catch (error) {
+        console.error('Error fetching utility usage for current manager:', error);
+        throw error;
+    }
+}
+
 // Get utility usage records by room
 export async function getUtilityUsageByRoom(maPhong: number): Promise<ApiResponseV2<UtilityUsageResponse[]>> {
     try {

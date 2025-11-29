@@ -283,6 +283,10 @@ export async function getAllActiveContractsPaged(page: number = 0, size: number 
                         ngayBatDau,
                         ngayKetThuc,
                         ngayTao,
+                        // Add display names for search functionality
+                        tenKhachThue: h.tenKhachThue || null,
+                        tenPhong: h.tenPhong || pick(h.phong, ['tenPhong', 'name']) || null,
+                        tenTaiKhoan: h.tenTaiKhoan || pick(h.taiKhoan, ['hoTen', 'username']) || null,
                     };
 
                     if (statusVal !== undefined && statusVal !== null) {

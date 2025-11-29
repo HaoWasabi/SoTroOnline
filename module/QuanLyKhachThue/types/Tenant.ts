@@ -8,4 +8,5 @@ export interface Tenant {
     trangThai: string,
     dienThoai: string,
     maNguoiQuanLy?: number,
+    email?: string,
 }

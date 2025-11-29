@@ -45,7 +45,7 @@ export async function updateUserInformationApi(
                 maTaiKhoan: maTaiKhoan,
                 email: email,
                 hoTen: hoTen,
-                cccdCode: cccdCode,
+                maCanCuoc: cccdCode,
                 dienThoai: dienThoai,
                 thuongTru: thuongTru,
                 ngaySinh: ngaySinh

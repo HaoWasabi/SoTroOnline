@@ -297,22 +297,42 @@ export function InvoiceFormAsDialog({ onSuccess }: { onSuccess?: () => void }) {
         }
         
         const query = searchQuery.toLowerCase();
-        return contracts.filter(contract => {
+        console.log('=== SEARCH DEBUG ===');
+        console.log('Search query:', query);
+        console.log('Total contracts:', contracts.length);
+        
+        const filtered = contracts.filter(contract => {
             if (!contract) return false;
             
-            // Get values with multiple fallback options
-            const tenKhachThue = (contract.tenKhachThue || contract.tenantName || contract.customerName || '').toLowerCase();
-            const maPhong = (contract.maPhong || contract.roomCode || '').toLowerCase();
-            const tenPhong = (contract.tenPhong || contract.roomName || '').toLowerCase();
-            const cccd = contract.cccd || contract.idCard || contract.cmnd || '';
-            const dienThoai = contract.dienThoai || contract.phone || contract.sdt || '';
+            // Get values with multiple fallback options, ensuring all values are strings
+            const tenKhachThue = String(contract.tenKhachThue || contract.tenantName || contract.customerName || '').toLowerCase();
+            const maPhong = String(contract.maPhong || contract.roomCode || '').toLowerCase();
+            const tenPhong = String(contract.tenPhong || contract.roomName || '').toLowerCase();
+            const cccd = String(contract.cccd || contract.idCard || contract.cmnd || '').toLowerCase();
+            const dienThoai = String(contract.dienThoai || contract.phone || contract.sdt || '').toLowerCase();
             
-            return tenKhachThue.includes(query) ||
-                   maPhong.includes(query) ||
-                   tenPhong.includes(query) ||
-                   cccd.includes(query) ||
-                   dienThoai.includes(query);
+            console.log(`Checking contract ID ${contract.maHopDongPhong}:`, {
+                contractId: contract.maHopDongPhong,
+                maPhong,
+                tenKhachThue,
+                tenPhong,
+                cccd,
+                dienThoai
+            });
+            
+            const matches = tenKhachThue.includes(query) ||
+                           maPhong.includes(query) ||
+                           tenPhong.includes(query) ||
+                           cccd.includes(query) ||
+                           dienThoai.includes(query);
+            
+            console.log(`Contract ID ${contract.maHopDongPhong} match result:`, matches);
+            return matches;
         });
+        
+        console.log('Filtered contracts count:', filtered.length);
+        console.log('=== SEARCH DEBUG END ===');
+        return filtered;
     }, [searchQuery, contracts]);
 
     // Handle contract selection

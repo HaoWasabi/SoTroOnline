@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/select";
 import { useLanguageStore } from "@/zustand/language-tranlator";
 import { useToast } from "@/hook/useToast";
-import { Plus, Edit, Calendar, Home } from "lucide-react";
+import { Plus, Edit, Calendar, Home, Search } from "lucide-react";
 import { 
     createUtilityUsage, 
     updateUtilityUsage 
@@ -64,6 +64,7 @@ export default function UtilityUsageFormDialog({
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [rooms, setRooms] = useState<Room[]>([]);
     const [isLoadingRooms, setIsLoadingRooms] = useState(false);
+    const [roomSearchQuery, setRoomSearchQuery] = useState("");
 
     const [formData, setFormData] = useState<UtilityUsageRequest>({
         maPhong: utilityUsage?.maPhong || 0,
@@ -76,6 +77,24 @@ export default function UtilityUsageFormDialog({
     });
 
     const [errors, setErrors] = useState<Record<string, string>>({});
+
+    // Filter rooms based on search query
+    const filteredRooms = useMemo(() => {
+        if (!roomSearchQuery.trim()) {
+            return rooms;
+        }
+        
+        const query = roomSearchQuery.toLowerCase();
+        return rooms.filter(room => {
+            const roomId = String(room.maPhong).toLowerCase();
+            const roomName = String(room.tenPhong || '').toLowerCase();
+            const address = String(room.diaChi || '').toLowerCase();
+            
+            return roomId.includes(query) ||
+                   roomName.includes(query) ||
+                   address.includes(query);
+        });
+    }, [roomSearchQuery, rooms]);
 
     // Load rooms when dialog opens
     useEffect(() => {
@@ -109,6 +128,7 @@ export default function UtilityUsageFormDialog({
                 });
             }
             setErrors({});
+            setRoomSearchQuery(''); // Reset search query when dialog closes
         }
     }, [open, mode, utilityUsage]);
 
@@ -212,7 +232,7 @@ export default function UtilityUsageFormDialog({
                     </Button>
                 )}
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-gradient-to-br from-white via-slate-50 to-blue-50/30 backdrop-blur-sm border-0 shadow-2xl">
+            <DialogContent className="sm:max-w-[1200px] max-h-[90vh] overflow-y-auto bg-gradient-to-br from-white via-slate-50 to-blue-50/30 backdrop-blur-sm border-0 shadow-2xl">
                 <DialogHeader className="pb-6">
                     <DialogTitle className="flex items-center gap-3 text-2xl font-bold text-gray-900 tracking-tight">
                         <div className="relative h-10 w-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
@@ -233,159 +253,226 @@ export default function UtilityUsageFormDialog({
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Room Selection (only for create mode) */}
-                    {mode === 'create' && (
-                        <div className="space-y-3">
-                            <Label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                                <Home className="h-4 w-4" />
-                                {language === 'vi' ? 'Phòng' : 'Room'} <span className="text-red-500">*</span>
-                            </Label>
-                            <Select
-                                value={formData.maPhong.toString()}
-                                onValueChange={(value) => handleInputChange('maPhong', parseInt(value))}
-                                disabled={isLoadingRooms}
-                            >
-                                <SelectTrigger className="border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200 bg-white/80 backdrop-blur-sm">
-                                    <SelectValue placeholder={language === 'vi' ? 'Chọn phòng' : 'Select room'} />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {rooms.map((room) => (
-                                        <SelectItem key={room.maPhong} value={room.maPhong.toString()}>
-                                            {room.tenPhong} ({room.maPhong})
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            {errors.maPhong && <p className="text-xs text-red-500 font-medium">{errors.maPhong}</p>}
-                        </div>
-                    )}
+                    <div className="flex flex-col lg:flex-row gap-8">
+                        {/* Left Panel - Room Selection (50% width) */}
+                        <div className="lg:w-1/2 space-y-6">
+                            {mode === 'create' ? (
+                                <div className="space-y-4">
+                                    <Label className="font-semibold text-gray-700 flex items-center gap-2 text-lg">
+                                        <Home className="h-5 w-5" />
+                                        {language === 'vi' ? 'Chọn phòng' : 'Select Room'} <span className="text-red-500">*</span>
+                                    </Label>
+                                    
+                                    {/* Room Search Input */}
+                                    <div className="space-y-3">
+                                        <div className="relative">
+                                            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                            <Input
+                                                placeholder={language === 'vi' ? 'Tìm kiếm theo mã phòng, tên phòng...' : 'Search by room ID, room name...'}
+                                                value={roomSearchQuery}
+                                                onChange={(e) => setRoomSearchQuery(e.target.value)}
+                                                className="pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200 bg-white/80 backdrop-blur-sm"
+                                            />
+                                        </div>
+                                    </div>
 
-                    {/* Selected Room Display (for edit mode) */}
-                    {mode === 'edit' && utilityUsage && (
-                        <div className="space-y-3">
-                            <Label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                                <Home className="h-4 w-4" />
-                                {language === 'vi' ? 'Phòng' : 'Room'}
-                            </Label>
-                            <div className="p-3 bg-gradient-to-r from-gray-50 to-slate-50 border border-gray-200 rounded-xl">
-                                <span className="font-medium text-gray-900">{utilityUsage.tenPhong}</span>
+                                    {/* Room Selection Dropdown */}
+                                    <Select
+                                        value={formData.maPhong.toString()}
+                                        onValueChange={(value) => handleInputChange('maPhong', parseInt(value))}
+                                        disabled={isLoadingRooms}
+                                    >
+                                        <SelectTrigger className="border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200 bg-white/80 backdrop-blur-sm h-12">
+                                            <SelectValue placeholder={language === 'vi' ? 'Chọn phòng' : 'Select room'} />
+                                        </SelectTrigger>
+                                        <SelectContent className="max-h-60 overflow-y-auto">
+                                            {isLoadingRooms ? (
+                                                <SelectItem value="loading" disabled>
+                                                    {language === 'vi' ? 'Đang tải...' : 'Loading...'}
+                                                </SelectItem>
+                                            ) : filteredRooms.length > 0 ? (
+                                                filteredRooms.map((room) => (
+                                                    <SelectItem key={room.maPhong} value={room.maPhong.toString()}>
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="font-medium">{room.tenPhong}</span>
+                                                            <span className="text-xs text-gray-500">#{room.maPhong}</span>
+                                                            {room.diaChi && (
+                                                                <span className="text-xs text-gray-400">• {room.diaChi}</span>
+                                                            )}
+                                                        </div>
+                                                    </SelectItem>
+                                                ))
+                                            ) : (
+                                                <SelectItem value="no-rooms" disabled>
+                                                    {language === 'vi' ? 'Không tìm thấy phòng nào' : 'No rooms found'}
+                                                </SelectItem>
+                                            )}
+                                        </SelectContent>
+                                    </Select>
+                                    
+                                    {/* Search Results Counter */}
+                                    {roomSearchQuery.trim() && (
+                                        <p className="text-xs text-gray-500 flex items-center gap-1">
+                                            <Search className="h-3 w-3" />
+                                            {language === 'vi' 
+                                                ? `Tìm thấy ${filteredRooms.length} phòng`
+                                                : `Found ${filteredRooms.length} room${filteredRooms.length !== 1 ? 's' : ''}`
+                                            }
+                                        </p>
+                                    )}
+
+                                    {/* Selected Room Preview */}
+                                    {formData.maPhong && getSelectedRoom() && (
+                                        <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl">
+                                            <h4 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1">
+                                                <Home className="h-4 w-4" />
+                                                {language === 'vi' ? 'Phòng đã chọn' : 'Selected Room'}
+                                            </h4>
+                                            <div className="space-y-1">
+                                                <p className="text-sm font-medium text-gray-900">{getSelectedRoom()?.tenPhong}</p>
+                                                <p className="text-xs text-gray-600">ID: #{getSelectedRoom()?.maPhong}</p>
+                                                {getSelectedRoom()?.diaChi && (
+                                                    <p className="text-xs text-gray-600">{getSelectedRoom()?.diaChi}</p>
+                                                )}
+                                                <p className="text-xs text-gray-600">{language === 'vi' ? 'Loại phòng:' : 'Room Type:'} {getSelectedRoom()?.loaiPhong}</p>
+                                            </div>
+                                        </div>
+                                    )}
+                                    
+                                    {errors.maPhong && <p className="text-xs text-red-500 font-medium">{errors.maPhong}</p>}
+                                </div>
+                            ) : (
+                                /* Selected Room Display (for edit mode) */
+                                <div className="space-y-3">
+                                    <Label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                        <Home className="h-5 w-5" />
+                                        {language === 'vi' ? 'Phòng' : 'Room'}
+                                    </Label>
+                                    <div className="p-4 bg-gradient-to-r from-gray-50 to-slate-50 border border-gray-200 rounded-xl">
+                                        <span className="font-medium text-gray-900 text-lg">{utilityUsage?.tenPhong}</span>
+                                        <p className="text-sm text-gray-600 mt-1">ID: #{utilityUsage?.maPhong}</p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Right Panel - Form Fields (50% width) */}
+                        <div className="lg:w-1/2 space-y-6">
+                            {/* Month/Year Selection */}
+                            <div className="space-y-3">
+                                <Label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                    <Calendar className="h-4 w-4" />
+                                    {language === 'vi' ? 'Tháng/Năm' : 'Month/Year'} <span className="text-red-500">*</span>
+                                </Label>
+                                <Input
+                                    type="month"
+                                    value={formData.thangNam.slice(0, 7)}
+                                    onChange={(e) => handleInputChange('thangNam', e.target.value + '-01')}
+                                    className="border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all duration-200 bg-white/80 backdrop-blur-sm"
+                                />
+                                {errors.thangNam && <p className="text-xs text-red-500 font-medium">{errors.thangNam}</p>}
+                            </div>
+
+                            {/* Electricity Readings */}
+                            <div className="bg-white rounded-xl p-4 border border-yellow-100 shadow-sm space-y-4">
+                                <h3 className="font-bold text-base text-gray-900 flex items-center gap-2">
+                                    <div className="w-3 h-3 rounded-full bg-gradient-to-r from-yellow-500 to-amber-500"></div>
+                                    {language === 'vi' ? 'Chỉ số điện' : 'Electricity Readings'}
+                                </h3>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="space-y-2">
+                                        <Label className="text-xs font-semibold text-gray-700">
+                                            {language === 'vi' ? 'Chỉ số cũ' : 'Previous Reading'}
+                                        </Label>
+                                        <Input
+                                            type="number"
+                                            min="0"
+                                            value={formData.chiSoDienCu}
+                                            onChange={(e) => handleInputChange('chiSoDienCu', parseInt(e.target.value) || 0)}
+                                            className="border-2 border-gray-200 rounded-xl focus:border-yellow-500 focus:ring-2 focus:ring-yellow-100 transition-all duration-200 bg-white/80 backdrop-blur-sm text-sm"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="text-xs font-semibold text-gray-700">
+                                            {language === 'vi' ? 'Chỉ số mới' : 'Current Reading'}
+                                        </Label>
+                                        <Input
+                                            type="number"
+                                            min="0"
+                                            value={formData.chiSoDienMoi}
+                                            onChange={(e) => handleInputChange('chiSoDienMoi', parseInt(e.target.value) || 0)}
+                                            className="border-2 border-gray-200 rounded-xl focus:border-yellow-500 focus:ring-2 focus:ring-yellow-100 transition-all duration-200 bg-white/80 backdrop-blur-sm text-sm"
+                                        />
+                                        {errors.chiSoDienMoi && <p className="text-xs text-red-500 font-medium">{errors.chiSoDienMoi}</p>}
+                                    </div>
+                                </div>
+                                {formData.chiSoDienMoi >= formData.chiSoDienCu && (
+                                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-2">
+                                        <p className="text-xs text-yellow-800">
+                                            <strong>{language === 'vi' ? 'Tiêu thụ:' : 'Usage:'}</strong> {(formData.chiSoDienMoi - formData.chiSoDienCu).toLocaleString()} kWh
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Water Readings */}
+                            <div className="bg-white rounded-xl p-4 border border-blue-100 shadow-sm space-y-4">
+                                <h3 className="font-bold text-base text-gray-900 flex items-center gap-2">
+                                    <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500"></div>
+                                    {language === 'vi' ? 'Chỉ số nước' : 'Water Readings'}
+                                </h3>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="space-y-2">
+                                        <Label className="text-xs font-semibold text-gray-700">
+                                            {language === 'vi' ? 'Chỉ số cũ' : 'Previous Reading'}
+                                        </Label>
+                                        <Input
+                                            type="number"
+                                            min="0"
+                                            value={formData.chiSoNuocCu}
+                                            onChange={(e) => handleInputChange('chiSoNuocCu', parseInt(e.target.value) || 0)}
+                                            className="border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200 bg-white/80 backdrop-blur-sm text-sm"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="text-xs font-semibold text-gray-700">
+                                            {language === 'vi' ? 'Chỉ số mới' : 'Current Reading'}
+                                        </Label>
+                                        <Input
+                                            type="number"
+                                            min="0"
+                                            value={formData.chiSoNuocMoi}
+                                            onChange={(e) => handleInputChange('chiSoNuocMoi', parseInt(e.target.value) || 0)}
+                                            className="border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200 bg-white/80 backdrop-blur-sm text-sm"
+                                        />
+                                        {errors.chiSoNuocMoi && <p className="text-xs text-red-500 font-medium">{errors.chiSoNuocMoi}</p>}
+                                    </div>
+                                </div>
+                                {formData.chiSoNuocMoi >= formData.chiSoNuocCu && (
+                                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-2">
+                                        <p className="text-xs text-blue-800">
+                                            <strong>{language === 'vi' ? 'Tiêu thụ:' : 'Usage:'}</strong> {(formData.chiSoNuocMoi - formData.chiSoNuocCu).toLocaleString()} m³
+                                        </p>
+                                    </div>
+                                )}
                             </div>
                         </div>
-                    )}
-
-                    {/* Month/Year Selection */}
-                    <div className="space-y-3">
-                        <Label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                            <Calendar className="h-4 w-4" />
-                            {language === 'vi' ? 'Tháng/Năm' : 'Month/Year'} <span className="text-red-500">*</span>
-                        </Label>
-                        <Input
-                            type="month"
-                            value={formData.thangNam.slice(0, 7)}
-                            onChange={(e) => handleInputChange('thangNam', e.target.value + '-01')}
-                            className="border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all duration-200 bg-white/80 backdrop-blur-sm"
-                        />
-                        {errors.thangNam && <p className="text-xs text-red-500 font-medium">{errors.thangNam}</p>}
                     </div>
 
-                    {/* Electricity Readings */}
-                    <div className="bg-white rounded-xl p-5 border border-yellow-100 shadow-sm space-y-4">
-                        <h3 className="font-bold text-lg text-gray-900 flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full bg-gradient-to-r from-yellow-500 to-amber-500"></div>
-                            {language === 'vi' ? 'Chỉ số điện' : 'Electricity Readings'}
-                        </h3>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-3">
-                                <Label className="text-sm font-semibold text-gray-700">
-                                    {language === 'vi' ? 'Chỉ số cũ' : 'Previous Reading'}
-                                </Label>
-                                <Input
-                                    type="number"
-                                    min="0"
-                                    value={formData.chiSoDienCu}
-                                    onChange={(e) => handleInputChange('chiSoDienCu', parseInt(e.target.value) || 0)}
-                                    className="border-2 border-gray-200 rounded-xl focus:border-yellow-500 focus:ring-4 focus:ring-yellow-100 transition-all duration-200 bg-white/80 backdrop-blur-sm"
-                                />
-                            </div>
-                            <div className="space-y-3">
-                                <Label className="text-sm font-semibold text-gray-700">
-                                    {language === 'vi' ? 'Chỉ số mới' : 'Current Reading'}
-                                </Label>
-                                <Input
-                                    type="number"
-                                    min="0"
-                                    value={formData.chiSoDienMoi}
-                                    onChange={(e) => handleInputChange('chiSoDienMoi', parseInt(e.target.value) || 0)}
-                                    className="border-2 border-gray-200 rounded-xl focus:border-yellow-500 focus:ring-4 focus:ring-yellow-100 transition-all duration-200 bg-white/80 backdrop-blur-sm"
-                                />
-                                {errors.chiSoDienMoi && <p className="text-xs text-red-500 font-medium">{errors.chiSoDienMoi}</p>}
-                            </div>
-                        </div>
-                        {formData.chiSoDienMoi >= formData.chiSoDienCu && (
-                            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                                <p className="text-sm text-yellow-800">
-                                    <strong>{language === 'vi' ? 'Tiêu thụ:' : 'Usage:'}</strong> {(formData.chiSoDienMoi - formData.chiSoDienCu).toLocaleString()} kWh
-                                </p>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Water Readings */}
-                    <div className="bg-white rounded-xl p-5 border border-blue-100 shadow-sm space-y-4">
-                        <h3 className="font-bold text-lg text-gray-900 flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500"></div>
-                            {language === 'vi' ? 'Chỉ số nước' : 'Water Readings'}
-                        </h3>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-3">
-                                <Label className="text-sm font-semibold text-gray-700">
-                                    {language === 'vi' ? 'Chỉ số cũ' : 'Previous Reading'}
-                                </Label>
-                                <Input
-                                    type="number"
-                                    min="0"
-                                    value={formData.chiSoNuocCu}
-                                    onChange={(e) => handleInputChange('chiSoNuocCu', parseInt(e.target.value) || 0)}
-                                    className="border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200 bg-white/80 backdrop-blur-sm"
-                                />
-                            </div>
-                            <div className="space-y-3">
-                                <Label className="text-sm font-semibold text-gray-700">
-                                    {language === 'vi' ? 'Chỉ số mới' : 'Current Reading'}
-                                </Label>
-                                <Input
-                                    type="number"
-                                    min="0"
-                                    value={formData.chiSoNuocMoi}
-                                    onChange={(e) => handleInputChange('chiSoNuocMoi', parseInt(e.target.value) || 0)}
-                                    className="border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200 bg-white/80 backdrop-blur-sm"
-                                />
-                                {errors.chiSoNuocMoi && <p className="text-xs text-red-500 font-medium">{errors.chiSoNuocMoi}</p>}
-                            </div>
-                        </div>
-                        {formData.chiSoNuocMoi >= formData.chiSoNuocCu && (
-                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                                <p className="text-sm text-blue-800">
-                                    <strong>{language === 'vi' ? 'Tiêu thụ:' : 'Usage:'}</strong> {(formData.chiSoNuocMoi - formData.chiSoNuocCu).toLocaleString()} m³
-                                </p>
-                            </div>
-                        )}
-                    </div>
-
-                    <DialogFooter className="gap-3 pt-6">
+                    <DialogFooter className="gap-3 pt-6 border-t border-gray-200">
                         <Button 
                             type="button" 
                             variant="outline" 
                             onClick={() => setOpen(false)}
                             disabled={isSubmitting}
-                            className="border-2 border-gray-300 hover:border-gray-400 rounded-xl py-3 font-semibold transition-all duration-200"
+                            className="border-2 border-gray-300 hover:border-gray-400 rounded-xl py-3 font-semibold transition-all duration-200 flex-1 lg:flex-none"
                         >
                             {language === 'vi' ? 'Hủy' : 'Cancel'}
                         </Button>
                         <Button 
                             type="submit" 
                             disabled={isSubmitting}
-                            className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white border-0 rounded-xl py-3 px-6 font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+                            className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white border-0 rounded-xl py-3 px-6 font-semibold shadow-lg hover:shadow-xl transition-all duration-200 flex-1 lg:flex-none"
                         >
                             {isSubmitting 
                                 ? (language === 'vi' ? 'Đang xử lý...' : 'Processing...')

@@ -1,11 +1,18 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { Plus, Search, Filter, DollarSign, TrendingUp, FileText, Clock } from 'lucide-react'
+import { Plus, Search, Filter, DollarSign, TrendingUp, FileText, Clock, Calendar, CalendarIcon } from 'lucide-react'
+import { format } from 'date-fns'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from '@/components/ui/popover'
+import { Calendar as CalendarComponent } from '@/components/ui/calendar'
 import { useLanguageStore } from '@/zustand/language-tranlator'
 import { useToast } from '@/hook/useToast'
 import { useAuthGuard } from '@/hook/useAuthGuard'
@@ -38,6 +45,8 @@ export default function ReceiptManagementLayout() {
     const [hasError, setHasError] = useState(false)
     const [searchTerm, setSearchTerm] = useState("")
     const [filterStatus, setFilterStatus] = useState<"all" | "active" | "cancelled">("all")
+    const [startDate, setStartDate] = useState<Date | undefined>(undefined)
+    const [endDate, setEndDate] = useState<Date | undefined>(undefined)
     const [summary, setSummary] = useState<ReceiptSummary>({
         totalReceipts: 0,
         totalAmount: 0,
@@ -145,6 +154,29 @@ export default function ReceiptManagementLayout() {
             )
         }
 
+        // Apply date range filter
+        if (startDate || endDate) {
+            filtered = filtered.filter(receipt => {
+                const receiptDate = new Date(receipt.ngayThu)
+                
+                // Check start date
+                if (startDate && receiptDate < startDate) {
+                    return false
+                }
+                
+                // Check end date (include the entire end date)
+                if (endDate) {
+                    const endOfDay = new Date(endDate)
+                    endOfDay.setHours(23, 59, 59, 999)
+                    if (receiptDate > endOfDay) {
+                        return false
+                    }
+                }
+                
+                return true
+            })
+        }
+
         // Apply status filter
         switch (filterStatus) {
             case "active":
@@ -164,7 +196,7 @@ export default function ReceiptManagementLayout() {
 
         setFilteredReceipts(filtered)
         setCurrentPage(1) // Reset to first page when filters change
-    }, [searchTerm, filterStatus, receipts])
+    }, [searchTerm, filterStatus, receipts, startDate, endDate])
 
     // Pagination calculations
     const totalPages = Math.ceil(filteredReceipts.length / itemsPerPage)
@@ -400,32 +432,119 @@ export default function ReceiptManagementLayout() {
             {/* Search and Filter */}
             <Card className="bg-gradient-to-r from-slate-50 to-gray-50 border border-gray-200">
                 <CardContent className="p-6">
-                    <div className="flex flex-col lg:flex-row gap-4 items-center">
-                        <div className="flex-1 relative">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                            <Input
-                                placeholder={language === "vi" ? "Tìm kiếm phiếu thu..." : "Search receipts..."}
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-10 bg-white"
-                            />
+                    <div className="flex flex-col gap-4">
+                        {/* Search and Status Filter Row */}
+                        <div className="flex flex-col lg:flex-row gap-4 items-center">
+                            <div className="flex-1 relative">
+                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                                <Input
+                                    placeholder={language === "vi" ? "Tìm kiếm phiếu thu..." : "Search receipts..."}
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="pl-10 bg-white"
+                                />
+                            </div>
+                            <div className="flex gap-2">
+                                {[
+                                    { value: "all", label: language === "vi" ? "Tất cả" : "All" },
+                                    { value: "active", label: language === "vi" ? "Hoạt động" : "Active" },
+                                    { value: "cancelled", label: language === "vi" ? "Đã hủy" : "Cancelled" }
+                                ].map(filter => (
+                                    <Button
+                                        key={filter.value}
+                                        variant={filterStatus === filter.value ? "default" : "outline"}
+                                        size="sm"
+                                        onClick={() => setFilterStatus(filter.value as any)}
+                                        className={filterStatus === filter.value ? "bg-gradient-to-r from-green-500 to-emerald-600" : ""}
+                                    >
+                                        {filter.label}
+                                    </Button>
+                                ))}
+                            </div>
                         </div>
-                        <div className="flex gap-2">
-                            {[
-                                { value: "all", label: language === "vi" ? "Tất cả" : "All" },
-                                { value: "active", label: language === "vi" ? "Hoạt động" : "Active" },
-                                { value: "cancelled", label: language === "vi" ? "Đã hủy" : "Cancelled" }
-                            ].map(filter => (
+
+                        {/* Date Range Filter Row */}
+                        <div className="flex flex-col lg:flex-row gap-4 items-center">
+                            <div className="flex flex-col sm:flex-row gap-3 flex-1">
+                                <div className="flex-1">
+                                    <label className="text-sm font-medium text-gray-700 mb-2 block">
+                                        {language === "vi" ? "Từ ngày:" : "From date:"}
+                                    </label>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                className="w-full justify-start text-left font-normal bg-white"
+                                            >
+                                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                                {startDate ? (
+                                                    format(startDate, "dd/MM/yyyy")
+                                                ) : (
+                                                    <span className="text-gray-500">
+                                                        {language === "vi" ? "Chọn ngày bắt đầu" : "Pick start date"}
+                                                    </span>
+                                                )}
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0">
+                                            <CalendarComponent
+                                                mode="single"
+                                                selected={startDate}
+                                                onSelect={setStartDate}
+                                                initialFocus
+                                            />
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
+
+                                <div className="flex-1">
+                                    <label className="text-sm font-medium text-gray-700 mb-2 block">
+                                        {language === "vi" ? "Đến ngày:" : "To date:"}
+                                    </label>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                className="w-full justify-start text-left font-normal bg-white"
+                                            >
+                                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                                {endDate ? (
+                                                    format(endDate, "dd/MM/yyyy")
+                                                ) : (
+                                                    <span className="text-gray-500">
+                                                        {language === "vi" ? "Chọn ngày kết thúc" : "Pick end date"}
+                                                    </span>
+                                                )}
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0">
+                                            <CalendarComponent
+                                                mode="single"
+                                                selected={endDate}
+                                                onSelect={setEndDate}
+                                                initialFocus
+                                                disabled={(date) => startDate ? date < startDate : false}
+                                            />
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-2">
                                 <Button
-                                    key={filter.value}
-                                    variant={filterStatus === filter.value ? "default" : "outline"}
+                                    variant="outline"
                                     size="sm"
-                                    onClick={() => setFilterStatus(filter.value as any)}
-                                    className={filterStatus === filter.value ? "bg-gradient-to-r from-green-500 to-emerald-600" : ""}
+                                    onClick={() => {
+                                        setStartDate(undefined)
+                                        setEndDate(undefined)
+                                        setSearchTerm("")
+                                        setFilterStatus("all")
+                                    }}
+                                    className="bg-white"
                                 >
-                                    {filter.label}
+                                    {language === "vi" ? "Xóa bộ lọc" : "Clear filters"}
                                 </Button>
-                            ))}
+                            </div>
                         </div>
                     </div>
                 </CardContent>

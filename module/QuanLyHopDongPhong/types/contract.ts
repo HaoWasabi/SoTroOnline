@@ -18,7 +18,9 @@ export interface Contract {
     // Enhanced fields for tenant management
     tenants?: ContractTenant[]; // List of tenants associated with this contract
     tenPhong?: string; // Room name for display
-    tenQuanLy?: string; // Manager name for display
+    tenQuanLy?: string; // Manager name for display  
+    tenTaiKhoan?: string; // Manager name for display
+    tenKhachThue?: string; // Main tenant name for display
     maxTenants?: number; // Maximum number of tenants allowed
 }
 

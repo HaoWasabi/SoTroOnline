@@ -673,7 +673,7 @@ export default function ContractTenantManagement({
                     </div>
                 </div>
                 
-                <DialogFooter className="border-t border-gray-100 pt-6 mt-6 bg-white/80 backdrop-blur-sm">
+                <DialogFooter className="border-t border-gray-100 pt-6 mt-6 backdrop-blur-sm">
                     <Button 
                         variant="outline" 
                         onClick={() => setIsOpen(false)}

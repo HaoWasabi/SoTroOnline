@@ -53,7 +53,7 @@ export default function ReceiptDetailDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-2xl bg-gradient-to-br from-white via-slate-50/30 to-blue-50/20 backdrop-blur-sm border-0 shadow-2xl">
+            <DialogContent className="min-w-2xl bg-gradient-to-br from-white via-slate-50/30 to-blue-50/20 backdrop-blur-sm border-0 shadow-2xl">
                 <DialogHeader className="pb-6">
                     <DialogTitle className="text-2xl font-bold flex items-center gap-3 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                         <div className="h-10 w-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
@@ -63,7 +63,7 @@ export default function ReceiptDetailDialog({
                     </DialogTitle>
                 </DialogHeader>
 
-                <div className="space-y-6">
+                <div className="space-y-4">
                     {/* Header with Receipt ID and Status */}
                     <div className="flex items-center justify-between">
                         <div>

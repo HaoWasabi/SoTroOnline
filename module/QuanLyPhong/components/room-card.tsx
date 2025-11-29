@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useLanguageStore } from "@/zustand/language-tranlator";
 import { useTaiKhoanStore } from "@/zustand/taikhoan-store";
-import { Edit, Eye, Trash2, MapPin, Ruler, Package, User, DollarSign, Building, MoreHorizontal } from "lucide-react";
+import { Edit, Eye, Trash2, MapPin, Ruler, Package, User, DollarSign, Building, MoreHorizontal, Users } from "lucide-react";
 import { useState } from "react";
 import { Room } from "../types/room-types";
 import { RoomFormAsDialog } from "./room-form-as-dialog";
@@ -210,7 +210,7 @@ export default function RoomCardComponent({ room, onUpdate, onDelete }: RoomCard
                             </div>
                             
                             {/* Dimensions Display */}
-                            <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-3 border border-purple-100">
+                            {/* <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-3 border border-purple-100">
                                 <div className="flex items-center gap-2 text-xs">
                                     <Ruler className="h-3 w-3 text-purple-600" />
                                     <span className="text-purple-600 font-medium">
@@ -218,6 +218,19 @@ export default function RoomCardComponent({ room, onUpdate, onDelete }: RoomCard
                                     </span>
                                     <span className="text-purple-800 font-semibold">
                                         {(room.width * room.height).toFixed(1)} m²
+                                    </span>
+                                </div>
+                            </div> */}
+
+                            {/* Maximum Tenants Display */}
+                            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-3 border border-blue-100">
+                                <div className="flex items-center gap-2 text-xs">
+                                    <Users className="h-3 w-3 text-blue-600" />
+                                    <span className="text-blue-600 font-medium">
+                                        {language === 'vi' ? 'Tối đa:' : 'Max:'}
+                                    </span>
+                                    <span className="text-blue-800 font-semibold">
+                                        {room.maxTenants || 4} {language === 'vi' ? 'người' : 'people'}
                                     </span>
                                 </div>
                             </div>
@@ -285,7 +298,7 @@ export default function RoomCardComponent({ room, onUpdate, onDelete }: RoomCard
 
             {/* View Details Dialog - Moved outside of Card */}
             <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
-                <DialogContent className="max-w-4xl rounded-2xl border-0 shadow-2xl bg-gradient-to-br from-white via-slate-50/50 to-indigo-50/30 backdrop-blur-sm max-h-[85vh] overflow-y-auto">
+                <DialogContent className="min-w-4xl rounded-2xl border-0 shadow-2xl bg-gradient-to-br from-white via-slate-50/50 to-indigo-50/30 backdrop-blur-sm max-h-[85vh] overflow-y-auto">
                     <DialogHeader className="space-y-2 pb-4 border-b border-gray-100">
                         <DialogTitle className="flex items-center gap-3 text-xl font-bold text-gray-900">
                             <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg">
@@ -381,7 +394,7 @@ export default function RoomCardComponent({ room, onUpdate, onDelete }: RoomCard
                                     {language === 'vi' ? 'Kích thước & Giá cả' : 'Dimensions & Pricing'}
                                 </h4>
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-3 gap-4">
                                 <div className="bg-gradient-to-br from-cyan-50 to-blue-50 rounded-lg p-4 border border-cyan-100">
                                     <div className="flex items-center gap-2 text-sm mb-2">
                                         <Ruler className="h-4 w-4 text-cyan-600" />
@@ -412,6 +425,23 @@ export default function RoomCardComponent({ room, onUpdate, onDelete }: RoomCard
                                         </span>
                                         <span className="text-emerald-600 text-sm">
                                             {language === 'vi' ? 'mỗi tháng' : 'per month'}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-100">
+                                    <div className="flex items-center gap-2 text-sm mb-2">
+                                        <Users className="h-4 w-4 text-blue-600" />
+                                        <span className="text-blue-600 font-medium">
+                                            {language === 'vi' ? 'Số người tối đa:' : 'Max Tenants:'}
+                                        </span>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <span className="text-blue-800 font-bold text-lg block">
+                                            {room.maxTenants || 4}
+                                        </span>
+                                        <span className="text-blue-600 text-sm">
+                                            {language === 'vi' ? 'người' : 'people'}
                                         </span>
                                     </div>
                                 </div>

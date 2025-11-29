@@ -392,7 +392,7 @@ export function ContractFormEditing({ contract, children, onUpdate }: ContractFo
                     defaultValue={toStr(contract.tienPhong).replace(/[^\d]/g, "") || ""}
                     onChange={handleInputChange}
                     className={`bg-white border-amber-200 focus:ring-amber-500 focus:border-amber-500 ${validationErrors.tienPhong ? "border-red-500 focus:ring-red-500" : ""}`}
-                    required
+                    disabled={true}
                   />
                   {validationErrors.tienPhong && (
                     <p className="text-sm text-red-500 mt-1">{validationErrors.tienPhong}</p>

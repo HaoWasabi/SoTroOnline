@@ -141,6 +141,7 @@ export default function TenantComponent({ tenant, onUpdate, onDelete }: TenantCo
                                     </div>
                                 </div>
                             )}
+                        
                         </div>
                     </div>
 
@@ -478,6 +479,20 @@ export default function TenantComponent({ tenant, onUpdate, onDelete }: TenantCo
                                         </div>
                                         <span className="text-purple-800 font-bold text-lg">
                                             {tenant.dienThoai}
+                                        </span>
+                                    </div>
+                                )}
+
+                                {tenant.email && (
+                                    <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg p-4 border border-blue-100">
+                                        <div className="flex items-center gap-2 text-sm mb-2">
+                                            <span className="h-4 w-4 text-blue-600">📧</span>
+                                            <span className="text-blue-600 font-medium">
+                                                {language === 'vi' ? 'Email:' : 'Email:'}
+                                            </span>
+                                        </div>
+                                        <span className="text-blue-800 font-bold text-lg">
+                                            {tenant.email}
                                         </span>
                                     </div>
                                 )}

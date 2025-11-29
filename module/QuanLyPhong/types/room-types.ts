@@ -8,6 +8,7 @@ export interface Room {
   height: number;
   furnitures: string[];
   baseRent: number;
+  maxTenants: number;
   roomStatus: string;
   managerId: number;
   managerName: string;
@@ -26,6 +27,7 @@ export interface RoomResponse {
   chieuRong: number;
   vatDung: string;
   giaThueCoBan: number;
+  soLuongKhachToiDa: number;
   trangThai: string;
 }
 
@@ -40,6 +42,7 @@ export const mapRoomResponseToRoom = (roomResponse: RoomResponse): Room => {
     height: roomResponse.chieuRong,
     furnitures: roomResponse.vatDung ? roomResponse.vatDung.split(', ') : [],
     baseRent: roomResponse.giaThueCoBan,
+    maxTenants: roomResponse.soLuongKhachToiDa || 4,
     roomStatus: roomResponse.trangThai, // Use the backend status directly
     managerId: roomResponse.maQuanLy,
     managerName: roomResponse.hoTenQuanLy,

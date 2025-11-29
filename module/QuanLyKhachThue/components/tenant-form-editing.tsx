@@ -43,7 +43,8 @@ export function TenantFormEditing({ tenant, children, onUpdate }: TenantFormEdit
         maCanCuoc: '',
         dienThoai: '',
         thuongTru: '',
-        ngaySinh: ''
+        ngaySinh: '',
+        email: ''
     });
 
     // Validation functions
@@ -92,6 +93,14 @@ export function TenantFormEditing({ tenant, children, onUpdate }: TenantFormEdit
                     return language === 'vi' ? 'Ngày sinh không hợp lệ' : 'Invalid date of birth';
                 }
                 break;
+            case 'email':
+                if (value && value.trim()) {
+                    const emailPattern = /^[A-Za-z0-9+_.-]+@(.+)$/;
+                    if (!emailPattern.test(value.trim())) {
+                        return language === 'vi' ? 'Định dạng email không hợp lệ' : 'Invalid email format';
+                    }
+                }
+                break;
         }
         return null;
     };
@@ -104,7 +113,8 @@ export function TenantFormEditing({ tenant, children, onUpdate }: TenantFormEdit
                 maCanCuoc: tenant.maCanCuoc || '',
                 dienThoai: tenant.dienThoai || '',
                 thuongTru: tenant.thuongTru || '',
-                ngaySinh: tenant.ngaySinh ? new Date(tenant.ngaySinh).toISOString().split('T')[0] : ''
+                ngaySinh: tenant.ngaySinh ? new Date(tenant.ngaySinh).toISOString().split('T')[0] : '',
+                email: tenant.email || ''
             };
             setHasChanges(false);
             setValidationErrors({});
@@ -162,6 +172,7 @@ export function TenantFormEditing({ tenant, children, onUpdate }: TenantFormEdit
             dienThoai: formData.get('dienThoai') as string,
             thuongTru: formData.get('thuongTru') as string,
             ngaySinh: formData.get('ngaySinh') as string,
+            email: formData.get('email') as string,
         };
 
         // Validate all fields
@@ -344,6 +355,32 @@ export function TenantFormEditing({ tenant, children, onUpdate }: TenantFormEdit
                                         <p className="text-xs text-red-500 bg-red-50 p-2 rounded-lg">{validationErrors.dienThoai}</p>
                                     )}
                                 </div>
+
+                                <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg p-4 border border-blue-100 space-y-2">
+                                    <Label htmlFor="email" className="text-sm font-semibold text-blue-700 flex items-center gap-2">
+                                        <span className="text-xs">📧</span>
+                                        {language === 'vi' ? 'Email' : 'Email'}
+                                    </Label>
+                                    <Input
+                                        id="email"
+                                        name="email"
+                                        type="email"
+                                        placeholder={language === 'vi' ? 'example@email.com' : 'example@email.com'}
+                                        defaultValue={tenant.email || ''}
+                                        onChange={handleInputChange}
+                                        className={`rounded-lg border-2 font-medium transition-all duration-200 text-sm ${
+                                            validationErrors.email 
+                                                ? 'border-red-300 focus:border-red-500 bg-red-50' 
+                                                : 'border-blue-200 focus:border-blue-400 bg-blue-50/30'
+                                        }`}
+                                    />
+                                    {validationErrors.email && (
+                                        <p className="text-xs text-red-500 bg-red-50 p-2 rounded-lg">{validationErrors.email}</p>
+                                    )}
+                                </div>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 gap-4 mt-4">
 
                                 <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-lg p-4 border border-amber-100 space-y-2">
                                     <Label htmlFor="thuongTru" className="text-sm font-semibold text-amber-700 flex items-center gap-2">
