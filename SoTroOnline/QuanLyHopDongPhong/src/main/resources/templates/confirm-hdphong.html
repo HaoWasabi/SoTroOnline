@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xác nhận hợp đồng thuê phòng</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+            margin: -30px -30px 30px -30px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .contract-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+        .info-row {
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #333;
+            flex: 0 0 40%;
+        }
+        .info-value {
+            color: #666;
+            flex: 1;
+            text-align: right;
+        }
+        .tenants-list {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .tenant-item {
+            padding: 5px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        .tenant-item:last-child {
+            border-bottom: none;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+            color: #666;
+            font-size: 14px;
+        }
+        .highlight {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #ffc107;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏠 Xác nhận hợp đồng thuê phòng</h1>
+            <p>Hợp đồng số: <strong th:text="${maHopDongPhong}">001</strong></p>
+        </div>
+
+        <p>Xin chào <strong th:text="${taiKhoan}">Chủ trọ</strong>,</p>
+        
+        <p>Chúng tôi xin xác nhận rằng hợp đồng thuê phòng đã được tạo thành công với thông tin như sau:</p>
+
+        <div class="contract-info">
+            <h3 style="margin-top: 0; color: #667eea;">📋 Thông tin hợp đồng</h3>
+            
+            <div class="info-row">
+                <span class="info-label">Mã hợp đồng:</span>
+                <span class="info-value" th:text="${maHopDongPhong}">001</span>
+            </div>
+            
+            <div class="info-row">
+                <span class="info-label">Phòng:</span>
+                <span class="info-value" th:text="${phong}">A101</span>
+            </div>
+            
+            <div class="info-row">
+                <span class="info-label">Loại phòng:</span>
+                <span class="info-value" th:text="${loaiPhong}">Phòng đơn</span>
+            </div>
+            
+            <div class="info-row">
+                <span class="info-label">Địa chỉ:</span>
+                <span class="info-value" th:text="${diaChi}">123 Đường ABC</span>
+            </div>
+            
+            <div class="info-row">
+                <span class="info-label">Kích thước:</span>
+                <span class="info-value">
+                    <span th:text="${chieuDai}">3</span>m x <span th:text="${chieuRong}">4</span>m
+                </span>
+            </div>
+            
+            <div class="info-row">
+                <span class="info-label">Tiền phòng:</span>
+                <span class="info-value" th:text="${#numbers.formatDecimal(tienPhong, 0, 'COMMA', 0, 'POINT')} + ' VNĐ/tháng'">3,000,000 VNĐ/tháng</span>
+            </div>
+            
+            <div class="info-row">
+                <span class="info-label">Tiền cọc:</span>
+                <span class="info-value" th:text="${#numbers.formatDecimal(tienCoc, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">6,000,000 VNĐ</span>
+            </div>
+            
+            <div class="info-row">
+                <span class="info-label">Ngày bắt đầu:</span>
+                <span class="info-value" th:text="${#temporals.format(ngayBatDau, 'dd/MM/yyyy')}">01/12/2024</span>
+            </div>
+            
+            <div class="info-row">
+                <span class="info-label">Ngày kết thúc:</span>
+                <span class="info-value" th:text="${#temporals.format(ngayKetThuc, 'dd/MM/yyyy')}">01/12/2025</span>
+            </div>
+        </div>
+
+        <div class="tenants-list">
+            <h4 style="margin-top: 0; color: #333;">👥 Danh sách khách thuê:</h4>
+            <div th:if="${khachThueList != null and !khachThueList.isEmpty()}">
+                <div th:each="tenant, iterStat : ${khachThueList}" class="tenant-item">
+                    <strong th:text="${iterStat.count + '. ' + tenant}">1. Nguyễn Văn A</strong>
+                </div>
+            </div>
+            <div th:if="${khachThueList == null or khachThueList.isEmpty()}">
+                <p><em>Chưa có thông tin khách thuê</em></p>
+            </div>
+        </div>
+
+        <div th:if="${vatDung != null and !vatDung.isEmpty()}" class="highlight">
+            <h4 style="margin-top: 0;">🛏️ Vật dụng trong phòng:</h4>
+            <p th:text="${vatDung}">Giường, tủ, bàn ghế...</p>
+        </div>
+
+        <div class="highlight">
+            <h4 style="margin-top: 0;">⚠️ Lưu ý quan trọng:</h4>
+            <ul style="margin: 10px 0; padding-left: 20px;">
+                <li>Vui lòng kiểm tra lại tất cả thông tin trên</li>
+                <li>Giữ email này để làm bằng chứng xác nhận hợp đồng</li>
+                <li>Liên hệ với chúng tôi nếu có bất kỳ thắc mắc nào</li>
+                <li>Thanh toán tiền cọc và tiền phòng tháng đầu theo thỏa thuận</li>
+            </ul>
+        </div>
+
+        <p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!</p>
+        
+        <div class="footer">
+            <p><strong>Hệ thống quản lý sổ trọ trực tuyến</strong></p>
+            <p>📧 Email: contact@minhhuu.com | 📞 Hotline: 1900-xxxx</p>
+            <p><em>Email này được gửi tự động, vui lòng không trả lời trực tiếp.</em></p>
+        </div>
+    </div>
+</body>
+</html>

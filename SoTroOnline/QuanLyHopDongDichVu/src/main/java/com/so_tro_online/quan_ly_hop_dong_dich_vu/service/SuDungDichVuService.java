@@ -34,6 +34,18 @@ public class SuDungDichVuService implements ISuDungDichVuService {
         return suDungDichVuRepository.findAll().stream()
                 .map(this::mapToResponse).collect(Collectors.toList());
     }
+    
+    @Override
+    public List<SuDungDichVuResponse> getAllSuDungDichVuActiveByUser(Integer maTaiKhoan) {
+        return suDungDichVuRepository.findByUserAndTrangThaiOrderByThangNamDesc(maTaiKhoan, TrangThai.hoatDong).stream()
+                .map(this::mapToResponse).collect(Collectors.toList());
+    }
+    
+    @Override
+    public List<SuDungDichVuResponse> getAllSuDungDichVuActiveByManager(Integer maQuanLy) {
+        return suDungDichVuRepository.findByMaQuanLyAndTrangThaiOrderByThangNamDesc(maQuanLy, TrangThai.hoatDong).stream()
+                .map(this::mapToResponse).collect(Collectors.toList());
+    }
 @Override
     public SuDungDichVuResponse mapToResponse(SuDungDichVu suDungDichVu) {
         SuDungDichVuResponse response = new SuDungDichVuResponse();
@@ -44,6 +56,7 @@ public class SuDungDichVuService implements ISuDungDichVuService {
         response.setChiSoNuocMoi(suDungDichVu.getChiSoNuocMoi());
         response.setMaPhong(suDungDichVu.getPhong().getMaPhong());
         response.setTenPhong(suDungDichVu.getPhong().getTenPhong());
+        response.setMaQuanLy(suDungDichVu.getMaQuanLy());
         response.setThangNam(suDungDichVu.getThangNam());
         response.setTrangThai(suDungDichVu.getTrangThai());
 
@@ -72,6 +85,8 @@ public class SuDungDichVuService implements ISuDungDichVuService {
         suDungDichVu.setChiSoNuocMoi(req.getChiSoNuocMoi());
         suDungDichVu.setTrangThai(req.getTrangThai());
         suDungDichVu.setPhong(phong);
+        // Set manager ID from the room's manager for direct SAAS filtering
+        suDungDichVu.setMaQuanLy(phong.getTaiKhoan().getMaTaiKhoan());
         return mapToResponse(suDungDichVuRepository.save(suDungDichVu));
     }
 

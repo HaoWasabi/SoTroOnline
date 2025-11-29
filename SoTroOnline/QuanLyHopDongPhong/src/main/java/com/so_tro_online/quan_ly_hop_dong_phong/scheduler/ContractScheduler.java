@@ -43,7 +43,7 @@ public class ContractScheduler {
      * Manual trigger for testing - runs every 10 minutes if enabled
      * Comment out @Scheduled annotation to disable
      */
-    @Scheduled(initialDelay = 30000, fixedDelay = Long.MAX_VALUE) // Run once after 30 seconds for testing
+    // @Scheduled(initialDelay = 30000, fixedDelay = Long.MAX_VALUE) // Disabled - was causing auto emails on startup
     public void updateExpiredContractsForTesting() {
         System.out.println("=== CONTRACT SCHEDULER TEST ===");
         System.out.println("Running test contract expiration check...");

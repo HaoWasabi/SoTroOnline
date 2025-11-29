@@ -11,6 +11,7 @@ public class SuDungDichVuResponse {
     private Integer id;
     private Integer maPhong;
     private String tenPhong;
+    private Integer maQuanLy;
     private LocalDate thangNam;  // ví dụ: 2025-10-01
     private Integer chiSoDienCu;
     private Integer chiSoDienMoi;
@@ -48,6 +49,14 @@ public class SuDungDichVuResponse {
 
     public void setTenPhong(String tenPhong) {
         this.tenPhong = tenPhong;
+    }
+
+    public Integer getMaQuanLy() {
+        return maQuanLy;
+    }
+
+    public void setMaQuanLy(Integer maQuanLy) {
+        this.maQuanLy = maQuanLy;
     }
 
     public LocalDate getThangNam() {

@@ -32,6 +32,10 @@ public interface HoaDonRepository extends JpaRepository<HoaDon,Integer> {
     @Query("SELECT h FROM HoaDon h WHERE h.trangThai <> 'DA_XOA'")
     List<HoaDon> findAllActive();
 
+    // User-based filtering methods for multi-tenant data isolation
+    @Query("SELECT h FROM HoaDon h WHERE h.hopDongPhong.taiKhoan.maTaiKhoan = :maTaiKhoan AND h.trangThai <> 'DA_XOA'")
+    List<HoaDon> findAllActiveByUser(@Param("maTaiKhoan") Integer maTaiKhoan);
+
     List<HoaDon> findByHopDongPhong(HopDongPhong hopDongPhong);
 
     @Query("SELECT h FROM HoaDon h WHERE h.maHoaDon = ?1 AND h.trangThai <> 'DA_XOA'")

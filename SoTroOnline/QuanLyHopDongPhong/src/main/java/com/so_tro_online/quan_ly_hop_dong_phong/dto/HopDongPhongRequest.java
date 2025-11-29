@@ -4,10 +4,13 @@ import com.so_tro_online.quan_ly_hop_dong_phong.entity.TrangThai;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 public class HopDongPhongRequest {
     private Integer maTaiKhoan;
-    private Integer maKhachThue;
+    private Integer maKhachThue; // Main tenant (representative)
+    private List<Integer> additionalTenantIds; // Additional tenants
+    private Integer maximumTenants; // Maximum tenant limit for the room
     private Integer maPhong;
     private BigDecimal tienPhong;
     private BigDecimal tienCoc;
@@ -42,6 +45,22 @@ public class HopDongPhongRequest {
 
     public void setMaKhachThue(Integer maKhachThue) {
         this.maKhachThue = maKhachThue;
+    }
+
+    public List<Integer> getAdditionalTenantIds() {
+        return additionalTenantIds;
+    }
+
+    public void setAdditionalTenantIds(List<Integer> additionalTenantIds) {
+        this.additionalTenantIds = additionalTenantIds;
+    }
+
+    public Integer getMaximumTenants() {
+        return maximumTenants;
+    }
+
+    public void setMaximumTenants(Integer maximumTenants) {
+        this.maximumTenants = maximumTenants;
     }
 
     public void setMaPhong(Integer maPhong) {

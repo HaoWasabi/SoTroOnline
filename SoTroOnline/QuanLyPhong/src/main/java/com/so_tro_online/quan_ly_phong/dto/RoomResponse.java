@@ -20,10 +20,11 @@ public class RoomResponse {
     private BigDecimal chieuRong;
     private String vatDung;
     private BigDecimal giaThueCoBan;
+    private Integer soLuongKhachToiDa;
     private TrangThai trangThai;
 
 
-    public RoomResponse(Integer maPhong, String tenQuanLy, Integer maQuanLy, String tenPhong, String loaiPhong, String diaChi, BigDecimal chieuDai, BigDecimal chieuRong, String vatDung, BigDecimal giaThueCoBan, TrangThai trangThai) {
+    public RoomResponse(Integer maPhong, String tenQuanLy, Integer maQuanLy, String tenPhong, String loaiPhong, String diaChi, BigDecimal chieuDai, BigDecimal chieuRong, String vatDung, BigDecimal giaThueCoBan, Integer soLuongKhachToiDa, TrangThai trangThai) {
         this.maPhong = maPhong;
         this.tenQuanLy = tenQuanLy;
         this.maQuanLy = maQuanLy;
@@ -34,6 +35,7 @@ public class RoomResponse {
         this.chieuRong = chieuRong;
         this.vatDung = vatDung;
         this.giaThueCoBan = giaThueCoBan;
+        this.soLuongKhachToiDa = soLuongKhachToiDa;
         this.trangThai = trangThai;
 
     }
@@ -118,6 +120,14 @@ public class RoomResponse {
 
     public void setGiaThueCoBan(BigDecimal giaThueCoBan) {
         this.giaThueCoBan = giaThueCoBan;
+    }
+
+    public Integer getSoLuongKhachToiDa() {
+        return soLuongKhachToiDa;
+    }
+
+    public void setSoLuongKhachToiDa(Integer soLuongKhachToiDa) {
+        this.soLuongKhachToiDa = soLuongKhachToiDa;
     }
 
     public TrangThai getTrangThai() {

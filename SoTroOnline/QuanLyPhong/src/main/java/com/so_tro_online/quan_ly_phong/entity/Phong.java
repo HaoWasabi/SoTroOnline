@@ -39,6 +39,9 @@ public class Phong {
     @Column(name = "gia_thue_co_ban")
     private BigDecimal giaThueCoBan;
 
+    @Column(name = "so_luong_khach_toi_da")
+    private Integer soLuongKhachToiDa;
+
     @Column(name = "trang_thai")
     @Enumerated(EnumType.STRING)
     private TrangThai trangThai;
@@ -121,6 +124,14 @@ public class Phong {
 
     public void setGiaThueCoBan(BigDecimal giaThueCoBan) {
         this.giaThueCoBan = giaThueCoBan;
+    }
+
+    public Integer getSoLuongKhachToiDa() {
+        return soLuongKhachToiDa;
+    }
+
+    public void setSoLuongKhachToiDa(Integer soLuongKhachToiDa) {
+        this.soLuongKhachToiDa = soLuongKhachToiDa;
     }
 
     public TrangThai getTrangThai() {

@@ -5,7 +5,6 @@ import com.so_tro_online.quan_ly_tai_khoan.dto.*;
 import com.so_tro_online.quan_ly_tai_khoan.entity.TaiKhoan;
 import com.so_tro_online.quan_ly_tai_khoan.exception.*;
 import com.so_tro_online.quan_ly_tai_khoan.mapper.UserMapper;
-import com.so_tro_online.quan_ly_tai_khoan.service.GoogleService;
 import com.so_tro_online.quan_ly_tai_khoan.service.JwtService;
 import com.so_tro_online.quan_ly_tai_khoan.service.TaiKhoanService;
 import org.springframework.http.HttpStatus;
@@ -28,16 +27,13 @@ public class QuanLyTaiKhoanController {
 
     private static final Logger logger = LoggerFactory.getLogger(QuanLyTaiKhoanController.class);
     private final TaiKhoanService taiKhoanService;
-    private final GoogleService googleService;
     private final JwtService jwtService;
 
     public QuanLyTaiKhoanController(
             TaiKhoanService taiKhoanService,
-            GoogleService googleService,
             JwtService jwtService
     ) {
         this.taiKhoanService = taiKhoanService;
-        this.googleService = googleService;
         this.jwtService = jwtService;
     }
 

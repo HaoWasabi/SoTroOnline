@@ -38,6 +38,9 @@ public class KhachThue {
     @Column(name = "ma_nguoi_quan_ly")
     private Integer maNguoiQuanLy;
 
+    @Column(name = "email")
+    private String email;
+
 
     public KhachThue() {
 
@@ -123,5 +126,13 @@ public class KhachThue {
 
     public void setMaNguoiQuanLy(Integer maNguoiQuanLy) {
         this.maNguoiQuanLy = maNguoiQuanLy;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

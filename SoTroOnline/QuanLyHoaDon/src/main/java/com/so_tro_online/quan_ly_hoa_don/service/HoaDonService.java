@@ -15,6 +15,11 @@ import com.so_tro_online.quan_ly_hop_dong_dich_vu.repository.SuDungDichVuReposit
 
 import com.so_tro_online.quan_ly_hop_dong_phong.entity.HopDongPhong;
 import com.so_tro_online.quan_ly_hop_dong_phong.repository.HopDongPhongRepository;
+import com.so_tro_online.quan_ly_hop_dong_khach_thue.repository.HopDongKhachThueRepository;
+import com.so_tro_online.quan_ly_hop_dong_khach_thue.entity.HopDongKhachThue;
+import com.so_tro_online.quan_ly_khach_thue.repository.KhachThueRepository;
+import com.so_tro_online.quan_ly_phong.repository.PhongRepository;
+import com.so_tro_online.quan_ly_tai_khoan.repository.TaiKhoanRepository;
 import com.so_tro_online.quan_ly_phong.exception.ReseourceNotFoundException;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -38,12 +43,28 @@ public class HoaDonService implements IHoaDonService{
     private final SuDungDichVuRepository suDungRepo;
     private final HoaDonRepository hoaDonRepository;
     private final HopDongPhongRepository hopDongPhongRepository;
+    private final HopDongKhachThueRepository hopDongKhachThueRepository;
+    private final KhachThueRepository khachThueRepository;
+    private final PhongRepository phongRepository;
+    private final TaiKhoanRepository taiKhoanRepository;
 
-    public HoaDonService(DichVuRepository dichVuRepository, SuDungDichVuRepository suDungRepo, HoaDonRepository hoaDonRepository, HopDongPhongRepository hopDongPhongRepository) {
+    public HoaDonService(DichVuRepository dichVuRepository, SuDungDichVuRepository suDungRepo, HoaDonRepository hoaDonRepository, HopDongPhongRepository hopDongPhongRepository, HopDongKhachThueRepository hopDongKhachThueRepository, KhachThueRepository khachThueRepository, PhongRepository phongRepository, TaiKhoanRepository taiKhoanRepository) {
         this.dichVuRepository = dichVuRepository;
         this.suDungRepo = suDungRepo;
         this.hoaDonRepository = hoaDonRepository;
         this.hopDongPhongRepository = hopDongPhongRepository;
+        this.hopDongKhachThueRepository = hopDongKhachThueRepository;
+        this.khachThueRepository = khachThueRepository;
+        this.phongRepository = phongRepository;
+        this.taiKhoanRepository = taiKhoanRepository;
+        
+        // Initialize HoaDonExporter repositories
+        HoaDonExporter.initializeRepositories(
+            khachThueRepository,
+            phongRepository,
+            hoaDonRepository,
+            taiKhoanRepository
+        );
     }
 
     @Override
@@ -54,6 +75,11 @@ public class HoaDonService implements IHoaDonService{
     @Override
     public List<HoaDonResponse> getAllActiveHoaDon() {
         return hoaDonRepository.findAllActive().stream().map(this::mapToResponse).toList();
+    }
+
+    @Override
+    public List<HoaDonResponse> getAllActiveHoaDonByUser(Integer maTaiKhoan) {
+        return hoaDonRepository.findAllActiveByUser(maTaiKhoan).stream().map(this::mapToResponse).toList();
     }
 
     @Override
@@ -323,10 +349,10 @@ public class HoaDonService implements IHoaDonService{
         // Tính tổng dịch vụ
         tongDichVu = ctDien.getThanhTien()
                 .add(ctNuoc.getThanhTien())
-                .add(ctRac.getThanhTien());
-        //.add(ctWifi.getThanhTien())
-        //.add(ctCap.getThanhTien())
-        //.add(ctKhac.getThanhTien());
+                .add(ctRac.getThanhTien())
+                .add(ctWifi.getThanhTien())
+                .add(ctCap.getThanhTien())
+                .add(ctKhac.getThanhTien());
 
         // Hoàn thiện hóa đơn
         hoaDon.setChiTietHoaDons(chiTietList);
@@ -367,6 +393,19 @@ public class HoaDonService implements IHoaDonService{
         response.setChiTietHoaDons(mapToChiTietResponse(hoaDon));
         response.setThang(hoaDon.getThang());
         response.setNam(hoaDon.getNam());
+        
+        // Fetch tenant name through the relationship chain
+        try {
+            Optional<HopDongKhachThue> mainTenant = hopDongKhachThueRepository.findMainTenantByContractId(hoaDon.getHopDongPhong().getMaHopDongPhong(), HopDongKhachThue.TrangThai.hoatDong);
+            if (mainTenant.isPresent() && mainTenant.get().getKhachThue() != null) {
+                response.setTenKhachThue(mainTenant.get().getKhachThue().getHoTen());
+            } else {
+                response.setTenKhachThue("Unknown Tenant");
+            }
+        } catch (Exception e) {
+            response.setTenKhachThue("Unknown Tenant");
+        }
+        
         return response;
     }
     public List<ChiTietHoaDonResponse>mapToChiTietResponse(HoaDon hoaDon){
@@ -390,13 +429,22 @@ public class HoaDonService implements IHoaDonService{
         HoaDon hoaDon = hoaDonRepository.findById(id)
                 .orElseThrow(() -> new ReseourceNotFoundException("không tìm thấy hoá đơn với id: " + id));
         try {
-            java.nio.file.Path temp = java.nio.file.Files.createTempFile("HoaDon_" + id + "_", ".docx");
-            // Export to temporary file using existing exporter
+            // Create temporary file with .pdf extension 
+            java.nio.file.Path temp = java.nio.file.Files.createTempFile("HoaDon_" + id + "_", ".pdf");
+            
+            // Export to temporary PDF file using existing exporter
             HoaDonExporter.exportHoaDon(temp.toAbsolutePath().toString(), id);
 
-            // Set response headers for download
-            response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-            response.setHeader("Content-Disposition", "attachment; filename=\"HoaDon_" + id + ".docx\"");
+            // Set response headers for PDF document download
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "attachment; filename=\"HoaDon_" + id + ".pdf\"");
+            response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+            response.setHeader("Pragma", "no-cache");
+            response.setHeader("Expires", "0");
+
+            // Get file size for Content-Length header
+            long fileSize = java.nio.file.Files.size(temp);
+            response.setContentLengthLong(fileSize);
 
             // Stream file to response
             try (java.io.InputStream in = java.nio.file.Files.newInputStream(temp);
@@ -409,9 +457,10 @@ public class HoaDonService implements IHoaDonService{
                 out.flush();
             }
 
+            // Clean up temporary file
             java.nio.file.Files.deleteIfExists(temp);
         } catch (IOException e) {
-            throw new RuntimeException("Lỗi khi xuất hóa đơn", e);
+            throw new RuntimeException("Lỗi khi xuất hóa đơn PDF", e);
         }
     }
 }

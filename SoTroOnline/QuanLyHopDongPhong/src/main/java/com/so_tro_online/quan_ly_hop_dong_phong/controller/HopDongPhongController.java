@@ -6,6 +6,9 @@ import com.so_tro_online.quan_ly_hop_dong_phong.service.HopDongPhongService;
 
 // Import for tenant management integration
 import com.so_tro_online.quan_ly_hop_dong_khach_thue.service.HopDongKhachThueService;
+// Import for user authentication
+import com.so_tro_online.quan_ly_tai_khoan.service.TaiKhoanService;
+import com.so_tro_online.quan_ly_tai_khoan.dto.TaiKhoanDto;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,120 +33,25 @@ public class HopDongPhongController {
     @Autowired
     private HopDongKhachThueService hopDongKhachThueService;
 
-    // Simple test endpoint to verify controller is working
-    @GetMapping("/test")
-    public ResponseEntity<Map<String, Object>> testEndpoint() {
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", "success");
-        response.put("data", "HopDongPhongController is working!");
-        response.put("timestamp", java.time.LocalDateTime.now().toString());
-        System.out.println("DEBUG: Test endpoint called successfully");
-        return ResponseEntity.ok(response);
-    }
+    // Add user authentication service
+    @Autowired
+    private TaiKhoanService taiKhoanService;
 
-    // DEPRECATED: Old mock implementation - kept for compatibility  
-    // Use the new getAvailableTenantsNew() method instead
-    @GetMapping("/available-tenants-mock")
-    public ResponseEntity<Map<String, Object>> getAvailableTenantsMock() {
-        Map<String, Object> response = new HashMap<>();
-        try {
-            System.out.println("DEBUG: getAvailableTenants() called");
 
-            // For now, provide a mock response to get the frontend working
-            // TODO: Replace with proper service integration
-            List<Map<String, Object>> mockTenants = new ArrayList<>();
 
-            // Add sample tenant data
-            Map<String, Object> tenant1 = new HashMap<>();
-            tenant1.put("maKhachThue", 1);
-            tenant1.put("hoTen", "Nguyen Van A");
-            tenant1.put("soDienThoai", "0123456789");
-            tenant1.put("email", "nguyenvana@gmail.com");
-            tenant1.put("trangThai", "hoatDong");
-            mockTenants.add(tenant1);
-
-            Map<String, Object> tenant2 = new HashMap<>();
-            tenant2.put("maKhachThue", 2);
-            tenant2.put("hoTen", "Tran Thi B");
-            tenant2.put("soDienThoai", "0987654321");
-            tenant2.put("email", "tranthib@gmail.com");
-            tenant2.put("trangThai", "hoatDong");
-            mockTenants.add(tenant2);
-
-            System.out.println("DEBUG: Returning " + mockTenants.size() + " mock tenants");
-            response.put("message", "success");
-            response.put("data", mockTenants);
-            return ResponseEntity.ok(response);
-
-            // Original RestTemplate code - commented out for now to avoid issues
-            /*
-            String tenantUrl = "http://localhost:8080/api/tenants?status=active";
-            System.out.println("DEBUG: Calling tenant URL: " + tenantUrl);
-            
-            // Add timeout and error handling
-            try {
-                @SuppressWarnings("unchecked")
-                Map<String, Object> tenantResponse = restTemplate.getForObject(tenantUrl, Map.class);
-                System.out.println("DEBUG: Tenant response: " + tenantResponse);
-                
-                if (tenantResponse != null) {
-                    // Check for success in different formats
-                    boolean isSuccess = "true".equals(String.valueOf(tenantResponse.get("success"))) ||
-                                       "success".equals(tenantResponse.get("status")) ||
-                                       "success".equals(tenantResponse.get("message"));
-                    
-                    System.out.println("DEBUG: Is response successful: " + isSuccess);
-                    
-                    if (isSuccess && tenantResponse.containsKey("data")) {
-                        @SuppressWarnings("unchecked")
-                        Map<String, Object> dataObject = (Map<String, Object>) tenantResponse.get("data");
-                        System.out.println("DEBUG: Data object: " + dataObject);
-                        
-                        if (dataObject != null && dataObject.containsKey("content")) {
-                            @SuppressWarnings("unchecked")
-                            List<Object> content = (List<Object>) dataObject.get("content");
-                            System.out.println("DEBUG: Found content with " + content.size() + " items");
-                            response.put("message", "success");
-                            response.put("data", content);
-                            return ResponseEntity.ok(response);
-                        }
-                    }
-                }
-                
-                System.out.println("DEBUG: No valid content found, returning empty array");
-                // Fallback - no tenants found or unexpected response structure
-                response.put("message", "success");
-                response.put("data", new ArrayList<>());
-                return ResponseEntity.ok(response);
-                
-            } catch (Exception restException) {
-                System.err.println("DEBUG: RestTemplate call failed: " + restException.getMessage());
-                // If RestTemplate fails, return empty array instead of error
-                response.put("message", "success");
-                response.put("data", new ArrayList<>());
-                return ResponseEntity.ok(response);
-            }
-            */
-
-        } catch (Exception e) {
-            System.err.println("DEBUG: Exception in getAvailableTenants: " + e.getMessage());
-            e.printStackTrace();
-            response.put("message", "error");
-            response.put("data", "Failed to fetch available tenants: " + e.getMessage());
-            return ResponseEntity.badRequest().body(response);
-        }
-    }
-
-    // Mock implementation with sample contract data for testing
+    // Paginated implementation with user filtering
     @GetMapping("/active/paged")
     public ResponseEntity<Map<String, Object>> getActivePaged(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "6") int size) {
+            @RequestParam(defaultValue = "6") int size,
+            @RequestHeader("Authorization") String token) {
 
         try {
-            // Since getActiveContractsPaged was removed, let's use the available methods
-            // This is a simplified implementation using available service methods
-            List<HopDongPhongResponse> contracts = hopDongPhongService.getAllHopDongPhongActive();
+            // Get current user from token
+            TaiKhoanDto currentUser = taiKhoanService.getCurrentUserInfo(token);
+            
+            // Use user-specific method
+            List<HopDongPhongResponse> contracts = hopDongPhongService.getAllHopDongPhongActiveByUser(currentUser.getMaTaiKhoan());
 
             // Simple pagination logic
             int start = page * size;
@@ -173,15 +81,19 @@ public class HopDongPhongController {
     }
 
     /**
-     * Get all active contracts
+     * Get all active contracts for current user
      */
     @GetMapping("/all-active")
-    public ResponseEntity<Map<String, Object>> getAllActiveContracts() {
+    public ResponseEntity<Map<String, Object>> getAllActiveContracts(@RequestHeader("Authorization") String token) {
         Map<String, Object> response = new HashMap<>();
         try {
             System.out.println("DEBUG: getAllActiveContracts() called");
-            List<HopDongPhongResponse> contracts = hopDongPhongService.getAllHopDongPhongActive();
-            System.out.println("DEBUG: Found " + contracts.size() + " active contracts");
+            
+            // Get current user from token
+            TaiKhoanDto currentUser = taiKhoanService.getCurrentUserInfo(token);
+            
+            List<HopDongPhongResponse> contracts = hopDongPhongService.getAllHopDongPhongActiveByUser(currentUser.getMaTaiKhoan());
+            System.out.println("DEBUG: Found " + contracts.size() + " active contracts for user " + currentUser.getMaTaiKhoan());
             
             // Log first contract for debugging
             if (!contracts.isEmpty()) {

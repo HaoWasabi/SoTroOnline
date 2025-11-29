@@ -12,6 +12,10 @@ import java.util.List;
 public interface IPhieuThuService {
     public List<PhieuThuResponse> getAllPhieuThu();
     public List<PhieuThuResponse> getAllActivePhieuThu();
+    
+    // User-based filtering method for multi-tenant data isolation
+    public List<PhieuThuResponse> getAllActivePhieuThuByUser(Integer maTaiKhoan);
+    
     public PhieuThuResponse createPhieuThu(PhieuThuRequest req);
     public PhieuThuResponse updatePhieuThu(Integer id, PhieuThuRequest req);
     public PhieuThuResponse getPhieuThuById(Integer id);

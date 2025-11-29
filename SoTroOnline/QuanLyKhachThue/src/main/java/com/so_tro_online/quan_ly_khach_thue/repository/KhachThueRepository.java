@@ -62,4 +62,7 @@ public interface KhachThueRepository extends JpaRepository<KhachThue, Integer> {
            "WHERE hdkt.khachThue.maKhach = :tenantId " +
            "AND hdkt.trangThai = 'hoatDong'")
     boolean existsActiveContractsForTenant(Integer tenantId);
+
+    // Check if tenant exists and is active
+    boolean existsByMaKhachAndTrangThai(Integer maKhach, TrangThai trangThai);
 }

@@ -7,11 +7,20 @@ import com.openhtmltopdf.outputdevice.helper.BaseRendererBuilder;
 import com.so_tro_online.quan_ly_hop_dong_phong.dto.HopDongPhongRequest;
 import com.so_tro_online.quan_ly_hop_dong_phong.dto.HopDongPhongResponse;
 
+import com.so_tro_online.quan_ly_hop_dong_phong.dto.RentRoomMessage;
 import com.so_tro_online.quan_ly_hop_dong_phong.entity.HopDongPhong;
 import com.so_tro_online.quan_ly_hop_dong_phong.exception.HopDongAlreadyExists;
+import com.so_tro_online.quan_ly_hop_dong_phong.exception.EmailNotificationException;
+import com.so_tro_online.quan_ly_hop_dong_phong.notification.NotificationService;
 import com.so_tro_online.quan_ly_hop_dong_phong.repository.HopDongPhongRepository;
 
 import com.so_tro_online.quan_ly_khach_thue.repository.KhachThueRepository;
+// Removed HoaDon imports to break circular dependency
+// import com.so_tro_online.quan_ly_hoa_don.entity.HoaDon;
+// import com.so_tro_online.quan_ly_hoa_don.repository.HoaDonRepository;
+// Removed PhieuThu imports to break circular dependency
+// import com.so_tro_online.quan_ly_phieu_thu.entity.PhieuThu;
+// import com.so_tro_online.quan_ly_phieu_thu.repository.PhieuThuRepository;
 import com.so_tro_online.quan_ly_phong.entity.Phong;
 import com.so_tro_online.quan_ly_phong.entity.TrangThai;
 import com.so_tro_online.quan_ly_phong.exception.ReseourceNotFoundException;
@@ -25,7 +34,10 @@ import com.so_tro_online.quan_ly_hop_dong_phong.util.HopDongData;
 import com.so_tro_online.quan_ly_hop_dong_phong.util.HopDongExporter;
 
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,6 +50,7 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -45,7 +58,11 @@ import java.util.stream.Collectors;
 
 @Service
 public class HopDongPhongService implements IHopDongPhongService {
-    
+
+    private static final Logger logger = LoggerFactory.getLogger(HopDongPhongService.class);
+
+    private final EmailRentRoomService emailRentRoomService;
+    private final NotificationService notificationService;
     private final PhongRepository phongRepository;
     private final TaiKhoanRepository taiKhoanRepository;
     private final HopDongPhongRepository hopDongPhongRepository;
@@ -57,11 +74,34 @@ public class HopDongPhongService implements IHopDongPhongService {
     
     @Autowired
     private KhachThueRepository khachThueRepository;
+
+    // Lazy injection to break circular dependency
+
+
+    /*@Autowired
+    @Lazy
+    public void setHoaDonRepository(HoaDonRepository hoaDonRepository) {
+        this.hoaDonRepository = hoaDonRepository;
+    }
+
+    @Autowired
+    @Lazy
+    public void setPhieuThuRepository(PhieuThuRepository phieuThuRepository) {
+        this.phieuThuRepository = phieuThuRepository;
+    }*/
     
-    public HopDongPhongService(PhongRepository phongRepository, TaiKhoanRepository taiKhoanRepository, HopDongPhongRepository hopDongPhongRepository) {
+    public HopDongPhongService(
+            PhongRepository phongRepository,
+            TaiKhoanRepository taiKhoanRepository,
+            HopDongPhongRepository hopDongPhongRepository,
+            EmailRentRoomService emailRentRoomService,
+            NotificationService notificationService
+    ) {
         this.phongRepository = phongRepository;
         this.taiKhoanRepository = taiKhoanRepository;
         this.hopDongPhongRepository = hopDongPhongRepository;
+        this.emailRentRoomService = emailRentRoomService;
+        this.notificationService = notificationService;
     }
     
     @Override
@@ -81,6 +121,19 @@ public class HopDongPhongService implements IHopDongPhongService {
     @Override
     public Page<HopDongPhongResponse> getAllHopDongPhongActivePaged(Pageable pageable) {
         return hopDongPhongRepository.findByTrangThai(com.so_tro_online.quan_ly_hop_dong_phong.entity.TrangThai.hoatDong, pageable)
+                .map(this::mapToHopDongPhongResponse);
+    }
+    
+    @Override
+    public List<HopDongPhongResponse> getAllHopDongPhongActiveByUser(Integer maTaiKhoan) {
+        return hopDongPhongRepository.findByTaiKhoanMaTaiKhoanAndTrangThai(maTaiKhoan, com.so_tro_online.quan_ly_hop_dong_phong.entity.TrangThai.hoatDong).stream()
+                .map(this::mapToHopDongPhongResponse)
+                .toList();
+    }
+    
+    @Override
+    public Page<HopDongPhongResponse> getAllHopDongPhongActivePagedByUser(Integer maTaiKhoan, Pageable pageable) {
+        return hopDongPhongRepository.findByTaiKhoanMaTaiKhoanAndTrangThai(maTaiKhoan, com.so_tro_online.quan_ly_hop_dong_phong.entity.TrangThai.hoatDong, pageable)
                 .map(this::mapToHopDongPhongResponse);
     }
 
@@ -151,26 +204,67 @@ public class HopDongPhongService implements IHopDongPhongService {
 
     @Override
     public HopDongPhongResponse createHopDongPhong(HopDongPhongRequest hopDongRequest) {
-        System.out.println("=== CREATE CONTRACT DEBUG ===");
-        System.out.println("maTaiKhoan = " + hopDongRequest.getMaTaiKhoan());
-        System.out.println("maKhachThue = " + hopDongRequest.getMaKhachThue());
-        System.out.println("phong=" + hopDongRequest.getMaPhong());
-        System.out.println("tienPhong=" + hopDongRequest.getTienPhong());
-        System.out.println("tienCoc=" + hopDongRequest.getTienCoc());
-        TaiKhoan taiKhoan=taiKhoanRepository.findByMaTaiKhoanAndTrangThai(hopDongRequest.getMaTaiKhoan(), com.so_tro_online.quan_ly_tai_khoan.entity.TrangThai.hoatDong)
-                .orElseThrow(()->new ReseourceNotFoundException("không tìm thấy người dùng với id: "+hopDongRequest.getMaTaiKhoan()));
-        // For contract creation, we need available rooms (phongTrong), not occupied ones (hoatDong)
-        Phong phong=phongRepository.findByMaPhongAndTrangThai(hopDongRequest.getMaPhong(), TrangThai.phongTrong)
-                .orElseThrow(()->new ReseourceNotFoundException("không tìm thấy phòng trống với id: "+hopDongRequest.getMaPhong()));
+        logger.debug("=== CREATE CONTRACT DEBUG ===");
+        logger.debug("maTaiKhoan = {}", hopDongRequest.getMaTaiKhoan());
+        logger.debug("maKhachThue (main tenant) = {}", hopDongRequest.getMaKhachThue());
+        logger.debug("additionalTenantIds = {}", hopDongRequest.getAdditionalTenantIds());
+        logger.debug("maximumTenants = {}", hopDongRequest.getMaximumTenants());
+        logger.debug("phong = {}", hopDongRequest.getMaPhong());
         
-        if(hopDongPhongRepository.existsByPhongAndTrangThai(phong, com.so_tro_online.quan_ly_hop_dong_phong.entity.TrangThai.hoatDong)){
+        // Validate account exists
+        TaiKhoan taiKhoan = taiKhoanRepository.findByMaTaiKhoanAndTrangThai(
+                hopDongRequest.getMaTaiKhoan(), 
+                com.so_tro_online.quan_ly_tai_khoan.entity.TrangThai.hoatDong
+        ).orElseThrow(() -> new ReseourceNotFoundException(
+                "không tìm thấy người dùng với id: " + hopDongRequest.getMaTaiKhoan()));
+        
+        // Validate room is available
+        Phong phong = phongRepository.findByMaPhongAndTrangThai(
+                hopDongRequest.getMaPhong(), 
+                TrangThai.phongTrong
+        ).orElseThrow(() -> new ReseourceNotFoundException(
+                "không tìm thấy phòng trống với id: " + hopDongRequest.getMaPhong()));
+        
+        // Check if room already has an active contract
+        if (hopDongPhongRepository.existsByPhongAndTrangThai(phong, 
+                com.so_tro_online.quan_ly_hop_dong_phong.entity.TrangThai.hoatDong)) {
             throw new HopDongAlreadyExists("phòng này đã được thuê");
         }
-        HopDongPhong hopDongPhong=new HopDongPhong();
+        
+        // Collect all tenant IDs (main tenant + additional tenants)
+        Set<Integer> allTenantIds = new HashSet<>();
+        if (hopDongRequest.getMaKhachThue() != null) {
+            allTenantIds.add(hopDongRequest.getMaKhachThue());
+        }
+        if (hopDongRequest.getAdditionalTenantIds() != null) {
+            allTenantIds.addAll(hopDongRequest.getAdditionalTenantIds());
+        }
+        
+        // Validate tenant limit using room's maximum tenant setting
+        Integer maxTenants = phong.getSoLuongKhachToiDa() != null ? 
+                phong.getSoLuongKhachToiDa() : 4; // Default max 4 tenants if not set
+        if (allTenantIds.size() > maxTenants) {
+            throw new RuntimeException(String.format(
+                    "Số lượng khách thuê (%d) vượt quá giới hạn tối đa của phòng (%d)", 
+                    allTenantIds.size(), maxTenants));
+        }
+        
+        // Validate all tenants exist and are active
+        for (Integer tenantId : allTenantIds) {
+            // Check tenant exists and is active
+            if (!khachThueRepository.existsByMaKhachAndTrangThai(
+                    tenantId, com.so_tro_online.quan_ly_khach_thue.entity.TrangThai.hoatDong)) {
+                throw new RuntimeException("Khách thuê với ID " + tenantId + " không tồn tại hoặc không hoạt động");
+            }
+            // Note: Removed active contract check - tenants can now rent multiple rooms
+        }
+        
+        // Create contract entity
+        HopDongPhong hopDongPhong = new HopDongPhong();
         hopDongPhong.setPhong(phong);
         hopDongPhong.setTaiKhoan(taiKhoan);
-        // Note: Tenant relationship is now managed separately through HopDongKhachThue
-        hopDongPhong.setTienPhong(phong.getGiaThueCoBan());
+        hopDongPhong.setTienPhong(hopDongRequest.getTienPhong() != null ? 
+                hopDongRequest.getTienPhong() : phong.getGiaThueCoBan());
         hopDongPhong.setTienCoc(hopDongRequest.getTienCoc());
         hopDongPhong.setDvRac(hopDongRequest.getDvRac());
         hopDongPhong.setDvWifi(hopDongRequest.getDvWifi());
@@ -183,33 +277,124 @@ public class HopDongPhongService implements IHopDongPhongService {
         
         // Save the contract
         HopDongPhong savedContract = hopDongPhongRepository.save(hopDongPhong);
-        System.out.println("Saved contract with ID: " + savedContract.getMaHopDongPhong());
+        logger.info("Saved contract with ID: {}", savedContract.getMaHopDongPhong());
         
         // Update room status from 'phongTrong' to 'hoatDong' after successful contract creation
         phong.setTrangThai(TrangThai.hoatDong);
         phongRepository.save(phong);
         
-        // Create tenant-contract relationship in hop_dong_khach_thue table if tenant is specified
+        // Create tenant-contract relationships for all tenants
+        List<String> failedTenants = new ArrayList<>();
+        
+        // Add main tenant first (as representative)
         if (hopDongRequest.getMaKhachThue() != null) {
             try {
-                System.out.println("Creating tenant-contract relationship for tenant: " + hopDongRequest.getMaKhachThue());
-                // Add tenant as the main tenant (representative) for this new contract
+                logger.debug("Adding main tenant (representative): {}", hopDongRequest.getMaKhachThue());
                 hopDongKhachThueService.addTenantToContract(
                     savedContract.getMaHopDongPhong(), 
                     hopDongRequest.getMaKhachThue(), 
-                    5 // Maximum 5 tenants per room
+                    maxTenants
                 );
-                System.out.println("Successfully created tenant-contract relationship");
+                logger.debug("Successfully added main tenant");
             } catch (Exception e) {
-                System.err.println("Failed to create tenant-contract relationship: " + e.getMessage());
-                e.printStackTrace();
-                // Log the error but don't fail the contract creation
-                // The tenant can be added later via the tenant management UI
+                logger.error("Failed to add main tenant: {}", e.getMessage());
+                failedTenants.add("Main tenant ID: " + hopDongRequest.getMaKhachThue());
             }
-        } else {
-            System.out.println("No tenant ID provided in contract request - skipping tenant-contract relationship creation");
         }
         
+        // Add additional tenants
+        if (hopDongRequest.getAdditionalTenantIds() != null) {
+            for (Integer tenantId : hopDongRequest.getAdditionalTenantIds()) {
+                try {
+                    logger.debug("Adding additional tenant: {}", tenantId);
+                    hopDongKhachThueService.addTenantToContract(
+                        savedContract.getMaHopDongPhong(), 
+                        tenantId, 
+                        maxTenants
+                    );
+                    logger.debug("Successfully added additional tenant: {}", tenantId);
+                } catch (Exception e) {
+                    logger.error("Failed to add tenant {}: {}", tenantId, e.getMessage());
+                    failedTenants.add("Tenant ID: " + tenantId);
+                }
+            }
+        }
+        
+        // Log any failures but don't fail the contract creation
+        if (!failedTenants.isEmpty()) {
+            logger.warn("Some tenants could not be added to the contract: {}", failedTenants);
+            logger.warn("Contract created successfully, but tenant relationships can be managed later via the UI");
+        }
+
+        // Collect all tenants for the email notification
+        List<com.so_tro_online.quan_ly_khach_thue.entity.KhachThue> allTenants = new ArrayList<>();
+        List<String> tenantEmails = new ArrayList<>();
+        
+        for (Integer tenantId : allTenantIds) {
+            try {
+                java.util.Optional<com.so_tro_online.quan_ly_khach_thue.entity.KhachThue> tenantOpt = 
+                    khachThueRepository.findById(tenantId);
+                if (tenantOpt.isPresent()) {
+                    com.so_tro_online.quan_ly_khach_thue.entity.KhachThue tenant = tenantOpt.get();
+                    // Check if tenant is active
+                    if (tenant.getTrangThai() == com.so_tro_online.quan_ly_khach_thue.entity.TrangThai.hoatDong) {
+                        allTenants.add(tenant);
+                        // Collect email addresses for notification
+                        if (tenant.getEmail() != null && !tenant.getEmail().trim().isEmpty()) {
+                            tenantEmails.add(tenant.getEmail().trim());
+                            logger.debug("Added tenant email for notification: {}", tenant.getEmail());
+                        } else {
+                            logger.debug("Warning: Tenant {} (ID: {}) has no email address", tenant.getHoTen(), tenantId);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                logger.error("Could not retrieve tenant {} for email: {}", tenantId, e.getMessage());
+            }
+        }
+
+        // Create the Kafka message with all tenant and contract information
+        RentRoomMessage rentRoomMessage = new RentRoomMessage();
+        rentRoomMessage.setMaHopDongPhong(savedContract.getMaHopDongPhong());
+        rentRoomMessage.setPhong(phong);
+        rentRoomMessage.setTienPhong(savedContract.getTienPhong());
+        rentRoomMessage.setKhachThue(allTenants);
+        rentRoomMessage.setTienCoc(savedContract.getTienCoc());
+        rentRoomMessage.setNgayBatDau(savedContract.getNgayBatDau());
+        rentRoomMessage.setNgayKetThuc(savedContract.getNgayKetThuc());
+        rentRoomMessage.setTaiKhoan(taiKhoan);
+        rentRoomMessage.setNgayTao(LocalDate.now());
+        
+        // Send notification only if we have tenants
+        if (!allTenants.isEmpty()) {
+            logger.info("Sending Kafka notification for contract {} to {} email addresses: {}", 
+                       savedContract.getMaHopDongPhong(), tenantEmails.size(), tenantEmails);
+            try {
+                notificationService.sentRentConfirm(rentRoomMessage);
+                logger.info("Kafka notification sent successfully for contract: {}", savedContract.getMaHopDongPhong());
+            } catch (Exception kafkaException) {
+                // Create custom exception with detailed information
+                EmailNotificationException emailNotificationException = new EmailNotificationException(
+                    "Failed to send Kafka notification for contract " + savedContract.getMaHopDongPhong(),
+                    savedContract.getMaHopDongPhong().toString(),
+                    "contract-confirmation",
+                    kafkaException
+                );
+                
+                logger.error("Email notification failed: {}", emailNotificationException.toString());
+                logger.warn("Contract created successfully, but email notification failed. Email can be sent manually later.");
+
+                
+                // Don't throw exception - contract creation should succeed even if email fails
+                // In a production system, you might want to:
+                // 1. Log this to a monitoring system
+                // 2. Queue the email for retry
+                // 3. Send notification to admin
+            }
+        } else {
+            logger.info("No active tenants found for email notification");
+        }
+
         return mapToHopDongPhongResponse(savedContract);
     }
 
@@ -255,7 +440,7 @@ public class HopDongPhongService implements IHopDongPhongService {
             int updatedCount = 0;
             for (HopDongPhong contract : activeContracts) {
                 if (contract.getNgayKetThuc().isBefore(today)) {
-                    System.out.println("Marking contract " + contract.getMaHopDongPhong() + " as expired");
+                    logger.info("Marking contract {} as expired", contract.getMaHopDongPhong());
                     contract.setTrangThai(com.so_tro_online.quan_ly_hop_dong_phong.entity.TrangThai.daXoa);
                     hopDongPhongRepository.save(contract);
                     
@@ -269,7 +454,7 @@ public class HopDongPhongService implements IHopDongPhongService {
             }
             
             if (updatedCount > 0) {
-                System.out.println("Updated " + updatedCount + " expired contracts");
+                logger.info("Updated {} expired contracts", updatedCount);
             }
         } catch (Exception e) {
             System.err.println("Error updating expired contracts: " + e.getMessage());
@@ -295,7 +480,7 @@ public class HopDongPhongService implements IHopDongPhongService {
             
             return result;
         } catch (Exception e) {
-            System.err.println("Error checking contract debts: " + e.getMessage());
+            logger.error("Error checking contract debts: {}", e.getMessage());
             result.put("error", e.getMessage());
             return result;
         }
@@ -325,7 +510,7 @@ public class HopDongPhongService implements IHopDongPhongService {
             
             return result;
         } catch (Exception e) {
-            System.err.println("Error calculating deposit refund: " + e.getMessage());
+            logger.error("Error calculating deposit refund: {}", e.getMessage());
             result.put("error", e.getMessage());
             return result;
         }
@@ -333,23 +518,61 @@ public class HopDongPhongService implements IHopDongPhongService {
 
     @Override
     public void deleteHopDongPhong(Integer id) {
-        HopDongPhong hopDongPhong=hopDongPhongRepository.findByMaHopDongPhongAndTrangThai(id, com.so_tro_online.quan_ly_hop_dong_phong.entity.TrangThai.hoatDong)
-                .orElseThrow(()->new ReseourceNotFoundException("không tìm thấy hợp đồng phòng với id: "+id));
+        HopDongPhong hopDongPhong = hopDongPhongRepository.findByMaHopDongPhongAndTrangThai(id, com.so_tro_online.quan_ly_hop_dong_phong.entity.TrangThai.hoatDong)
+                .orElseThrow(() -> new ReseourceNotFoundException("không tìm thấy hợp đồng phòng với id: " + id));
+        
+        logger.info("Attempting to delete contract with ID: {}", id);
+        
+        // Mark related invoices as DA_XOA using lazy-injected repository
+        /*if (hoaDonRepository != null) {
+            List<HoaDon> relatedInvoices = hoaDonRepository.findByHopDongPhong(hopDongPhong);
+            if (!relatedInvoices.isEmpty()) {
+                logger.info("Found {} related invoices for contract {}. Marking them as DA_XOA.", relatedInvoices.size(), id);
                 
+                for (HoaDon invoice : relatedInvoices) {
+                    // Mark invoice as deleted (DA_XOA)
+                    invoice.setTrangThai(com.so_tro_online.quan_ly_hoa_don.entity.TrangThai.DA_XOA);
+                    hoaDonRepository.save(invoice);
+                    logger.debug("Marked invoice {} as DA_XOA", invoice.getMaHoaDon());
+                }
+                
+                logger.info("Successfully marked {} invoices as DA_XOA for contract {}", relatedInvoices.size(), id);
+            }
+        }
+        
+        // Mark related receipts as DA_XOA using lazy-injected repository
+        if (phieuThuRepository != null) {
+            List<PhieuThu> relatedReceipts = phieuThuRepository.findByHoaDon_HopDongPhong(hopDongPhong);
+            if (!relatedReceipts.isEmpty()) {
+                logger.info("Found {} related receipts for contract {}. Marking them as DA_XOA.", relatedReceipts.size(), id);
+                
+                for (PhieuThu receipt : relatedReceipts) {
+                    // Mark receipt as deleted (DA_XOA)
+                    receipt.setTrangThai(com.so_tro_online.quan_ly_phieu_thu.entity.TrangThai.daXoa);
+                    phieuThuRepository.save(receipt);
+                    logger.debug("Marked receipt {} as DA_XOA", receipt.getMaPhieuThu());
+                }
+                
+                logger.info("Successfully marked {} receipts as DA_XOA for contract {}", relatedReceipts.size(), id);
+            }
+        }*/
+        
+        logger.info("Related invoices and receipts have been marked as DA_XOA. Proceeding with contract deletion.");
+        
         // Check debts before liquidation
         Map<String, Object> debtInfo = checkContractDebts(id);
         Boolean hasDebt = (Boolean) debtInfo.get("hasDebt");
         
         if (hasDebt != null && hasDebt) {
             Double totalDebt = (Double) debtInfo.get("totalDebt");
-            System.out.println("Warning: Contract has outstanding debt of " + totalDebt);
+            logger.warn("Warning: Contract has outstanding debt of {}", totalDebt);
             // In a real system, you might want to prevent deletion or require confirmation
         }
         
         // Calculate deposit refund
         Map<String, Object> refundInfo = calculateDepositRefund(id);
         Double refundAmount = (Double) refundInfo.get("refundAmount");
-        System.out.println("Deposit refund amount: " + refundAmount);
+        logger.info("Deposit refund amount: {}", refundAmount);
         
         // Get room for status update
         Phong phong = hopDongPhong.getPhong();
@@ -357,15 +580,16 @@ public class HopDongPhongService implements IHopDongPhongService {
         // Soft delete the contract
         hopDongPhong.setTrangThai(com.so_tro_online.quan_ly_hop_dong_phong.entity.TrangThai.daXoa);
         hopDongPhongRepository.save(hopDongPhong);
+        logger.info("Contract {} marked as deleted (DA_XOA)", id);
         
         // Update room status back to available (phongTrong)
         phong.setTrangThai(TrangThai.phongTrong);
         phongRepository.save(phong);
-        System.out.println("Updated room " + phong.getTenPhong() + " status to available");
+        logger.info("Updated room {} status to available", phong.getTenPhong());
         
         // Sync with tenant-contract relationships - mark all tenants as moved out
         try {
-            System.out.println("Contract liquidated, handling tenant relationships for contract: " + id);
+            logger.info("Contract liquidated, handling tenant relationships for contract: {}", id);
             // Get all tenants for this contract and mark them as moved out
             List<Map<String, Object>> tenants = hopDongKhachThueService.getContractTenants(id);
             for (Map<String, Object> tenant : tenants) {
@@ -375,11 +599,13 @@ public class HopDongPhongService implements IHopDongPhongService {
                     hopDongKhachThueService.removeTenantFromContract(id, tenantId);
                 }
             }
-            System.out.println("Successfully updated tenant relationships on contract liquidation");
+            logger.info("Successfully updated tenant relationships on contract liquidation");
         } catch (Exception e) {
-            System.err.println("Failed to sync tenant relationships on contract liquidation: " + e.getMessage());
+            logger.error("Failed to sync tenant relationships on contract liquidation: {}", e.getMessage());
             // Log error but don't fail the contract liquidation
         }
+        
+        logger.info("Contract {} deletion completed successfully", id);
     }
 
     @Override

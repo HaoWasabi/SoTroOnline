@@ -78,12 +78,12 @@ public class HopDongExporter {
             addLeftLine(document, "Giá thuê: " + formatMoney(data.giaThue) + " đ/tháng.", 12, true);
             addLeftLine(document, "Hình thức thanh toán: Tiền mặt", 12, false);
 
-            addLeftLine(document, "Chi phí dịch vụ phải trả:", 12, false);
-            addLeftLine(document, "- Tiền điện " + formatMoney(data.donGiaDien)
-                    + " đ/kwh tính theo chỉ số công tơ, thanh toán vào cuối các tháng.", 12, false);
-            addLeftLine(document,
-                    "- Tiền nước: " + formatMoney(data.donGiaNuoc) + " đ/m³ thanh toán vào đầu các tháng.",
-                    12, false);
+//            addLeftLine(document, "Chi phí dịch vụ phải trả:", 12, false);
+//            addLeftLine(document, "- Tiền điện " + formatMoney(data.donGiaDien)
+//                    + " đ/kwh tính theo chỉ số công tơ, thanh toán vào cuối các tháng.", 12, false);
+//            addLeftLine(document,
+//                    "- Tiền nước: " + formatMoney(data.donGiaNuoc) + " đ/m³ thanh toán vào đầu các tháng.",
+//                    12, false);
 
             if (data.dvRac)
                 addLeftLine(document,

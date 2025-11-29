@@ -19,11 +19,12 @@ public class KhachThueDto implements Serializable {
     private String ngayTao;
     private TrangThai trangThai;
     private Integer maNguoiQuanLy; // Add manager ID field for SAAS support
+    private String email;
 
     public KhachThueDto() {}
 
     public KhachThueDto(int maKhach, String maCanCuoc, String hoTen, String dienThoai,
-                       String thuongTru, String ngaySinh, String ngayTao, TrangThai trangThai, Integer maNguoiQuanLy) {
+                       String thuongTru, String ngaySinh, String ngayTao, TrangThai trangThai, Integer maNguoiQuanLy, String email) {
         this.maKhach = maKhach;
         this.maCanCuoc = maCanCuoc;
         this.hoTen = hoTen;
@@ -33,12 +34,13 @@ public class KhachThueDto implements Serializable {
         this.ngayTao = ngayTao;
         this.trangThai = trangThai;
         this.maNguoiQuanLy = maNguoiQuanLy;
+        this.email = email;
     }
 
-    // Backward compatibility constructor without manager ID
+    // Backward compatibility constructor without manager ID and email
     public KhachThueDto(int maKhach, String maCanCuoc, String hoTen, String dienThoai,
                        String thuongTru, String ngaySinh, String ngayTao, TrangThai trangThai) {
-        this(maKhach, maCanCuoc, hoTen, dienThoai, thuongTru, ngaySinh, ngayTao, trangThai, null);
+        this(maKhach, maCanCuoc, hoTen, dienThoai, thuongTru, ngaySinh, ngayTao, trangThai, null, null);
     }
 
     // Getters and Setters
@@ -112,5 +114,13 @@ public class KhachThueDto implements Serializable {
 
     public void setMaNguoiQuanLy(Integer maNguoiQuanLy) {
         this.maNguoiQuanLy = maNguoiQuanLy;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

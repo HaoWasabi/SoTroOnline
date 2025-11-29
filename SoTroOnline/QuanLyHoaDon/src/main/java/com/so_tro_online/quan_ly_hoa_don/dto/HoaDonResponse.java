@@ -24,6 +24,7 @@ public class HoaDonResponse {
     private Integer maHopDongPhong;
     private Integer maPhong;
     private String tenPhong;
+    private String tenKhachThue;
     private Integer thang;
     private Integer nam;
     private List<ChiTietHoaDonResponse> chiTietHoaDons = new ArrayList<>();
@@ -153,6 +154,14 @@ public class HoaDonResponse {
 
     public void setNam(Integer nam) {
         this.nam = nam;
+    }
+
+    public String getTenKhachThue() {
+        return tenKhachThue;
+    }
+
+    public void setTenKhachThue(String tenKhachThue) {
+        this.tenKhachThue = tenKhachThue;
     }
 
     public void setChiTietHoaDons(List<ChiTietHoaDonResponse> chiTietHoaDons) {

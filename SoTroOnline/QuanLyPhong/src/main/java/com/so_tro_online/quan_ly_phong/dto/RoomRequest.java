@@ -14,6 +14,7 @@ public class RoomRequest {
     private BigDecimal chieuRong;
     private String vatDung;
     private BigDecimal giaThueCoBan;
+    private Integer soLuongKhachToiDa;
     private String trangThai;
     public Integer getMaQuanLy() {
         return maQuanLy;
@@ -76,6 +77,14 @@ public class RoomRequest {
 
     public void setGiaThueCoBan(BigDecimal giaThueCoBan) {
         this.giaThueCoBan = giaThueCoBan;
+    }
+
+    public Integer getSoLuongKhachToiDa() {
+        return soLuongKhachToiDa;
+    }
+
+    public void setSoLuongKhachToiDa(Integer soLuongKhachToiDa) {
+        this.soLuongKhachToiDa = soLuongKhachToiDa;
     }
 
     public String getTrangThai() {

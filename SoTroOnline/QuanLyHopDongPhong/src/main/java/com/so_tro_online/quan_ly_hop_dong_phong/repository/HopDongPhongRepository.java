@@ -19,6 +19,11 @@ public interface HopDongPhongRepository extends JpaRepository<HopDongPhong,Integ
     List<HopDongPhong>  findByTrangThai(TrangThai trangThai);
 
     Page<HopDongPhong> findByTrangThai(TrangThai trangThai, Pageable pageable);
+    
+    // Filter by user account (manager)
+    List<HopDongPhong> findByTaiKhoanMaTaiKhoanAndTrangThai(Integer maTaiKhoan, TrangThai trangThai);
+    
+    Page<HopDongPhong> findByTaiKhoanMaTaiKhoanAndTrangThai(Integer maTaiKhoan, TrangThai trangThai, Pageable pageable);
 
     Optional<HopDongPhong> findByMaHopDongPhongAndTrangThai(Integer id, TrangThai trangThai);
 

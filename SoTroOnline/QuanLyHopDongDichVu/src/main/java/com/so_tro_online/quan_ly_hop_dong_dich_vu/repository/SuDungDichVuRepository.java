@@ -27,4 +27,12 @@ public interface SuDungDichVuRepository extends JpaRepository<SuDungDichVu,Integ
             @Param("trangThai") TrangThai trangThai);
 
     List<SuDungDichVu> findByPhongMaPhongAndTrangThaiOrderByThangNamDesc(Integer maPhong, TrangThai trangThai);
+    
+    // User-based filtering methods for multi-tenant data isolation
+    @Query("SELECT s FROM SuDungDichVu s WHERE s.phong.taiKhoan.maTaiKhoan = :maTaiKhoan AND s.trangThai = :trangThai ORDER BY s.thangNam DESC")
+    List<SuDungDichVu> findByUserAndTrangThaiOrderByThangNamDesc(@Param("maTaiKhoan") Integer maTaiKhoan, @Param("trangThai") TrangThai trangThai);
+    
+    // Direct manager filtering using ma_quan_ly column for better performance
+    @Query("SELECT s FROM SuDungDichVu s WHERE s.maQuanLy = :maQuanLy AND s.trangThai = :trangThai ORDER BY s.thangNam DESC")
+    List<SuDungDichVu> findByMaQuanLyAndTrangThaiOrderByThangNamDesc(@Param("maQuanLy") Integer maQuanLy, @Param("trangThai") TrangThai trangThai);
 }

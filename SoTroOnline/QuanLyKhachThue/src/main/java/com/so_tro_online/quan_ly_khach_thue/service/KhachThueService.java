@@ -1,6 +1,6 @@
 package com.so_tro_online.quan_ly_khach_thue.service;
 
-import com.so_tro_online.dung_chung.utils.IdGenerator;
+
 import com.so_tro_online.quan_ly_khach_thue.dto.KhachThueDto;
 import com.so_tro_online.quan_ly_khach_thue.dto.KhachThueRequest;
 import com.so_tro_online.quan_ly_khach_thue.entity.KhachThue;
@@ -167,6 +167,9 @@ public class KhachThueService {
                     throw new InvalidKhachThueDataException("Định dạng ngày sinh không hợp lệ. Vui lòng sử dụng định dạng YYYY-MM-DD");
                 }
             }
+            if (khachThueRequest.getEmail() != null && !khachThueRequest.getEmail().trim().isEmpty()) {
+                khachThue.setEmail(khachThueRequest.getEmail().trim());
+            }
 
             KhachThue updatedKhachThue = khachThueRepository.save(khachThue);
             return KhachThueMapper.toDto(updatedKhachThue);
@@ -328,6 +331,15 @@ public class KhachThueService {
                 throw new InvalidKhachThueDataException("Số điện thoại phải có từ 10 đến 15 ký tự");
             }
         }
+
+        // Validate email format if provided
+        if (khachThueRequest.getEmail() != null && !khachThueRequest.getEmail().trim().isEmpty()) {
+            String email = khachThueRequest.getEmail().trim();
+            String emailPattern = "^[A-Za-z0-9+_.-]+@(.+)$";
+            if (!email.matches(emailPattern)) {
+                throw new InvalidKhachThueDataException("Định dạng email không hợp lệ");
+            }
+        }
     }
 
     /**
@@ -345,6 +357,15 @@ public class KhachThueService {
 
         if(khachThueRequest.getNgaySinh() != null && khachThueRequest.getNgaySinh().trim().isEmpty()) {
             throw new InvalidKhachThueDataException("Ngày sinh không được để trống");
+        }
+
+        // Validate email format if provided
+        if (khachThueRequest.getEmail() != null && !khachThueRequest.getEmail().trim().isEmpty()) {
+            String email = khachThueRequest.getEmail().trim();
+            String emailPattern = "^[A-Za-z0-9+_.-]+@(.+)$";
+            if (!email.matches(emailPattern)) {
+                throw new InvalidKhachThueDataException("Định dạng email không hợp lệ");
+            }
         }
     }
 

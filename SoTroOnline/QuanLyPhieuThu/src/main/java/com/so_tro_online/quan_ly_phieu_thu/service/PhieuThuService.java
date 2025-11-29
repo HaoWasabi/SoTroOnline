@@ -66,6 +66,13 @@ public class PhieuThuService implements IPhieuThuService{
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<PhieuThuResponse> getAllActivePhieuThuByUser(Integer maTaiKhoan) {
+        return phieuThuRepository.findAllActiveByUser(maTaiKhoan).stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
     private PhieuThuResponse toResponse(PhieuThu phieuThu) {
         PhieuThuResponse response = new PhieuThuResponse();
         response.setMaPhieuThu(phieuThu.getMaPhieuThu());

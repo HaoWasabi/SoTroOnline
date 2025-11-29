@@ -27,7 +27,8 @@ public class KhachThueMapper {
                 khachThue.getNgaySinh() != null ? DATE_FORMAT.format(khachThue.getNgaySinh()) : null,
                 khachThue.getNgayTao() != null ? khachThue.getNgayTao().toString() : null,
                 khachThue.getTrangThai(),
-                khachThue.getMaNguoiQuanLy() // Include manager ID
+                khachThue.getMaNguoiQuanLy(), // Include manager ID
+                khachThue.getEmail() // Include email
         );
     }
 
@@ -78,6 +79,7 @@ public class KhachThueMapper {
         khachThue.setHoTen(request.getHoTen().trim());
         khachThue.setDienThoai(request.getDienThoai() != null ? request.getDienThoai().trim() : null);
         khachThue.setThuongTru(request.getThuongTru() != null ? request.getThuongTru().trim() : null);
+        khachThue.setEmail(request.getEmail() != null ? request.getEmail().trim() : null);
         khachThue.setTrangThai(TrangThai.hoatDong);
         khachThue.setNgayTao(Instant.now());
 

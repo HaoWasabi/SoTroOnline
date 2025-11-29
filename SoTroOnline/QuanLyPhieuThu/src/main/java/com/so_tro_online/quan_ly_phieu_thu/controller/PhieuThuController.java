@@ -6,6 +6,10 @@ import com.so_tro_online.dung_chung.dto.ApiResponseV2;
 import com.so_tro_online.quan_ly_phieu_thu.dto.PhieuThuRequest;
 import com.so_tro_online.quan_ly_phieu_thu.dto.ThuNoRequest;
 import com.so_tro_online.quan_ly_phieu_thu.service.IPhieuThuService;
+// Import for user authentication
+import com.so_tro_online.quan_ly_tai_khoan.service.TaiKhoanService;
+import com.so_tro_online.quan_ly_tai_khoan.dto.TaiKhoanDto;
+import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +18,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/receipt")
 public class PhieuThuController {
     private final IPhieuThuService phieuThuService;
-
+    
+    @Autowired
+    private TaiKhoanService taiKhoanService;
 
     public PhieuThuController(IPhieuThuService phieuThuService) {
         this.phieuThuService = phieuThuService;
@@ -26,9 +32,16 @@ public class PhieuThuController {
         return ResponseEntity.ok(new ApiResponseV2("success", phieuThuService.getAllPhieuThu()));
     }
     @GetMapping("/active")
-    public ResponseEntity<ApiResponseV2>getAllActivePhieuThu() {
-
-        return ResponseEntity.ok(new ApiResponseV2("success", phieuThuService.getAllActivePhieuThu()));
+    public ResponseEntity<ApiResponseV2> getAllActivePhieuThu(@RequestHeader("Authorization") String token) {
+        try {
+            // Get current user from token
+            TaiKhoanDto currentUser = taiKhoanService.getCurrentUserInfo(token);
+            
+            // Use user-specific method to get receipts
+            return ResponseEntity.ok(new ApiResponseV2("success", phieuThuService.getAllActivePhieuThuByUser(currentUser.getMaTaiKhoan())));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ApiResponseV2("error", e.getMessage()));
+        }
     }
     @GetMapping("/{id}")
     public  ResponseEntity<ApiResponseV2>getPhieuThuById(@PathVariable Integer id) {

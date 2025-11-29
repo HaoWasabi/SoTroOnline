@@ -418,6 +418,7 @@ CREATE TABLE `khach_thue` (
   `ngay_tao` datetime(6) DEFAULT NULL,
   `thuong_tru` varchar(255) DEFAULT NULL,
   `trang_thai` enum('daXoa','hoatDong') DEFAULT NULL,
+  `email` varchar(255) unique,
   `ma_nguoi_quan_ly` int DEFAULT NULL,
   PRIMARY KEY (`ma_khach`),
   KEY `FK_khach_thue_nguoi_quan_ly` (`ma_nguoi_quan_ly`),
@@ -487,6 +488,7 @@ CREATE TABLE `phong` (
   `trang_thai` enum('baoTri','daXoa','hoatDong','phongTrong') DEFAULT NULL,
   `vat_dung` varchar(255) DEFAULT NULL,
   `ma_quan_ly` int DEFAULT NULL,
+  `so_luong_khach_toi_da` int DEFAULT NULL,
   PRIMARY KEY (`ma_phong`),
   KEY `FKhu62ao3q5qxsl2ak529wcgrr5` (`ma_quan_ly`),
   CONSTRAINT `FKhu62ao3q5qxsl2ak529wcgrr5` FOREIGN KEY (`ma_quan_ly`) REFERENCES `tai_khoan` (`ma_tai_khoan`)
@@ -518,9 +520,11 @@ CREATE TABLE `su_dung_dich_vu` (
   `thang_nam` date DEFAULT NULL,
   `trang_thai` enum('daXoa','hoatDong') DEFAULT NULL,
   `phong_ma_phong` int DEFAULT NULL,
+  `ma_quan_ly` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FKta9g4ajmlnfj4mum9n4ybkwpi` (`phong_ma_phong`),
-  CONSTRAINT `FKta9g4ajmlnfj4mum9n4ybkwpi` FOREIGN KEY (`phong_ma_phong`) REFERENCES `phong` (`ma_phong`)
+  CONSTRAINT `FKta9g4ajmlnfj4mum9n4ybkwpi` FOREIGN KEY (`phong_ma_phong`) REFERENCES `phong` (`ma_phong`),
+  CONSTRAINT `FKma_quan_ly` FOREIGN KEY (`ma_quan_ly`) REFERENCES `tai_khoan` (`ma_tai_khoan`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

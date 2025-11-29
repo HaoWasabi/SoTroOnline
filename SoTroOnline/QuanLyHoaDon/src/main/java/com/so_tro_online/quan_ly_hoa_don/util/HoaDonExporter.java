@@ -6,19 +6,18 @@ import com.so_tro_online.quan_ly_khach_thue.repository.KhachThueRepository;
 import com.so_tro_online.quan_ly_phong.repository.PhongRepository;
 import com.so_tro_online.quan_ly_tai_khoan.repository.TaiKhoanRepository;
 
-import org.apache.poi.xwpf.usermodel.*;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.*;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.Optional;
 
 /**
- * Class xuất hóa đơn ra file .docx
+ * Class xuất hóa đơn ra file .pdf
  */
 public class HoaDonExporter {
 
@@ -51,14 +50,12 @@ public class HoaDonExporter {
     }
 
     /**
-     * Xuất hóa đơn ra file DOCX
+     * Xuất hóa đơn ra file PDF
      */
     public static void exportHoaDon(String filePath, Integer id) throws IOException {
         if (hoaDonRepository == null) {
             throw new IllegalStateException("Repositories not initialized. Call initializeRepositories() first.");
         }
-
-        XWPFDocument document = new XWPFDocument();
 
         try {
             // Lấy dữ liệu từ repository
@@ -69,160 +66,108 @@ public class HoaDonExporter {
             
             HoaDon hoaDonResponse = hoaDonOpt.get();
             
-            // Note: These would need to be implemented properly based on your actual service layer
-            // For now, using placeholder data
-            String tenQuanLy = "Quản lý nhà trọ";
-            String diaChiPhong = "Địa chỉ phòng";
-            String tenKhachThue = "Tên khách thuê";
-
-            // ================================================
-            addCenteredLine(document, tenQuanLy, 14, true);
-            addCenteredLine(document, "HÓA ĐƠN", 18, true);
-            addCenteredLine(document, diaChiPhong, 12, false);
-            addCenteredLine(document,
-                    "Tháng " + hoaDonResponse.getThang() + " năm " + hoaDonResponse.getNam(),
-                    12, false);
-
-            addEmptyLine(document, 400);
-
-            // Thông tin cơ bản
-            addSeparator(document, "single", "A0A0A0", 4, 200, 200);
-            addKeyValueLine(document, "Mã hóa đơn:", String.valueOf(hoaDonResponse.getMaHoaDon()));
-            addKeyValueLine(document, "Mã hợp đồng:", String.valueOf(hoaDonResponse.getHopDongPhong().getMaHopDongPhong()));
-            addKeyValueLine(document, "Tên Khách ĐD:", tenKhachThue);
-            addKeyValueLine(document, "Ngày tạo:", hoaDonResponse.getNgayTao().toString());
-
-            // Tiền
-            addSeparator(document, "single", "A0A0A0", 4, 200, 200);
-            addMoneyLine(document, "Tiền phòng:", bigDecimalToCleanLong(hoaDonResponse.getTienPhong()));
-            addMoneyLine(document, "Tiền dịch vụ:", bigDecimalToCleanLong(hoaDonResponse.getTienDichVu()));
-            addMoneyLine(document, "Nợ cũ:", bigDecimalToCleanLong(hoaDonResponse.getTienConNo()));
-            addMoneyLine(document, "Tổng tiền:", bigDecimalToCleanLong(hoaDonResponse.getTongTien()));
-
-            // Lưu ý
-            addSeparator(document, "single", "A0A0A0", 4, 200, 200);
-            XWPFParagraph note = document.createParagraph();
-            note.setAlignment(ParagraphAlignment.BOTH);
-            XWPFRun noteRun = note.createRun();
-            noteRun.setText(
-                    "Lưu ý: - Số tiền trên có thể bao gồm phí trọ, phí dịch vụ và tiền nợ theo quy định của nhà cung cấp. – "
-                            + "Quý khách vui lòng kiểm tra và đóng phí đúng hạn để tránh bị đưa vào danh sách nợ xấu.");
-            noteRun.setItalic(true);
-            noteRun.setFontSize(11);
-            noteRun.setFontFamily("Times New Roman");
-
-            // Ghi file
-            try (FileOutputStream out = new FileOutputStream(filePath)) {
-                document.write(out);
-                System.out.println("✓ Xuất hóa đơn thành công: " + filePath);
+            // Get actual data from relationships
+            String tenQuanLy = "QUẢN LÝ NHÀ TRỌ";
+            String diaChiPhong = "Phòng: " + hoaDonResponse.getHopDongPhong().getPhong().getTenPhong();
+            
+            // Try to get tenant name from the contract
+            String tenKhachThue = "Khách thuê";
+            try {
+                if (hoaDonResponse.getHopDongPhong() != null && 
+                    hoaDonResponse.getHopDongPhong().getPhong() != null) {
+                    diaChiPhong = "Phòng: " + hoaDonResponse.getHopDongPhong().getPhong().getTenPhong() +
+                                  " - Địa chỉ: " + hoaDonResponse.getHopDongPhong().getPhong().getDiaChi();
+                }
+            } catch (Exception e) {
+                // Use default if there's any issue
+                diaChiPhong = "Phòng thuê";
             }
 
-        } finally {
+            // Create PDF document
+            Document document = new Document(PageSize.A4);
+            PdfWriter.getInstance(document, new FileOutputStream(filePath));
+            document.open();
+
+            // Define fonts
+            Font titleFont = new Font(Font.FontFamily.TIMES_ROMAN, 18, Font.BOLD);
+            Font headerFont = new Font(Font.FontFamily.TIMES_ROMAN, 14, Font.BOLD);
+            Font normalFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL);
+            Font moneyFont = new Font(Font.FontFamily.TIMES_ROMAN, 13, Font.BOLD, BaseColor.RED);
+
+            // Title section
+            addCenteredParagraph(document, tenQuanLy, headerFont);
+            addCenteredParagraph(document, "HÓA ĐƠN", titleFont);
+            addCenteredParagraph(document, diaChiPhong, normalFont);
+            addCenteredParagraph(document, "Tháng " + hoaDonResponse.getThang() + " năm " + hoaDonResponse.getNam(), normalFont);
+            
+            document.add(Chunk.NEWLINE);
+
+            // Basic information
+            addSeparatorLine(document);
+            addKeyValueParagraph(document, "Mã hóa đơn:", String.valueOf(hoaDonResponse.getMaHoaDon()), normalFont);
+            addKeyValueParagraph(document, "Mã hợp đồng:", String.valueOf(hoaDonResponse.getHopDongPhong().getMaHopDongPhong()), normalFont);
+            addKeyValueParagraph(document, "Tên Khách ĐD:", tenKhachThue, normalFont);
+            addKeyValueParagraph(document, "Ngày tạo:", hoaDonResponse.getNgayTao().toString(), normalFont);
+
+            // Money information
+            addSeparatorLine(document);
+            addMoneyParagraph(document, "Tiền phòng:", bigDecimalToCleanLong(hoaDonResponse.getTienPhong()), normalFont, moneyFont);
+            addMoneyParagraph(document, "Tiền dịch vụ:", bigDecimalToCleanLong(hoaDonResponse.getTienDichVu()), normalFont, moneyFont);
+            addMoneyParagraph(document, "Nợ cũ:", bigDecimalToCleanLong(hoaDonResponse.getTienConNo()), normalFont, moneyFont);
+            addMoneyParagraph(document, "Tổng tiền:", bigDecimalToCleanLong(hoaDonResponse.getTongTien()), normalFont, moneyFont);
+
+            // Notes
+            addSeparatorLine(document);
+            Font noteFont = new Font(Font.FontFamily.TIMES_ROMAN, 11, Font.ITALIC);
+            Paragraph note = new Paragraph("Lưu ý: - Số tiền trên có thể bao gồm phí trọ, phí dịch vụ và tiền nợ theo quy định của nhà cung cấp. – " +
+                    "Quý khách vui lòng kiểm tra và đóng phí đúng hạn để tránh bị đưa vào danh sách nợ xấu.", noteFont);
+            note.setAlignment(Element.ALIGN_JUSTIFIED);
+            document.add(note);
+
             document.close();
+            System.out.println("✓ Xuất hóa đơn PDF thành công: " + filePath);
+
+        } catch (DocumentException e) {
+            throw new IOException("Lỗi khi tạo PDF: " + e.getMessage(), e);
         }
     }
 
     // ==================================================================
-    // Các hàm hỗ trợ
+    // Các hàm hỗ trợ cho PDF
     // ==================================================================
 
-    private static void addCenteredLine(XWPFDocument doc, String text, int fontSize, boolean bold) {
-        XWPFParagraph p = doc.createParagraph();
-        p.setAlignment(ParagraphAlignment.CENTER);
-        XWPFRun r = p.createRun();
-        r.setText(text);
-        r.setFontSize(fontSize);
-        r.setBold(bold);
-        r.setFontFamily("Times New Roman");
+    private static void addCenteredParagraph(Document document, String text, Font font) throws DocumentException {
+        Paragraph paragraph = new Paragraph(text, font);
+        paragraph.setAlignment(Element.ALIGN_CENTER);
+        paragraph.setSpacingAfter(5f);
+        document.add(paragraph);
     }
 
-    private static void addEmptyLine(XWPFDocument doc, int spacingAfter) {
-        XWPFParagraph p = doc.createParagraph();
-        p.setSpacingAfter(spacingAfter);
-    }
-
-    private static void addKeyValueLine(XWPFDocument doc, String label, String value) {
-        XWPFParagraph p = doc.createParagraph();
-        p.setSpacingAfter(120);
-
-        XWPFRun rLabel = p.createRun();
-        rLabel.setText(label + " ");
-        rLabel.setFontSize(12);
-        rLabel.setFontFamily("Times New Roman");
-
+    private static void addKeyValueParagraph(Document document, String label, String value, Font font) throws DocumentException {
+        Paragraph paragraph = new Paragraph();
+        paragraph.add(new Chunk(label + " ", font));
         if (value != null && !value.isEmpty()) {
-            CTP ctp = p.getCTP();
-            CTPPr pPr = ctp.isSetPPr() ? ctp.getPPr() : ctp.addNewPPr();
-            CTTabs tabs = pPr.isSetTabs() ? pPr.getTabs() : pPr.addNewTabs();
-            CTTabStop tabStop = tabs.addNewTab();
-            tabStop.setVal(STTabJc.RIGHT);
-            tabStop.setPos(BigInteger.valueOf(7300));
-
-            XWPFRun rAmount = p.createRun();
-            rAmount.setText("\t" + value);
-            rAmount.setFontSize(12);
-            rAmount.setFontFamily("Times New Roman");
+            paragraph.add(new Chunk(value, font));
         }
+        paragraph.setSpacingAfter(8f);
+        document.add(paragraph);
     }
 
-    private static void addMoneyLine(XWPFDocument doc, String label, long amount) {
-        XWPFParagraph p = doc.createParagraph();
-        p.setSpacingAfter(180);
-
-        XWPFRun rLabel = p.createRun();
-        rLabel.setText(label + " ");
-        rLabel.setFontSize(12);
-        rLabel.setFontFamily("Times New Roman");
-
+    private static void addMoneyParagraph(Document document, String label, long amount, Font labelFont, Font moneyFont) throws DocumentException {
         String moneyText = NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).format(amount);
-
-        CTP ctp = p.getCTP();
-        CTPPr pPr = ctp.isSetPPr() ? ctp.getPPr() : ctp.addNewPPr();
-        CTTabs tabs = pPr.isSetTabs() ? pPr.getTabs() : pPr.addNewTabs();
-        CTTabStop tabStop = tabs.addNewTab();
-        tabStop.setVal(STTabJc.RIGHT);
-        tabStop.setPos(BigInteger.valueOf(7300));
-
-        XWPFRun rAmount = p.createRun();
-        rAmount.setText("\t" + moneyText);
-        rAmount.setBold(true);
-        rAmount.setFontSize(13);
-        rAmount.setColor("FF0000");
-        rAmount.setFontFamily("Times New Roman");
+        
+        Paragraph paragraph = new Paragraph();
+        paragraph.add(new Chunk(label + " ", labelFont));
+        paragraph.add(new Chunk(moneyText, moneyFont));
+        paragraph.setSpacingAfter(10f);
+        document.add(paragraph);
     }
 
-    private static void addSeparator(XWPFDocument doc,
-                                     String lineStyle,
-                                     String color,
-                                     int thickness,
-                                     int spacingBefore,
-                                     int spacingAfter) {
-
-        XWPFParagraph p = doc.createParagraph();
-        p.setAlignment(ParagraphAlignment.CENTER);
-        p.setSpacingBefore(spacingBefore);
-        p.setSpacingAfter(spacingAfter);
-
-        XWPFRun r = p.createRun();
-        r.setText("");
-
-        CTBorder border = CTBorder.Factory.newInstance();
-
-        switch (lineStyle.toLowerCase()) {
-            case "double" -> border.setVal(STBorder.DOUBLE);
-            case "thick" -> border.setVal(STBorder.THICK);
-            case "dashed" -> border.setVal(STBorder.DASHED);
-            case "dotted" -> border.setVal(STBorder.DOTTED);
-            default -> border.setVal(STBorder.SINGLE);
-        }
-
-        border.setSz(BigInteger.valueOf(thickness));
-        border.setColor(color);
-        border.setSpace(BigInteger.valueOf(1));
-
-        CTP ctpParagraph = p.getCTP();
-        CTPPr pPrParagraph = ctpParagraph.isSetPPr() ? ctpParagraph.getPPr() : ctpParagraph.addNewPPr();
-        CTPBdr pBdr = pPrParagraph.isSetPBdr() ? pPrParagraph.getPBdr() : pPrParagraph.addNewPBdr();
-        pBdr.setBottom(border);
+    private static void addSeparatorLine(Document document) throws DocumentException {
+        Paragraph separator = new Paragraph("_".repeat(50));
+        separator.setAlignment(Element.ALIGN_CENTER);
+        separator.setSpacingBefore(10f);
+        separator.setSpacingAfter(10f);
+        document.add(separator);
     }
 }

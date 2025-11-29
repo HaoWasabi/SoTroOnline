@@ -20,6 +20,9 @@ public class SuDungDichVu {
     @ManyToOne
     private Phong phong;
 
+    @Column(name = "ma_quan_ly")
+    private Integer maQuanLy;
+
     @Column(name = "thang_nam")
     private LocalDate thangNam;
 
@@ -61,6 +64,14 @@ public class SuDungDichVu {
 
     public void setPhong(Phong phong) {
         this.phong = phong;
+    }
+
+    public Integer getMaQuanLy() {
+        return maQuanLy;
+    }
+
+    public void setMaQuanLy(Integer maQuanLy) {
+        this.maQuanLy = maQuanLy;
     }
 
     public LocalDate getThangNam() {

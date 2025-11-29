@@ -74,13 +74,7 @@ public class HopDongKhachThueService {
             throw new RuntimeException("Tenant is already in this contract");
         }
 
-        // Check if tenant has other active contracts
-        List<HopDongKhachThue> activeContracts = hopDongKhachThueRepository
-            .findActiveContractsByTenantId(tenantId, HopDongKhachThue.TrangThai.hoatDong);
-        
-        if (!activeContracts.isEmpty()) {
-            throw new RuntimeException("Tenant already has an active contract");
-        }
+        // Note: Removed active contract check - tenants can now rent multiple rooms
 
         // Check tenant limit
         Long currentTenantCount = hopDongKhachThueRepository

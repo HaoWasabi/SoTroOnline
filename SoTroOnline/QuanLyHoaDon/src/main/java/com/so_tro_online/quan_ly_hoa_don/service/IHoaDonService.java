@@ -10,6 +10,10 @@ import java.util.List;
 public interface IHoaDonService {
     public List<HoaDonResponse>getAllHoaDon();
     public List<HoaDonResponse>getAllActiveHoaDon();
+    
+    // User-based filtering methods for multi-tenant data isolation
+    public List<HoaDonResponse> getAllActiveHoaDonByUser(Integer maTaiKhoan);
+    
     public HoaDonResponse getHoaDonById(Integer id);
     //    public void printHoaDonByThangAndNam(HttpServletResponse response, Integer thang, Integer nam);
     public HoaDonResponse getActiveHoaDonById(Integer id);

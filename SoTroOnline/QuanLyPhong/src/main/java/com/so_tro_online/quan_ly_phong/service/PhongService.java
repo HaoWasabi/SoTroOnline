@@ -136,6 +136,7 @@ public class PhongService implements IPhongService{
         phong.setChieuRong(roomRequest.getChieuRong());
         phong.setVatDung(roomRequest.getVatDung());
         phong.setGiaThueCoBan(roomRequest.getGiaThueCoBan());
+        phong.setSoLuongKhachToiDa(roomRequest.getSoLuongKhachToiDa() != null ? roomRequest.getSoLuongKhachToiDa() : 4);
         phong.setTrangThai(TrangThai.valueOf(roomRequest.getTrangThai()));
         phong.setTaiKhoan(taiKhoan);
         return phong;
@@ -160,6 +161,7 @@ public class PhongService implements IPhongService{
         phong.setChieuRong(roomRequest.getChieuRong());
         phong.setVatDung(roomRequest.getVatDung());
         phong.setGiaThueCoBan(roomRequest.getGiaThueCoBan());
+        phong.setSoLuongKhachToiDa(roomRequest.getSoLuongKhachToiDa() != null ? roomRequest.getSoLuongKhachToiDa() : 4);
         phong.setTrangThai(TrangThai.valueOf(roomRequest.getTrangThai()));
         phong.setTaiKhoan(taiKhoan);
         return mapToRoomResponse(phongRepository.save(phong));
@@ -380,7 +382,7 @@ public class PhongService implements IPhongService{
     public RoomResponse mapToRoomResponse(Phong phong) {
         return new RoomResponse(phong.getMaPhong(),phong.getTaiKhoan().getHoTen(),phong.getTaiKhoan().getMaTaiKhoan(),
                 phong.getTenPhong() ,phong.getLoaiPhong(), phong.getDiaChi(),phong.getChieuDai(),phong.getChieuRong()
-                ,phong.getVatDung(),phong.getGiaThueCoBan(),phong.getTrangThai()
+                ,phong.getVatDung(),phong.getGiaThueCoBan(),phong.getSoLuongKhachToiDa(),phong.getTrangThai()
         );
     }
     

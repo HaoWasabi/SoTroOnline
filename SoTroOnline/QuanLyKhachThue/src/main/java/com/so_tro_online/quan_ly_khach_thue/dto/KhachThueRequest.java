@@ -7,6 +7,7 @@ public class KhachThueRequest {
     private String ngaySinh;
     private String dienThoai;
     private Integer maNguoiQuanLy; // Add manager ID field for SAAS support
+    private String email;
 
     public KhachThueRequest() {}
 
@@ -65,5 +66,13 @@ public class KhachThueRequest {
 
     public void setMaNguoiQuanLy(Integer maNguoiQuanLy) {
         this.maNguoiQuanLy = maNguoiQuanLy;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
