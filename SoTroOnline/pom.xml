@@ -32,6 +32,7 @@
         <module>QuanLyHoaDon</module>
         <module>QuanLyPhieuThu</module>
         <module>QuanLyHopDongKhachThue</module>
+        <module>ChamSocKhachHang</module>
         <module>app</module>
     </modules>
 

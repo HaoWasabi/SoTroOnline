@@ -22,4 +22,7 @@ public interface PhieuThuRepository extends JpaRepository<PhieuThu,Integer> {
     List<PhieuThu> findAllActiveByUser(@Param("maTaiKhoan") Integer maTaiKhoan);
 
     List<PhieuThu> findByHoaDon_HopDongPhong(HopDongPhong hopDongPhong);
+
+    @Query("SELECT p FROM PhieuThu p WHERE p.hoaDon.hopDongPhong.maHopDongPhong = :hopDongPhongId AND p.trangThai <> 'daXoa'")
+    List<PhieuThu> findByHoaDon_HopDongPhong(Integer hopDongPhongId);
 }

@@ -4,6 +4,7 @@ import com.deepoove.poi.XWPFTemplate;
 // OpenHTMLtoPDF imports for PDF generation
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import com.openhtmltopdf.outputdevice.helper.BaseRendererBuilder;
+import com.so_tro_online.dung_chung.event.hopdongphong.HopDongPhongDeletedEvent;
 import com.so_tro_online.quan_ly_hop_dong_phong.dto.HopDongPhongRequest;
 import com.so_tro_online.quan_ly_hop_dong_phong.dto.HopDongPhongResponse;
 
@@ -37,6 +38,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
@@ -61,6 +63,7 @@ public class HopDongPhongService implements IHopDongPhongService {
 
     private static final Logger logger = LoggerFactory.getLogger(HopDongPhongService.class);
 
+    private ApplicationEventPublisher eventPublisher;
     private final EmailRentRoomService emailRentRoomService;
     private final NotificationService notificationService;
     private final PhongRepository phongRepository;
@@ -95,13 +98,15 @@ public class HopDongPhongService implements IHopDongPhongService {
             TaiKhoanRepository taiKhoanRepository,
             HopDongPhongRepository hopDongPhongRepository,
             EmailRentRoomService emailRentRoomService,
-            NotificationService notificationService
+            NotificationService notificationService,
+            ApplicationEventPublisher applicationEventPublisher
     ) {
         this.phongRepository = phongRepository;
         this.taiKhoanRepository = taiKhoanRepository;
         this.hopDongPhongRepository = hopDongPhongRepository;
         this.emailRentRoomService = emailRentRoomService;
         this.notificationService = notificationService;
+        this.eventPublisher = applicationEventPublisher;
     }
     
     @Override
@@ -522,7 +527,9 @@ public class HopDongPhongService implements IHopDongPhongService {
                 .orElseThrow(() -> new ReseourceNotFoundException("không tìm thấy hợp đồng phòng với id: " + id));
         
         logger.info("Attempting to delete contract with ID: {}", id);
-        
+
+        logger.info("Publishing HopDongPhongDeletedEvent for contract {}", id);
+        eventPublisher.publishEvent(new HopDongPhongDeletedEvent(id));
         // Mark related invoices as DA_XOA using lazy-injected repository
         /*if (hoaDonRepository != null) {
             List<HoaDon> relatedInvoices = hoaDonRepository.findByHopDongPhong(hopDongPhong);

@@ -20,7 +20,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
         "com.so_tro_online.quan_ly_hoa_don",
         "com.so_tro_online.quan_ly_phieu_thu",
         "com.so_tro_online.quan_ly_hop_dong_khach_thue",
-        "com.so_tro_online.dung_chung"
+        "com.so_tro_online.dung_chung",
+        "com.so_tro_online.quan_ly_thong_bao",
+        "com.so_tro_online.cham_soc_khach_hang",
 })
 @EnableJpaRepositories(basePackages = {
         "com.so_tro_online.quan_ly_tai_khoan.repository",

@@ -38,6 +38,9 @@ public interface HoaDonRepository extends JpaRepository<HoaDon,Integer> {
 
     List<HoaDon> findByHopDongPhong(HopDongPhong hopDongPhong);
 
+    @Query("SELECT h FROM HoaDon h WHERE h.hopDongPhong.maHopDongPhong = :hopDongPhongId AND h.trangThai <> 'DA_XOA'")
+    List<HoaDon> findByHopDongPhong(@Param("hopDongPhongId") Integer hopDongPhongId);
+
     @Query("SELECT h FROM HoaDon h WHERE h.maHoaDon = ?1 AND h.trangThai <> 'DA_XOA'")
     Optional<HoaDon> findActiveByMaHoaDon(Integer id);
 
