@@ -7,10 +7,10 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { useLanguageStore } from "@/zustand/language-tranlator"
 import { useTaiKhoanStore } from "@/zustand/taikhoan-store"
-import {  Edit, Trash2, Phone, User, Calendar, MapPin, CreditCard, RotateCcw, MoreHorizontal, Eye } from "lucide-react"
+import {  Edit, Trash2, Phone, User, Calendar, MapPin, CreditCard, RotateCcw, MoreHorizontal, Eye, PhoneCall, PhoneOff, Loader2 } from "lucide-react"
 import { TenantFormEditing } from "./tenant-form-editing"
-import { deleteTenant, restoreTenant } from "../api/api-tenant"
-import { useState } from "react"
+import { deleteTenant, restoreTenant, makePhoneCall, getCallStatus, terminateCall } from "../api/api-tenant"
+import { useState, useEffect, useCallback } from "react"
 import { Tenant } from "../types/Tenant"
 import { useToast } from "@/hook/useToast"
 import { Toast } from "@/components/toast"
@@ -30,6 +30,18 @@ export default function TenantComponent({ tenant, onUpdate, onDelete }: TenantCo
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
     const [seeDialogOpen, setSeeDialogOpen] = useState(false);
+    
+    // Phone call state management
+    const [phoneCallDialogOpen, setPhoneCallDialogOpen] = useState(false);
+    const [isInitiatingCall, setIsInitiatingCall] = useState(false);
+    const [currentCall, setCurrentCall] = useState<{
+        callId: string;
+        status: 'initiated' | 'ringing' | 'in-progress' | 'completed' | 'failed' | 'busy' | 'no-answer';
+        startTime: Date;
+        duration?: number;
+    } | null>(null);
+    const [callStatusPollingInterval, setCallStatusPollingInterval] = useState<NodeJS.Timeout | null>(null);
+    
     const { toast, showSuccess, showError, removeToast } = useToast();
 
     // Helper function to get manager name
@@ -80,6 +92,150 @@ export default function TenantComponent({ tenant, onUpdate, onDelete }: TenantCo
                 {tenant.trangThai || (language === 'vi' ? 'Không xác định' : 'Unknown')}
             </Badge>
         );
+    };
+
+    // Phone call handler functions
+    const handleMakePhoneCall = useCallback(async () => {
+        if (!tenant.dienThoai) {
+            showError(language === 'vi' ? 'Số điện thoại không khả dụng' : 'Phone number not available');
+            return;
+        }
+
+        setIsInitiatingCall(true);
+        try {
+            const result = await makePhoneCall(tenant.dienThoai);
+            
+            if (result.success && result.data?.callId) {
+                setCurrentCall({
+                    callId: result.data.callId,
+                    status: result.data.callStatus || 'initiated',
+                    startTime: new Date()
+                });
+                setPhoneCallDialogOpen(true);
+                showSuccess(language === 'vi' ? 'Cuộc gọi đã được khởi tạo' : 'Phone call initiated');
+                
+                // Start polling for call status
+                startCallStatusPolling(result.data.callId);
+            } else {
+                showError(result.message || (language === 'vi' ? 'Không thể thực hiện cuộc gọi' : 'Failed to make phone call'));
+            }
+        } catch (error) {
+            console.error('Error making phone call:', error);
+            showError(language === 'vi' ? 'Có lỗi xảy ra khi thực hiện cuộc gọi' : 'An error occurred while making the phone call');
+        } finally {
+            setIsInitiatingCall(false);
+        }
+    }, [tenant.dienThoai, language, showSuccess, showError]);
+
+    const startCallStatusPolling = useCallback((callId: string) => {
+        const interval = setInterval(async () => {
+            try {
+                const statusResult = await getCallStatus(callId);
+                if (statusResult.success && statusResult.data) {
+                    setCurrentCall(prev => prev ? {
+                        ...prev,
+                        status: statusResult.data!.status,
+                        duration: statusResult.data!.duration
+                    } : null);
+
+                    // Stop polling if call is completed or failed
+                    if (['completed', 'failed', 'busy', 'no-answer'].includes(statusResult.data.status)) {
+                        clearInterval(interval);
+                        setCallStatusPollingInterval(null);
+                        
+                        // Show final status message
+                        const statusMessages = {
+                            'completed': language === 'vi' ? 'Cuộc gọi đã hoàn thành' : 'Call completed',
+                            'failed': language === 'vi' ? 'Cuộc gọi thất bại' : 'Call failed',
+                            'busy': language === 'vi' ? 'Máy bận' : 'Line busy',
+                            'no-answer': language === 'vi' ? 'Không trả lời' : 'No answer'
+                        };
+                        
+                        showSuccess(statusMessages[statusResult.data.status as keyof typeof statusMessages]);
+                    }
+                }
+            } catch (error) {
+                console.error('Error polling call status:', error);
+            }
+        }, 2000); // Poll every 2 seconds
+
+        setCallStatusPollingInterval(interval);
+    }, [language, showSuccess]);
+
+    const handleTerminateCall = useCallback(async () => {
+        if (!currentCall?.callId) return;
+
+        try {
+            const result = await terminateCall(currentCall.callId);
+            if (result.success) {
+                setCurrentCall(prev => prev ? { ...prev, status: 'completed' } : null);
+                showSuccess(language === 'vi' ? 'Cuộc gọi đã được kết thúc' : 'Call terminated');
+                
+                // Stop polling
+                if (callStatusPollingInterval) {
+                    clearInterval(callStatusPollingInterval);
+                    setCallStatusPollingInterval(null);
+                }
+                
+                // Close dialog after a short delay
+                setTimeout(() => {
+                    setPhoneCallDialogOpen(false);
+                    setCurrentCall(null);
+                }, 1500);
+            } else {
+                showError(result.message || (language === 'vi' ? 'Không thể kết thúc cuộc gọi' : 'Failed to terminate call'));
+            }
+        } catch (error) {
+            console.error('Error terminating call:', error);
+            showError(language === 'vi' ? 'Có lỗi xảy ra khi kết thúc cuộc gọi' : 'An error occurred while terminating the call');
+        }
+    }, [currentCall?.callId, callStatusPollingInterval, language, showSuccess, showError]);
+
+    // Cleanup polling interval on unmount
+    useEffect(() => {
+        return () => {
+            if (callStatusPollingInterval) {
+                clearInterval(callStatusPollingInterval);
+            }
+        };
+    }, [callStatusPollingInterval]);
+
+    // Helper function to get call status display
+    const getCallStatusDisplay = () => {
+        if (!currentCall) return { text: '', color: 'gray' };
+
+        const statusMap = {
+            'initiated': { 
+                text: language === 'vi' ? 'Đang khởi tạo...' : 'Initiating...', 
+                color: 'blue' 
+            },
+            'ringing': { 
+                text: language === 'vi' ? 'Đang đổ chuông...' : 'Ringing...', 
+                color: 'yellow' 
+            },
+            'in-progress': { 
+                text: language === 'vi' ? 'Đang đàm thoại' : 'In Progress', 
+                color: 'green' 
+            },
+            'completed': { 
+                text: language === 'vi' ? 'Đã hoàn thành' : 'Completed', 
+                color: 'green' 
+            },
+            'failed': { 
+                text: language === 'vi' ? 'Thất bại' : 'Failed', 
+                color: 'red' 
+            },
+            'busy': { 
+                text: language === 'vi' ? 'Máy bận' : 'Busy', 
+                color: 'red' 
+            },
+            'no-answer': { 
+                text: language === 'vi' ? 'Không trả lời' : 'No Answer', 
+                color: 'orange' 
+            }
+        };
+
+        return statusMap[currentCall.status] || { text: currentCall.status, color: 'gray' };
     };
 
     return (
@@ -182,11 +338,19 @@ export default function TenantComponent({ tenant, onUpdate, onDelete }: TenantCo
                                         
                                         {tenant.dienThoai && tenant.trangThai === 'hoatDong' && (
                                             <DropdownMenuItem 
-                                                onClick={() => window.open(`tel:${tenant.dienThoai}`, '_blank')}
+                                                onClick={handleMakePhoneCall}
+                                                disabled={isInitiatingCall || currentCall !== null}
                                                 className="flex items-center gap-2 cursor-pointer"
                                             >
-                                                <Phone className="h-4 w-4" />
-                                                {language === 'vi' ? 'Gọi điện thoại' : 'Call Phone'}
+                                                {isInitiatingCall ? (
+                                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                                ) : (
+                                                    <PhoneCall className="h-4 w-4" />
+                                                )}
+                                                {isInitiatingCall 
+                                                    ? (language === 'vi' ? 'Đang gọi...' : 'Calling...') 
+                                                    : (language === 'vi' ? 'Gọi điện Twilio' : 'Call via Twilio')
+                                                }
                                             </DropdownMenuItem>
                                         )}
                                         
@@ -557,6 +721,152 @@ export default function TenantComponent({ tenant, onUpdate, onDelete }: TenantCo
                             className="rounded-xl px-6 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-semibold"
                         >
                             {language === 'vi' ? 'Đóng' : 'Close'}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Phone Call Dialog */}
+            <Dialog open={phoneCallDialogOpen} onOpenChange={(open) => {
+                if (!open && currentCall && ['completed', 'failed', 'busy', 'no-answer'].includes(currentCall.status)) {
+                    setPhoneCallDialogOpen(false);
+                    setCurrentCall(null);
+                    if (callStatusPollingInterval) {
+                        clearInterval(callStatusPollingInterval);
+                        setCallStatusPollingInterval(null);
+                    }
+                }
+            }}>
+                <DialogContent className="sm:max-w-[500px] rounded-2xl border-0 shadow-2xl bg-gradient-to-br from-white via-slate-50 to-blue-50/30 backdrop-blur-sm">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-3 text-xl font-bold text-gray-900">
+                            <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg">
+                                <PhoneCall className="h-6 w-6 text-white" />
+                            </div>
+                            {language === 'vi' ? 'Cuộc gọi đang diễn ra' : 'Ongoing Call'}
+                        </DialogTitle>
+                        <DialogDescription className="text-gray-600 ml-12">
+                            {language === 'vi' ? `Đang gọi cho ${tenant.hoTen}` : `Calling ${tenant.hoTen}`}
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="space-y-6 py-6">
+                        {/* Call Information */}
+                        <div className="bg-white rounded-xl p-6 border border-blue-100 shadow-sm">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500"></div>
+                                <h4 className="font-bold text-lg text-gray-900">
+                                    {language === 'vi' ? 'Thông tin cuộc gọi' : 'Call Information'}
+                                </h4>
+                            </div>
+                            
+                            <div className="space-y-4">
+                                {/* Phone Number */}
+                                <div className="flex items-center justify-between p-3 bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg border border-purple-100">
+                                    <div className="flex items-center gap-2">
+                                        <Phone className="h-4 w-4 text-purple-600" />
+                                        <span className="text-purple-600 font-medium">
+                                            {language === 'vi' ? 'Số điện thoại:' : 'Phone Number:'}
+                                        </span>
+                                    </div>
+                                    <span className="font-semibold text-purple-800">
+                                        {tenant.dienThoai}
+                                    </span>
+                                </div>
+
+                                {/* Call Status */}
+                                <div className="flex items-center justify-between p-3 bg-gradient-to-br from-emerald-50 to-green-50 rounded-lg border border-emerald-100">
+                                    <div className="flex items-center gap-2">
+                                        <div className={`w-3 h-3 rounded-full ${
+                                            currentCall?.status === 'in-progress' ? 'bg-green-500 animate-pulse' :
+                                            currentCall?.status === 'ringing' ? 'bg-yellow-500 animate-pulse' :
+                                            currentCall?.status === 'completed' ? 'bg-green-500' :
+                                            ['failed', 'busy', 'no-answer'].includes(currentCall?.status || '') ? 'bg-red-500' :
+                                            'bg-blue-500 animate-pulse'
+                                        }`}></div>
+                                        <span className="text-emerald-600 font-medium">
+                                            {language === 'vi' ? 'Trạng thái:' : 'Status:'}
+                                        </span>
+                                    </div>
+                                    <span className={`font-semibold ${
+                                        getCallStatusDisplay().color === 'green' ? 'text-green-700' :
+                                        getCallStatusDisplay().color === 'red' ? 'text-red-700' :
+                                        getCallStatusDisplay().color === 'yellow' ? 'text-yellow-700' :
+                                        getCallStatusDisplay().color === 'orange' ? 'text-orange-700' :
+                                        'text-blue-700'
+                                    }`}>
+                                        {getCallStatusDisplay().text}
+                                    </span>
+                                </div>
+
+                                {/* Call Duration */}
+                                {currentCall && (
+                                    <div className="flex items-center justify-between p-3 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-100">
+                                        <div className="flex items-center gap-2">
+                                            <Calendar className="h-4 w-4 text-blue-600" />
+                                            <span className="text-blue-600 font-medium">
+                                                {currentCall.duration 
+                                                    ? (language === 'vi' ? 'Thời lượng:' : 'Duration:')
+                                                    : (language === 'vi' ? 'Bắt đầu lúc:' : 'Started at:')
+                                                }
+                                            </span>
+                                        </div>
+                                        <span className="font-semibold text-blue-800">
+                                            {currentCall.duration 
+                                                ? `${Math.floor(currentCall.duration / 60)}:${String(currentCall.duration % 60).padStart(2, '0')}`
+                                                : currentCall.startTime.toLocaleTimeString()
+                                            }
+                                        </span>
+                                    </div>
+                                )}
+
+                                {/* Call ID for reference */}
+                                {currentCall?.callId && (
+                                    <div className="flex items-center justify-between p-3 bg-gradient-to-br from-gray-50 to-slate-50 rounded-lg border border-gray-100">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-gray-600 font-medium">
+                                                {language === 'vi' ? 'Mã cuộc gọi:' : 'Call ID:'}
+                                            </span>
+                                        </div>
+                                        <span className="font-mono text-sm text-gray-700">
+                                            {currentCall.callId.slice(-8)}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    <DialogFooter className="gap-3">
+                        {currentCall && !['completed', 'failed', 'busy', 'no-answer'].includes(currentCall.status) && (
+                            <Button 
+                                onClick={handleTerminateCall}
+                                variant="destructive"
+                                className="rounded-xl px-6 py-2 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white font-semibold"
+                            >
+                                <PhoneOff className="h-4 w-4 mr-2" />
+                                {language === 'vi' ? 'Kết thúc cuộc gọi' : 'End Call'}
+                            </Button>
+                        )}
+                        
+                        <Button 
+                            onClick={() => {
+                                setPhoneCallDialogOpen(false);
+                                if (['completed', 'failed', 'busy', 'no-answer'].includes(currentCall?.status || '')) {
+                                    setCurrentCall(null);
+                                    if (callStatusPollingInterval) {
+                                        clearInterval(callStatusPollingInterval);
+                                        setCallStatusPollingInterval(null);
+                                    }
+                                }
+                            }}
+                            variant="outline"
+                            className="rounded-xl px-6 py-2 border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold"
+                        >
+                            {['completed', 'failed', 'busy', 'no-answer'].includes(currentCall?.status || '') 
+                                ? (language === 'vi' ? 'Đóng' : 'Close')
+                                : (language === 'vi' ? 'Thu nhỏ' : 'Minimize')
+                            }
                         </Button>
                     </DialogFooter>
                 </DialogContent>
