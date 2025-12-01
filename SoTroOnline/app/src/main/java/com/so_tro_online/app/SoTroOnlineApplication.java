@@ -23,6 +23,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
         "com.so_tro_online.dung_chung",
         "com.so_tro_online.quan_ly_thong_bao",
         "com.so_tro_online.cham_soc_khach_hang",
+        "com.so_tro_online.chatbot"
 })
 @EnableJpaRepositories(basePackages = {
         "com.so_tro_online.quan_ly_tai_khoan.repository",

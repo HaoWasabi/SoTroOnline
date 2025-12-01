@@ -87,6 +87,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.j2ee-2526</groupId>
+            <artifactId>ChatbotAI</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <optional>true</optional>

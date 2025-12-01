@@ -42,16 +42,16 @@ public class BatchConfig {
 
     @Bean
     @Primary
-    public JobLauncher jobLauncher(JobRepository jobRepository, TaskExecutor taskExecutor) throws Exception {
+    public JobLauncher jobLauncher(JobRepository jobRepository, TaskExecutor batchTaskExecutor) throws Exception {
         TaskExecutorJobLauncher jobLauncher = new TaskExecutorJobLauncher();
         jobLauncher.setJobRepository(jobRepository);
-        jobLauncher.setTaskExecutor(taskExecutor);
+        jobLauncher.setTaskExecutor(batchTaskExecutor);
         jobLauncher.afterPropertiesSet();
         return jobLauncher;
     }
 
-    @Bean
-    public TaskExecutor taskExecutor() {
+    @Bean(name = "batchTaskExecutor")
+    public TaskExecutor batchTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(4);
         executor.setMaxPoolSize(8);

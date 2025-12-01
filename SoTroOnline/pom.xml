@@ -33,6 +33,7 @@
         <module>QuanLyPhieuThu</module>
         <module>QuanLyHopDongKhachThue</module>
         <module>ChamSocKhachHang</module>
+        <module>ChatbotAI</module>
         <module>app</module>
     </modules>
 

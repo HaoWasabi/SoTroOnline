@@ -46,8 +46,9 @@
         <module>SoTroOnline/QuanLyHopDongDichVu</module>
         <module>SoTroOnline/QuanLyKhachThue</module>
         <module>SoTroOnline/QuanLyHopDongKhachThue</module>
-        <module>SoTroOnline/app</module>
         <module>SoTroOnline/ChamSocKhachHang</module>
+        <module>SoTroOnline/ChatbotAI</module>
+        <module>SoTroOnline/app</module>
     </modules>
 
     <dependencyManagement>
