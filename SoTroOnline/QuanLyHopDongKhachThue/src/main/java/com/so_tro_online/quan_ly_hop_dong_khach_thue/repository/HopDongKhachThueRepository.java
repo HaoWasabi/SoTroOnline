@@ -38,6 +38,9 @@ public interface HopDongKhachThueRepository extends JpaRepository<HopDongKhachTh
                                                                        @Param("tenantId") Integer tenantId,
                                                                        @Param("trangThai") HopDongKhachThue.TrangThai trangThai);
 
+    @Query("SELECT hdkt.khachThue FROM HopDongKhachThue hdkt WHERE hdkt.maHopDongPhong = :maHopDongPhong")
+    List<KhachThue> getAllKhachThueByMaHopDongPhong(Integer maHopDongPhong);
+
     /**
      * Find active tenant-contract relationships for a tenant
      * Note: Contract validity (dates, status) should be checked by calling service

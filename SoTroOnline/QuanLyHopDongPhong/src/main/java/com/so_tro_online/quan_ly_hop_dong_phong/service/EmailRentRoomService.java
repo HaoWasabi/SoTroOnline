@@ -70,19 +70,19 @@ public class EmailRentRoomService {
 
             // Send email to all tenants with valid email addresses
             List<String> tenantEmails = rentRoomMessage.getKhachThue().stream()
-                .filter(tenant -> tenant.getEmail() != null && !tenant.getEmail().trim().isEmpty())
-                .map(tenant -> tenant.getEmail().trim())
-                .distinct()
-                .collect(Collectors.toList());
-                
-            logger.info("Attempting to send email for contract {} to {} tenant(s): {}", 
-                rentRoomMessage.getMaHopDongPhong(), tenantEmails.size(), tenantEmails);
-                
+                    .filter(tenant -> tenant.getEmail() != null && !tenant.getEmail().trim().isEmpty())
+                    .map(tenant -> tenant.getEmail().trim())
+                    .distinct()
+                    .collect(Collectors.toList());
+
+            logger.info("Attempting to send email for contract {} to {} tenant(s): {}",
+                    rentRoomMessage.getMaHopDongPhong(), tenantEmails.size(), tenantEmails);
+
             if (tenantEmails.isEmpty()) {
                 logger.warn("No valid tenant emails found for contract {}", rentRoomMessage.getMaHopDongPhong());
                 return;
             }
-            
+
             // Send individual emails to each tenant
             for (String email : tenantEmails) {
                 try {
@@ -92,21 +92,21 @@ public class EmailRentRoomService {
                     individualHelper.setTo(email);
                     individualHelper.setSubject("Xác nhận hợp đồng thuê phòng #" + rentRoomMessage.getMaHopDongPhong());
                     individualHelper.setText(htmlTemplate, true);
-                    
+
                     mailSender.send(individualMessage);
                     logger.info("Email successfully sent to tenant: {} for contract: {}", email, rentRoomMessage.getMaHopDongPhong());
                 } catch (Exception individualError) {
-                    logger.error("Failed to send email to tenant: {} for contract: {}. Error: {}", 
-                        email, rentRoomMessage.getMaHopDongPhong(), individualError.getMessage());
+                    logger.error("Failed to send email to tenant: {} for contract: {}. Error: {}",
+                            email, rentRoomMessage.getMaHopDongPhong(), individualError.getMessage());
                 }
             }
-            
-            logger.info("Email sending process completed for contract {} - sent to {} addresses", 
-                rentRoomMessage.getMaHopDongPhong(), tenantEmails.size());
-                
+
+            logger.info("Email sending process completed for contract {} - sent to {} addresses",
+                    rentRoomMessage.getMaHopDongPhong(), tenantEmails.size());
+
         } catch (MessagingException | jakarta.mail.MessagingException e) {
-            logger.error("Error in email template processing for contract {}: {}", 
-                rentRoomMessage.getMaHopDongPhong(), e.getMessage(), e);
+            logger.error("Error in email template processing for contract {}: {}",
+                    rentRoomMessage.getMaHopDongPhong(), e.getMessage(), e);
         }
     }
 }

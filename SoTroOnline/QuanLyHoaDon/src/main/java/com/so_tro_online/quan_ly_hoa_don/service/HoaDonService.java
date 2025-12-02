@@ -1,6 +1,7 @@
 package com.so_tro_online.quan_ly_hoa_don.service;
 
 
+import com.so_tro_online.quan_ly_hoa_don.listener.InvoiceCreatedEvent;
 import com.so_tro_online.quan_ly_dich_vu_phong.entity.DichVu;
 import com.so_tro_online.quan_ly_dich_vu_phong.repository.DichVuRepository;
 import com.so_tro_online.quan_ly_hoa_don.dto.ChiTietHoaDonResponse;
@@ -23,6 +24,8 @@ import com.so_tro_online.quan_ly_tai_khoan.repository.TaiKhoanRepository;
 import com.so_tro_online.quan_ly_phong.exception.ReseourceNotFoundException;
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -48,6 +51,8 @@ public class HoaDonService implements IHoaDonService{
     private final PhongRepository phongRepository;
     private final TaiKhoanRepository taiKhoanRepository;
 
+    private ApplicationEventPublisher eventPublisher;
+
     public HoaDonService(DichVuRepository dichVuRepository, SuDungDichVuRepository suDungRepo, HoaDonRepository hoaDonRepository, HopDongPhongRepository hopDongPhongRepository, HopDongKhachThueRepository hopDongKhachThueRepository, KhachThueRepository khachThueRepository, PhongRepository phongRepository, TaiKhoanRepository taiKhoanRepository) {
         this.dichVuRepository = dichVuRepository;
         this.suDungRepo = suDungRepo;
@@ -65,6 +70,11 @@ public class HoaDonService implements IHoaDonService{
             hoaDonRepository,
             taiKhoanRepository
         );
+    }
+
+    @Autowired
+    public void setEventPublisher(ApplicationEventPublisher eventPublisher) {
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -363,6 +373,8 @@ public class HoaDonService implements IHoaDonService{
         hoaDon.setNoiDung("Hoa don thang " + request.getThang() + "/" + request.getNam());
         hoaDon.setThang(request.getThang());
         hoaDon.setNam(request.getNam());
+
+        eventPublisher.publishEvent(new InvoiceCreatedEvent(hoaDon));
 
         return mapToResponse(hoaDonRepository.save(hoaDon));
     }
