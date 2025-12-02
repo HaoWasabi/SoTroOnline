@@ -5,11 +5,20 @@ import InvoiceManagementLayout from "@/module/QuanLyHoaDon/components/invoice-ma
 import { useAuthGuard } from "@/hook/useAuthGuard";
 
 export default function InvoicesPage() {
-    const { isAuthenticated } = useAuthGuard();
+    const { isAuthenticated, isLoading } = useAuthGuard();
 
-    // Show loading or nothing while authentication is being checked
+    // Show loading during hydration
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-lg">Loading...</div>
+            </div>
+        );
+    }
+
+    // Will redirect if not authenticated, so just return null briefly
     if (!isAuthenticated) {
-        return null; // The auth guard will handle the redirect
+        return null;
     }
 
     return (

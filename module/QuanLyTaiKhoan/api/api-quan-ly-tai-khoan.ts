@@ -175,7 +175,12 @@ export const login = async (email: string, password: string): Promise<LoginRespo
             localStorage.setItem('accessToken', data.data.accessToken);
             localStorage.setItem('refreshToken', data.data.refreshToken);
             sessionStorage.setItem('user', JSON.stringify(data.data.taiKhoanDTO));
-        
+            
+            console.log('✅ Login successful - tokens stored:', {
+                hasAccessToken: !!localStorage.getItem('accessToken'),
+                hasUser: !!sessionStorage.getItem('user'),
+                userData: data.data.taiKhoanDTO
+            });
         }
         
         return {

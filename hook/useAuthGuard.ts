@@ -19,17 +19,27 @@ export const useAuthGuard = (redirectTo: string = '/login-page') => {
         // Validate authentication state after hydration
         validateAndSyncAuth();
         
-        // Check if user is authenticated
-        const isAuth = isAuthenticated();
-        
-        if (!isAuth) {
-            clearTaiKhoan();
-            router.push(redirectTo);
-        }
-    }, [taiKhoan, isHydrated, clearTaiKhoan, validateAndSyncAuth, hydrate, router, redirectTo]);
+        // Check if user is authenticated with a slight delay to ensure storage is ready
+        setTimeout(() => {
+            const isAuth = isAuthenticated();
+            const hasUser = !!taiKhoan;
+            
+            console.log('Auth check:', { isAuth, hasUser, taiKhoan });
+            
+            if (!isAuth || !hasUser) {
+                console.log('Authentication failed, redirecting to login');
+                clearTaiKhoan();
+                router.push(redirectTo);
+            }
+        }, 100);
+    }, [isHydrated, taiKhoan]); // Simplified dependencies
+
+    // Don't return authenticated state until store is hydrated
+    const currentlyAuthenticated = isHydrated ? (isAuthenticated() && !!taiKhoan) : false;
 
     return {
-        isAuthenticated: isAuthenticated() && !!taiKhoan,
-        user: taiKhoan
+        isAuthenticated: currentlyAuthenticated,
+        user: taiKhoan,
+        isLoading: !isHydrated // Add loading state for UI
     };
 };

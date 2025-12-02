@@ -1,8 +1,11 @@
+"use client"
+
 import { Header } from "./header";
 import { Sidebar } from "./sidebar";
+import ChatbotFloatingButton from "../module/ChatbotAI/components/chatbot-floating-button";
 
 
-export default function MainLayout({children}: {children: React.ReactNode}) {
+function MainLayout({children}: {children: React.ReactNode}) {
     return (
         <div className="flex">
             <Sidebar />
@@ -11,6 +14,11 @@ export default function MainLayout({children}: {children: React.ReactNode}) {
                 <Header />
                     {children}
                 </main>
+
+            {/* Chatbot AI Assistant - Global Access */}
+            <ChatbotFloatingButton />
         </div>
     );
 }
+
+export default MainLayout;

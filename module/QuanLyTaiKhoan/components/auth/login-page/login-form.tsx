@@ -46,14 +46,16 @@ export default function LoginForm() {
 
             if(response.status === 'success') {
                 if (response.data && response.data.taiKhoanDTO) {
+                    // Set user in store first
                     setTaiKhoan(response.data.taiKhoanDTO);
                     showSuccess(language === 'vi' ? 'Đăng nhập thành công' : 'Login successful');
                     
-                    // Add a small delay to ensure token storage is complete
+                    // Wait longer to ensure all storage operations complete
                     setTimeout(() => {
                         setIsSubmitting(false);
-                        router.push("/");
-                    }, 500);
+                        // Force a page refresh to ensure clean state
+                        window.location.href = "/";
+                    }, 1000);
                 } else {
                     showError('Invalid user data received from server');
                     setIsSubmitting(false);

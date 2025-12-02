@@ -36,7 +36,7 @@ interface ReceiptSummary {
 export default function ReceiptManagementLayout() {
     const { language } = useLanguageStore()
     const { toast, showSuccess, showError, removeToast } = useToast()
-    const { isAuthenticated, user } = useAuthGuard()
+    const { isAuthenticated, user, isLoading: authLoading } = useAuthGuard()
     
     // State management
     const [receipts, setReceipts] = useState<Receipt[]>([])
@@ -309,15 +309,25 @@ export default function ReceiptManagementLayout() {
 
     return (
         <div className="p-6 space-y-6">
-            {/* Header */}
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-                        <div className="h-8 w-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
-                            <DollarSign className="h-5 w-5 text-white" />
-                        </div>
-                        {language === "vi" ? "Quản lý phiếu thu" : "Receipt Management"}
-                    </h1>
+            {/* Show loading during auth hydration */}
+            {authLoading && (
+                <div className="min-h-screen flex items-center justify-center">
+                    <div className="text-lg">Loading...</div>
+                </div>
+            )}
+            
+            {/* Show content only when auth is loaded and user is authenticated */}
+            {!authLoading && isAuthenticated && (
+                <>
+                    {/* Header */}
+                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                        <div>
+                            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+                                <div className="h-8 w-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
+                                    <DollarSign className="h-5 w-5 text-white" />
+                                </div>
+                                {language === "vi" ? "Quản lý phiếu thu" : "Receipt Management"}
+                            </h1>
                     <p className="text-gray-600 mt-1">
                         {language === "vi" 
                             ? "Ghi nhận và theo dõi các phiếu thu từ khách thuê" 
@@ -672,6 +682,8 @@ export default function ReceiptManagementLayout() {
                     duration={toast.duration} 
                     onClose={removeToast} 
                 />
+            )}
+            </>
             )}
         </div>
     )
