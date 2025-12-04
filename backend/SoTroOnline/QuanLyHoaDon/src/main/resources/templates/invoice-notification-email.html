@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice Notification</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7fa;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            background: #ffffff;
+            max-width: 600px;
+            margin: auto;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        li {
+            background: #ecf5ff;
+            margin-bottom: 8px;
+            padding: 10px 15px;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+            font-size: 15px;
+        }
+
+        .thanks {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 25px;
+            color: #34495e;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <h2>Thông báo Hóa đơn</h2>
+
+    <p>Xin chào <strong th:text="${tenantName}"></strong>,</p>
+
+    <p>Hóa đơn của bạn đã được tạo với các thông tin như sau:</p>
+
+    <ul>
+        <li>Mã hóa đơn: <strong th:text="${invoiceCode}"></strong></li>
+        <li>Mã phòng: <strong th:text="${roomCode}"></strong></li>
+        <li>Người quản lý: <strong th:text="${managerName}"></strong></li>
+        <li>Tiền phòng: <strong th:text="${roomFee}"></strong> VND</li>
+        <li>Tiền dịch vụ: <strong th:text="${serviceFee}"></strong> VND</li>
+        <li>Tổng tiền: <strong th:text="${totalFee}"></strong> VND</li>
+        <li>Ngày tạo: <strong th:text="${createdDate}"></strong></li>
+    </ul>
+
+    <p class="thanks">Xin cảm ơn bạn đã sử dụng dịch vụ!</p>
+</div>
+</body>
+</html>

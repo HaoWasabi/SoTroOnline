@@ -1,0 +1,88 @@
+package com.so_tro_online.quan_ly_hoa_don.controller;
+
+
+import com.so_tro_online.dung_chung.dto.ApiResponseV2;
+import com.so_tro_online.quan_ly_hoa_don.dto.HoaDonRequest;
+import com.so_tro_online.quan_ly_hoa_don.service.IHoaDonService;
+// Import for user authentication
+import com.so_tro_online.quan_ly_tai_khoan.service.TaiKhoanService;
+import com.so_tro_online.quan_ly_tai_khoan.dto.TaiKhoanDto;
+import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+
+import java.io.IOException;
+
+@RestController
+@RequestMapping("/api/invoice")
+public class HoaDonController {
+    private final IHoaDonService hoaDonService;
+    
+    @Autowired
+    private TaiKhoanService taiKhoanService;
+
+    public HoaDonController(IHoaDonService hoaDonService) {
+        this.hoaDonService = hoaDonService;
+    }
+    @GetMapping("/all")
+    public ResponseEntity<ApiResponseV2> getAllHoaDon() {
+
+        return ResponseEntity.ok(new ApiResponseV2("success", hoaDonService.getAllHoaDon()));
+    }
+    @GetMapping("/active")
+    public ResponseEntity<ApiResponseV2> getAllActiveHoaDon(@RequestHeader("Authorization") String token) {
+        try {
+            // Get current user from token
+            TaiKhoanDto currentUser = taiKhoanService.getCurrentUserInfo(token);
+            
+            // Use user-specific method to get invoices
+            return ResponseEntity.ok(new ApiResponseV2("success", hoaDonService.getAllActiveHoaDonByUser(currentUser.getMaTaiKhoan())));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ApiResponseV2("error", e.getMessage()));
+        }
+    }
+    @GetMapping("/{id}")
+    public  ResponseEntity<ApiResponseV2>getHoaDonById(@PathVariable Integer id) {
+        return ResponseEntity.ok(new ApiResponseV2("success",hoaDonService.getHoaDonById(id)));
+    }
+    @GetMapping("/active/{id}")
+    public  ResponseEntity<ApiResponseV2>getActiveHoaDonById(@PathVariable Integer id) {
+        return ResponseEntity.ok(new ApiResponseV2("success",hoaDonService.getActiveHoaDonById(id)));
+    }
+
+    @GetMapping("/contract/{id}")
+    public  ResponseEntity<ApiResponseV2>getHoaDonByHopDong(@PathVariable Integer id) {
+        return ResponseEntity.ok(new ApiResponseV2("success",hoaDonService.getAllByHopDong(id)));
+    }
+    @GetMapping("/date")
+    public ResponseEntity<ApiResponseV2>getHoaDonByDate(@RequestParam Integer thang,@RequestParam Integer nam) {
+        return ResponseEntity.ok(new ApiResponseV2("success",hoaDonService.getHoaDonByDate(thang, nam)));
+    }
+    /*@GetMapping("/print")
+    public void printHoaDonByDate(@RequestParam Integer thang,@RequestParam Integer nam, HttpServletResponse res) throws IOException {
+        hoaDonService.printHoaDonByThangAndNam(res,thang,nam);
+    }*/
+    @PostMapping
+    public ResponseEntity<ApiResponseV2> createHoaDon(@RequestBody HoaDonRequest request) {
+        return ResponseEntity.ok(new ApiResponseV2("success",hoaDonService.createHoaDon(request)));
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponseV2>deleteHoaDon(@PathVariable Integer id) {
+        hoaDonService.deleteHoaDon(id);
+        return ResponseEntity.ok(new ApiResponseV2("success", null));
+    }
+
+    // Endpoint to print/download an invoice as a .docx file
+    /*@GetMapping("/{id}/print")
+    public void printHoaDon(@PathVariable Integer id, HttpServletResponse response) {
+        hoaDonService.printHoaDon(id, response);
+    }*/
+
+    // Alternative endpoint mapping to handle /print/{id} pattern  
+    @GetMapping("/print/{id}")
+    public void printHoaDonAlternative(@PathVariable Integer id, HttpServletResponse response) {
+        hoaDonService.printHoaDon(id, response);
+    }
+}

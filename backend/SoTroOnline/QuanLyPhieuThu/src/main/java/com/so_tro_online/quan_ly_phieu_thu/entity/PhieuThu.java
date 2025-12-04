@@ -1,0 +1,123 @@
+package com.so_tro_online.quan_ly_phieu_thu.entity;
+
+import com.so_tro_online.quan_ly_hoa_don.entity.HoaDon;
+import com.so_tro_online.quan_ly_khach_thue.entity.KhachThue;
+import jakarta.persistence.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Date;
+
+@Entity
+@Table(name = "phieu_thu")
+public class PhieuThu {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ma_phieu_thu")
+    private Integer maPhieuThu;
+
+    @ManyToOne
+    @JoinColumn(name = "ma_hoa_don")
+    private HoaDon hoaDon;
+
+    @ManyToOne
+    @JoinColumn(name = "ma_khach")
+    private KhachThue khachThue;
+
+    @Column(name = "so_tien_thu")
+    private BigDecimal soTienThu;
+
+    @Column(name = "con_no")
+    private BigDecimal conNo;
+    @Column(name = "noi_dung_thu")
+    private String noiDungThu;
+
+    @Column(name = "ghi_chu")
+    private String ghiChu;
+
+    @Column(name = "ngay_thu")
+    private LocalDate ngayThu;
+    
+    @Column(name = "cap_nhat_lan_cuoi")
+    private LocalDate capNhatLanCuoi;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "trang_thai")
+    private TrangThai trangThai;
+
+    public Integer getMaPhieuThu() {
+        return maPhieuThu;
+    }
+
+    public void setMaPhieuThu(Integer maPhieuThu) {
+        this.maPhieuThu = maPhieuThu;
+    }
+
+    public HoaDon getHoaDon() {
+        return hoaDon;
+    }
+
+    public void setHoaDon(HoaDon hoaDon) {
+        this.hoaDon = hoaDon;
+    }
+
+    public LocalDate getNgayThu() {
+        return ngayThu;
+    }
+    public void setNgayThu(LocalDate ngayThu) {
+        this.ngayThu = ngayThu;
+    }
+    public KhachThue getKhachThue() {
+        return khachThue;
+    }
+
+    public void setKhachThue(KhachThue khachThue) {
+        this.khachThue = khachThue;
+    }
+
+    public BigDecimal getSoTienThu() {
+        return soTienThu;
+    }
+    public void setSoTienThu(BigDecimal soTienThu) {
+        this.soTienThu = soTienThu;
+    }
+
+    public BigDecimal getConNo() {
+        return conNo;
+    }
+
+    public void setConNo(BigDecimal conNo) {
+        this.conNo = conNo;
+    }
+
+    public String getNoiDungThu() {
+        return noiDungThu;
+    }
+
+    public void setNoiDungThu(String noiDungThu) {
+        this.noiDungThu = noiDungThu;
+    }
+
+    public String getGhiChu() {
+        return ghiChu;
+    }
+
+    public void setGhiChu(String ghiChu) {
+        this.ghiChu = ghiChu;
+    }
+
+    public LocalDate getCapNhatLanCuoi() {
+        return capNhatLanCuoi;
+    }
+    public void setCapNhatLanCuoi(LocalDate capNhatLanCuoi) {
+        this.capNhatLanCuoi = capNhatLanCuoi;
+    }
+
+    public TrangThai getTrangThai() {
+        return trangThai;
+    }
+
+    public void setTrangThai(TrangThai trangThai) {
+        this.trangThai = trangThai;
+    }
+}

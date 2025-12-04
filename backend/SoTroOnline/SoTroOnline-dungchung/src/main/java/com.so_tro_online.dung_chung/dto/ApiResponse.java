@@ -1,0 +1,47 @@
+package com.so_tro_online.dung_chung.dto;
+
+public class ApiResponse<T> {
+    private int status;
+    private String message;
+    private T data;
+
+    public ApiResponse() {
+    }
+
+    public ApiResponse(int status, String message, T data) {
+        this.status = status;
+        this.message = message;
+        this.data = data;
+    }
+    
+    // Convenience constructor for successful responses
+    public ApiResponse(String message, T data) {
+        this.status = 200;
+        this.message = message;
+        this.data = data;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public T getData() {
+        return data;
+    }
+
+    public void setData(T data) {
+        this.data = data;
+    }
+}

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.j2ee-2526</groupId>
+        <artifactId>soTroOnline</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>SoTroOnline</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <modules>
+        <module>SoTroOnline-dungchung</module>
+        <module>QuanLyTaiKhoan</module>
+        <module>QuanLyKhachThue</module>
+        <module>QuanLyDichVuPhong</module>
+        <module>QuanLyPhong</module>
+        <module>QuanLyHopDongPhong</module>
+        <module>QuanLyHopDongDichVu</module>
+        <module>QuanLyHoaDon</module>
+        <module>QuanLyPhieuThu</module>
+        <module>QuanLyHopDongKhachThue</module>
+        <module>ChamSocKhachHang</module>
+        <module>ChatbotAI</module>
+        <module>app</module>
+    </modules>
+
+
+</project>
