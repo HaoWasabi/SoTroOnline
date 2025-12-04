@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/api/chatbot")
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
+@CrossOrigin(origins = {"http://localhost:3000"})
 public class ChatbotController {
 
     private static final Logger logger = Logger.getLogger(ChatbotController.class.getName());
@@ -25,6 +25,7 @@ public class ChatbotController {
 
     /**
      * Streaming chat endpoint - returns Server-Sent Events
+     *
      */
     @GetMapping(value = "/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> chatStream(@RequestParam(value = "message") String message) {
@@ -39,7 +40,7 @@ public class ChatbotController {
     /**
      * Non-streaming fallback endpoint
      */
-    @PostMapping(value = "/chat-fallback", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/chat-fallback")
     public Map<String, Object> chatFallback(@RequestBody Map<String, String> request) {
         String message = request.get("message");
         if (message == null || message.trim().isEmpty()) {

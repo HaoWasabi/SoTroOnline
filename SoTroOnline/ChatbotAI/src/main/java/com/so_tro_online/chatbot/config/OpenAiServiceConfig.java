@@ -15,7 +15,7 @@ public class OpenAiServiceConfig {
     @Bean
     public WebClient openAiWebClient(@Value("${openai.api-key:${OPENAI_API_KEY:}}") String apiKey) {
         if (apiKey == null || apiKey.trim().isEmpty()) {
-            logger.warning("⚠️ OpenAI API key not found! WebClient will be created without authorization.");
+            logger.warning("OpenAI API key not found! WebClient will be created without authorization.");
             return WebClient.builder()
                     .baseUrl("https://api.openai.com")
                     .build();
@@ -28,11 +28,11 @@ public class OpenAiServiceConfig {
                     .defaultHeader("Content-Type", "application/json")
                     .build();
                     
-            logger.info("✅ OpenAI WebClient initialized successfully");
+            logger.info("OpenAI WebClient initialized successfully");
             return client;
             
         } catch (Exception e) {
-            logger.severe("❌ Failed to initialize OpenAI WebClient: " + e.getMessage());
+            logger.severe("Failed to initialize OpenAI WebClient: " + e.getMessage());
             return WebClient.builder().baseUrl("https://api.openai.com").build();
         }
     }
