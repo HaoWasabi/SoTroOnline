@@ -105,7 +105,7 @@ export const sendMessageToChatbot = async (
         
         // Create AbortController for timeout handling
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+        const timeoutId = setTimeout(() => controller.abort(), 90000); // 90 second timeout
         
         const response = await fetch(`${API_BASE_URL}/api/chatbot/chat?message=${encodeURIComponent(message)}`, {
             method: 'GET',
