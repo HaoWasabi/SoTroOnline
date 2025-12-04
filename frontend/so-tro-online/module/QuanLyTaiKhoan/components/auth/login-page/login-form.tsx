@@ -1,0 +1,164 @@
+"use client"
+
+import Link from "next/link"
+
+import { useRef, useState } from "react"
+import { EyeOff, Eye} from "lucide-react"
+import { Button } from "../../../../../components/ui/button"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../../../../../components/ui/card"
+import { Input } from "../../../../../components/ui/input"
+import { Label } from "../../../../../components/ui/label"
+import { useLanguageStore } from "@/zustand/language-tranlator"
+import { Toast, ToastContainer } from "@/components/toast"
+import { useToast } from "@/hook/useToast"
+import { validateEmail } from "@/utils/auth-validation"
+import { useRouter } from "next/navigation"
+import { useTaiKhoanStore } from "@/zustand/taikhoan-store"
+import GoogleButton from "./google-button"
+import { login } from "@/module/QuanLyTaiKhoan/api/api-quan-ly-tai-khoan"
+
+export default function LoginForm() {
+
+    const router = useRouter();
+    const { setTaiKhoan } = useTaiKhoanStore();
+    const emailRef = useRef<HTMLInputElement>(null)
+    const passwordRef = useRef<HTMLInputElement>(null)
+    const { toast, showError, showSuccess, removeToast } = useToast();
+    const {language} = useLanguageStore();
+    const [showPassword, setShowPassword] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+
+        const email = emailRef.current?.value || '';
+        const password = passwordRef.current?.value || '';
+
+        if(!validateEmail(email)) {
+            showError(language === 'vi' ? 'Email không hợp lệ' : 'Invalid email address');
+            setIsSubmitting(false);
+            return;
+        }
+
+        try {
+            const response = await login(email, password);
+
+            if(response.status === 'success') {
+                if (response.data && response.data.taiKhoanDTO) {
+                    // Set user in store first
+                    setTaiKhoan(response.data.taiKhoanDTO);
+                    showSuccess(language === 'vi' ? 'Đăng nhập thành công' : 'Login successful');
+                    
+                    // Wait longer to ensure all storage operations complete
+                    setTimeout(() => {
+                        setIsSubmitting(false);
+                        // Force a page refresh to ensure clean state
+                        window.location.href = "/";
+                    }, 1000);
+                } else {
+                    showError('Invalid user data received from server');
+                    setIsSubmitting(false);
+                }
+                
+            } else {
+                const errorMessage = response.message && (language === 'vi' ? (
+                    response.message === 'Account is not exist' ? 'Tài khoản không tồn tại' : 
+                    response.message === 'Invalid credentials' ? 'Sai tài khoản hoặc mật khẩu' : 
+                    response.message === 'Internal server error' ? 'Lỗi máy chủ nội bộ' : response.message
+                ) : 'Login failed');
+                showError(errorMessage);
+                setIsSubmitting(false);
+            }
+        } catch (error) {
+            showError('Network error occurred');
+            setIsSubmitting(false);
+        }
+    }
+
+    return (
+        <>
+            {toast && (
+                <ToastContainer>
+                    <Toast
+                        message={toast.message}
+                        type={toast.type}
+                        duration={toast.duration}
+                        onClose={removeToast}
+                    />
+                </ToastContainer>
+            )}
+            <Card className="shadow-lg w-80 sm:min-w-md">
+                <CardHeader>
+                    <CardTitle className="text-2xl font-semibold text-center">
+                        {language === 'vi' ? 'Chào mừng quay trở lại' : 'Welcome back'}
+                    </CardTitle>
+                    <CardDescription className="text-center">
+                        {language === 'vi' ? 'Đăng nhập để tiếp tục' : 'Sign in to your account to continue'}
+                    </CardDescription>
+                </CardHeader>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="email">Email</Label>
+                            <Input
+                                ref={emailRef}
+                                id="email"
+                                type="email"
+                                placeholder={language === 'vi' ? 'Nhập email ở đây' : "Enter your email"}
+                                //value={formData.email}
+                                //onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                required
+                            />
+                        </div>
+                    
+                        <div className="space-y-2">
+                            <Label htmlFor="password">
+                                {language === 'vi' ? 'Mật khẩu' : 'Password'}
+                            </Label>
+                            <div className="relative">
+                                <Input
+                                    ref={passwordRef}
+                                    id="password"
+                                    type={showPassword ? 'text' : 'password'}
+                                    placeholder={language === 'vi' ? 'Nhập mật khẩu' : 'Enter your password'}
+                                    //value={formData.password}
+                                    //onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                    required
+                                />
+                                <button
+                                    disabled={isSubmitting}
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                                >
+                                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                </button>
+                            </div>
+                        </div>
+
+                        <Link href="/forgot-password" className="text-sm text-right text-blue-600 hover:text-blue-800">
+                                {language === 'vi' ? 'Quên mật khẩu?' : 'Forgot password?'}
+                            </Link>
+                        </CardContent>
+            
+                        <CardFooter className="flex flex-col space-y-4">
+                           <GoogleButton disabled={isSubmitting} />
+                            <Button type="submit" disabled={isSubmitting} className="w-full bg-blue-500 hover:bg-blue-600 cursor-pointer">
+                                {isSubmitting 
+                                    ? (language === 'vi' ? 'Đang đăng nhập...' : 'Signing In...') 
+                                    : (language === 'vi' ? 'Đăng nhập' : 'Sign In')
+                                }
+                            </Button>
+                        <div className="text-center text-sm text-gray-600">
+                            {language === 'vi' ? 'Chưa có tài khoản?' : 'Do not have an account?'}
+                            <Link href="/signup-page" className="text-blue-600 hover:text-blue-800 font-medium cursor-pointer">
+                                {language === 'vi' ? ' Đăng ký ở đây' : ' Sign up here'}
+                            </Link>
+                        </div>
+                    </CardFooter>
+                </form>
+            </Card>
+        </>
+    )
+}   
